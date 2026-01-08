@@ -4,3 +4,8 @@ spring:
     username: dev
     password: dev1234
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  flyway:
+    locations:
+      - classpath:db/migration
+      - classpath:db/mock
