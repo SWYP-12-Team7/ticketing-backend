@@ -1,5 +1,6 @@
-package com.jpa.entity;
+package com.example.services.user.domain;
 
+import com.example.jpa.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

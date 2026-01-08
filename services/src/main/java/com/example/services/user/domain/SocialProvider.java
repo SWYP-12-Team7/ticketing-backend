@@ -1,4 +1,4 @@
-package com.jpa.entity;
+package com.example.services.user.domain;
 
 public enum SocialProvider {
     KAKAO,

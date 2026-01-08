@@ -33,15 +33,18 @@ apps/ticketing-api (서버 실행) → services → modules/jpa
 ### 패키지 구조
 ```
 src/main/java/com/services
-├── {domain}/                # 도메인별 패키지
-│   ├── controller/          # Presentation Layer
-│   ├── facade/              # Facade Layer (트랜잭션 외부 I/O 처리)
-│   ├── service/             # Business Layer (트랜잭션 단위)
-│   ├── repository/          # Data Access Layer
-│   ├── entity/              # JPA Entity
-│   └── dto/                 # DTO 클래스
+├── user/                   # 도메인별 패키지
+│   ├── application/
+│   │   ├── dto/                # DTO 클래스
+│   │   ├── facade/             # Facade Layer (트랜잭션 외부 I/O 처리)
+│   │   └── usecase/            # Business Layer (트랜잭션 단위)
+│   └── domain/
+│       ├── service/            # 다른 도메인과의 협력이 필요한 비즈니스 로직
+│       ├── User.java           # Domain Entity
+│       ├── SocialProvider.java # Enum
+│       └── UserRepository.java
 └── common/
-    └── exception/           # CustomException
+    └── exception/              # CustomException
 ```
 
 ## 빌드 및 실행
