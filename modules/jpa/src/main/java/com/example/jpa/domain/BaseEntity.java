@@ -1,4 +1,4 @@
-package com.jpa.entity;
+package com.example.jpa.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
