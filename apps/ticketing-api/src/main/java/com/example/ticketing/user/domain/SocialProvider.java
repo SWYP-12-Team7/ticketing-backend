@@ -1,4 +1,4 @@
-package com.example.services.user.domain;
+package com.example.ticketing.user.domain;
 
 public enum SocialProvider {
     KAKAO,

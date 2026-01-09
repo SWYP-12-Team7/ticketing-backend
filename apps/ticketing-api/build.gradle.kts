@@ -1,12 +1,14 @@
 
 
 dependencies {
-    implementation(project(":services"))
+    implementation(project(":modules:jpa"))
 
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-webmvc-test")
+    testImplementation("org.springframework.security:spring-security-test")
 }
