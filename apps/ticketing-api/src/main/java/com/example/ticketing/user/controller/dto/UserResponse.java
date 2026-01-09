@@ -1,6 +1,6 @@
-package com.example.ticketing.dto;
+package com.example.ticketing.user.controller.dto;
 
-import com.example.services.user.domain.User;
+import com.example.ticketing.user.domain.User;
 import java.time.LocalDateTime;
 
 public record UserResponse(

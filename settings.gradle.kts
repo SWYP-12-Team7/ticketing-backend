@@ -2,7 +2,6 @@ rootProject.name = "example"
 
 include(
     ":apps:ticketing-api",
-    ":services",
     ":modules:jpa"
 )
 

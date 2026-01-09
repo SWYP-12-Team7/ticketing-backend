@@ -1,4 +1,4 @@
-package com.example.services.user.domain;
+package com.example.ticketing.user.domain;
 
 import com.example.jpa.domain.BaseEntity;
 import jakarta.persistence.Column;
