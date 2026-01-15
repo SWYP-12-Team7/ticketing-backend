@@ -9,6 +9,11 @@ import com.example.ticketing.user.controller.dto.RefreshTokenResponse;
 import com.example.ticketing.user.domain.User;
 import com.example.ticketing.user.domain.UserRepository;
 import com.example.ticketing.user.infrastructure.jwt.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "인증", description = "로그인, 회원가입, 토큰 관리 API")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -31,45 +37,52 @@ public class AuthController {
   private final JwtTokenProvider jwtTokenProvider;
   private final UserRepository userRepository;
 
-  /**
-   * 카카오 로그인 콜백 (인가 코드 처리)
-   * @return 로그인 응답 (JWT 토큰 + 사용자 정보)
-   */
+  @Operation(summary = "카카오 로그인 (POST)", description = "카카오 인가 코드로 로그인 처리 후 JWT 토큰 발급")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "로그인 성공"),
+      @ApiResponse(responseCode = "400", description = "잘못된 인가 코드"),
+      @ApiResponse(responseCode = "500", description = "카카오 API 호출 실패")
+  })
   @PostMapping("/kakao/callback")
-  public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam @NotBlank(message = "인가 코드는 필수입니다") String code) {
+  public ResponseEntity<LoginResponse> kakaoLogin(
+      @Parameter(description = "카카오 인가 코드", required = true)
+      @RequestParam @NotBlank(message = "인가 코드는 필수입니다") String code) {
     LoginResult result = kakaoLoginUseCase.execute(code);
     return ResponseEntity.ok(LoginResponse.from(result));
   }
 
-  /**
-   * 카카오 로그인 콜백 (Query Parameter 방식)
-   * 프론트엔드에서 Redirect로 받을 때 사용
-   */
+  @Operation(summary = "카카오 로그인 (GET)", description = "카카오 리다이렉트 콜백용. 프론트엔드에서 리다이렉트로 받을 때 사용")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "로그인 성공"),
+      @ApiResponse(responseCode = "400", description = "잘못된 인가 코드")
+  })
   @GetMapping("/kakao/callback")
-  public ResponseEntity<LoginResponse> kakaoLoginCallback(@RequestParam String code) {
+  public ResponseEntity<LoginResponse> kakaoLoginCallback(
+      @Parameter(description = "카카오 인가 코드", required = true)
+      @RequestParam String code) {
     LoginResult result = kakaoLoginUseCase.execute(code);
     return ResponseEntity.ok(LoginResponse.from(result));
   }
 
-  /**
-   * 토큰 갱신
-   * @param authorization Authorization 헤더 (Bearer {refreshToken})
-   * @return 새로운 Access Token, Refresh Token
-   */
+  @Operation(summary = "토큰 갱신", description = "Refresh Token으로 새로운 Access Token과 Refresh Token 발급")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "토큰 갱신 성공"),
+      @ApiResponse(responseCode = "401", description = "유효하지 않은 Refresh Token")
+  })
   @PostMapping("/refresh")
-  public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestHeader("Authorization") String authorization
-  ) {
+  public ResponseEntity<RefreshTokenResponse> refreshToken(
+      @Parameter(description = "Bearer {refreshToken}", required = true)
+      @RequestHeader("Authorization") String authorization) {
     String refreshToken = authorization.replace("Bearer ", "");
     RefreshTokenUseCase.TokenPair tokenPair = refreshTokenUseCase.execute(refreshToken);
     return ResponseEntity.ok(RefreshTokenResponse.from(tokenPair));
   }
 
-  /**
-   * Mock 로그인 (개발용)
-   * 카카오 인증 없이 바로 JWT 토큰 발급
-   * @param request 이메일, 닉네임
-   * @return 로그인 응답 (JWT 토큰 + 사용자 정보)
-   */
+  @Operation(summary = "Mock 로그인 (개발용)", description = "카카오 인증 없이 이메일/닉네임으로 바로 JWT 토큰 발급. 개발 환경에서만 사용")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "로그인 성공"),
+      @ApiResponse(responseCode = "400", description = "잘못된 요청 (이메일/닉네임 누락)")
+  })
   @PostMapping("/mock/login")
   public ResponseEntity<LoginResponse> mockLogin(@Valid @RequestBody MockLoginRequest request) {
     // 기존 사용자 조회 또는 생성

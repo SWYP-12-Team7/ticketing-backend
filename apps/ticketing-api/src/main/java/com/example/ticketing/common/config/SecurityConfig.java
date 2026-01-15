@@ -15,7 +15,12 @@ public class SecurityConfig {
       "/actuator/health",
       "/error",
       "/",
-      "/auth/**"  // 인증 관련 엔드포인트는 모두 허용
+      "/auth/**",  // 인증 관련 엔드포인트는 모두 허용
+      // Swagger UI
+      "/swagger-ui/**",
+      "/swagger-ui.html",
+      "/api-docs/**",
+      "/v3/api-docs/**"
   };
 
   @Bean
