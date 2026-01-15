@@ -40,6 +40,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          script_stop: true
           script: |
             docker pull ${{ secrets.NCP_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             docker stop ticketing-api || true
