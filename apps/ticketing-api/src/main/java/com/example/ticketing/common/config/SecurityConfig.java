@@ -11,22 +11,23 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINTS = {
-        "/actuator/health",
-        "/error",
-        "/"
-    };
+  private static final String[] PUBLIC_ENDPOINTS = {
+      "/actuator/health",
+      "/error",
+      "/",
+      "/auth/**"  // 인증 관련 엔드포인트는 모두 허용
+  };
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        return http
-            .csrf(AbstractHttpConfigurer::disable)
-            .formLogin(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .anyRequest().authenticated()
-            )
-            .build();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    return http
+        .csrf(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+            .anyRequest().authenticated()
+        )
+        .build();
+  }
 }

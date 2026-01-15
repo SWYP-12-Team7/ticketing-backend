@@ -77,7 +77,6 @@ public class Curation extends BaseEntity {
     // 사전예약가능여부
     private ReservationStatus reservationStatus;
 
-
     public void 전시상태() {
 
     }

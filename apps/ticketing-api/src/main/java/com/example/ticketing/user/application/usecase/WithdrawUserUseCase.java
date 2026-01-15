@@ -8,21 +8,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 회원탈퇴 UseCase
+ * Soft Delete 방식으로 처리
+ */
 @Service
 @RequiredArgsConstructor
-public class FindUserUseCase {
+@Transactional
+public class WithdrawUserUseCase {
 
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public User findById(Long id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-    }
+    public void execute(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-    @Transactional(readOnly = true)
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        user.withdraw();
     }
 }

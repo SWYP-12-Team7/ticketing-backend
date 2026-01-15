@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카카오 인가 코드 추출기</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #0d47a1;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #FEE500;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background: #FDD835;
+        }
+
+        .code-box {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px dashed #ccc;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .code-box.show {
+            display: block;
+        }
+
+        .code-box h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .code-value {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .copy-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        .postman-guide {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .postman-guide h4 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .postman-guide code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #c7254e;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔑 카카오 인가 코드 추출기</h1>
+    <p style="color: #666; margin-bottom: 20px;">Postman 테스트를 위한 새로운 인가 코드를 받아보세요</p>
+
+    <div class="info">
+        ℹ️ <strong>주의:</strong> 카카오 인가 코드는 1회용입니다. 매번 새로운 코드를 받아야 합니다.
+    </div>
+
+    <button onclick="getKakaoCode()">
+        🟡 카카오 인가 코드 받기
+    </button>
+
+    <div id="codeBox" class="code-box">
+        <h3>✅ 인가 코드 발급 완료!</h3>
+        <div id="codeValue" class="code-value"></div>
+        <button class="copy-btn" onclick="copyCode()">📋 코드 복사</button>
+        <div id="copySuccess" class="success"></div>
+    </div>
+
+    <div class="postman-guide">
+        <h4>📮 Postman에서 사용하는 방법</h4>
+        <ol style="margin-left: 20px; color: #856404;">
+            <li>위 버튼 클릭 → 카카오 로그인</li>
+            <li>발급된 코드 복사</li>
+            <li>Postman에서 요청:
+                <pre style="background: white; padding: 10px; border-radius: 5px; margin-top: 10px; overflow-x: auto;">
+POST http://localhost:8080/api/auth/kakao/callback
+Content-Type: application/json
+
+{
+  "code": "복사한_코드_붙여넣기"
+}</pre>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<script>
+    const KAKAO_REST_API_KEY = '7a5115b25ab6e62d7dc2fecdb6583b44';
+    const REDIRECT_URI = window.location.href; // 현재 페이지로 리다이렉트
+
+    // 카카오 로그인 시작
+    function getKakaoCode() {
+        const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+        window.location.href = kakaoAuthUrl;
+    }
+
+    // 페이지 로드 시 code 파라미터 확인
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+
+        if (code) {
+            // 코드 표시
+            document.getElementById('codeValue').textContent = code;
+            document.getElementById('codeBox').classList.add('show');
+
+            // URL에서 code 파라미터 제거 (깔끔하게)
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    });
+
+    // 코드 복사
+    function copyCode() {
+        const code = document.getElementById('codeValue').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            const successMsg = document.getElementById('copySuccess');
+            successMsg.textContent = '✅ 클립보드에 복사되었습니다!';
+            successMsg.classList.add('show');
+
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        });
+    }
+</script>
+</body>
+</html>
