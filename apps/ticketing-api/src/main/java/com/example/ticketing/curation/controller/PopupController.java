@@ -1,10 +1,12 @@
 package com.example.ticketing.curation.controller;
 
 import com.example.ticketing.common.response.ApiResponse;
+import com.example.ticketing.curation.dto.PopupDetailResponse;
 import com.example.ticketing.curation.dto.PopupListResponse;
 import com.example.ticketing.curation.facade.PopupFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +27,12 @@ public class PopupController {
         @RequestParam(defaultValue = "10") int size
     ) {
         PopupListResponse response = popupFacade.getPopups(keyword, city, page, size);
+        return ApiResponse.success(response);
+    }
+
+    @GetMapping("/{popupId}")
+    public ApiResponse<PopupDetailResponse> getPopupDetail(@PathVariable String popupId) {
+        PopupDetailResponse response = popupFacade.getPopupDetail(popupId);
         return ApiResponse.success(response);
     }
 }

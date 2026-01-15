@@ -20,7 +20,8 @@ public class SecurityConfig {
         "/swagger-ui.html",
         "/v3/api-docs/**",
         // Popup API
-        "/api/popups/**"
+        "/api/popups/**",
+        "/popups/**"
     };
 
     @Bean
