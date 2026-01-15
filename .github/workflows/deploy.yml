@@ -34,24 +34,35 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Copy docker-compose to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "/home/app"
+
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          NCP_REGISTRY: ${{ secrets.NCP_REGISTRY }}
+          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           script_stop: true
+          envs: NCP_REGISTRY,DB_ROOT_PASSWORD,DB_USER,DB_PASSWORD
           script: |
-            docker pull ${{ secrets.NCP_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            docker stop ticketing-api || true
-            docker rm ticketing-api || true
-            docker run -d \
-              --name ticketing-api \
-              --restart unless-stopped \
-              -p 8080:8080 \
-              -e SPRING_PROFILES_ACTIVE=prod \
-              -e SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/swyp \
-              -e SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }} \
-              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              ${{ secrets.NCP_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            cd /home/app
+            mv docker-compose.prod.yml docker-compose.yml
+            export NCP_REGISTRY=$NCP_REGISTRY
+            export DB_ROOT_PASSWORD=$DB_ROOT_PASSWORD
+            export DB_USER=$DB_USER
+            export DB_PASSWORD=$DB_PASSWORD
+            docker compose pull
+            docker compose up -d
             docker image prune -af
