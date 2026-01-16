@@ -14,11 +14,17 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
         "/actuator/health",
         "/error",
-        "/"
+        "/",
+        // Swagger
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/v3/api-docs/**",
+        // Popup API
+        "/api/popups/**"
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
