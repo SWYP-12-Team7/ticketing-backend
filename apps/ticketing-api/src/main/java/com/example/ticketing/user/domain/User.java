@@ -8,6 +8,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -41,5 +43,9 @@ public class User extends BaseEntity {
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
+    }
+
+    public void withdraw() {
+        this.delete();
     }
 }

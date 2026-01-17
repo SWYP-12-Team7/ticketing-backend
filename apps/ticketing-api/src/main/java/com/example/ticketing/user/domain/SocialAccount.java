@@ -18,6 +18,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(
     name = "social_accounts",
@@ -48,4 +50,5 @@ public class SocialAccount extends BaseEntity {
         this.provider = provider;
         this.providerId = providerId;
     }
+
 }
