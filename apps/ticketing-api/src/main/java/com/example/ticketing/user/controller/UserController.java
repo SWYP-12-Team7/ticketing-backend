@@ -22,6 +22,7 @@ public class UserController {
         return UserResponse.from(findUserUseCase.findById(id));
     }
 
+
     // 회원 탈퇴
     @DeleteMapping("/me")
     public ResponseEntity<Void> withdrawUser(@RequestHeader("Authorization") String authorization) {
@@ -32,4 +33,5 @@ public class UserController {
 
         return ResponseEntity.noContent().build();
     }
+
 }

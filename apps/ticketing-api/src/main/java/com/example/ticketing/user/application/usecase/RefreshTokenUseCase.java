@@ -23,7 +23,6 @@ public class RefreshTokenUseCase {
 
   /**
    * 토큰 갱신 실행
-   * 
    * @param refreshToken Refresh Token
    * @return 새로운 Access Token, Refresh Token
    */
@@ -47,9 +46,7 @@ public class RefreshTokenUseCase {
     return new TokenPair(newAccessToken, newRefreshToken);
   }
 
-  /**
-   * 토큰 쌍 (Access Token, Refresh Token)
-   */
+  // 토큰 쌍
   public record TokenPair(
       String accessToken,
       String refreshToken

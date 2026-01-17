@@ -49,53 +49,43 @@ public class KakaoLoginUseCase {
 
     // 4. 결과 반환
     return new LoginResult(
-        accessToken,
-        refreshToken,
-        new LoginResult.UserInfo(
-            user.getId(),
-            user.getEmail(),
-            user.getNickname(),
-            user.getProfileImage()
-        )
+            accessToken,
+            refreshToken,
+            new LoginResult.UserInfo(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getNickname(),
+                    user.getProfileImage()
+            )
     );
   }
 
 
-  /**
-   * 기존 회원 조회 또는 신규 회원 생성
-   * @param userInfo 카카오 사용자 정보
-   * @return User 엔티티
-   */
   private User getOrCreateUser(KakaoUserInfoResponse userInfo) {
     String providerId = String.valueOf(userInfo.id());
 
     // 소셜 계정으로 기존 회원 조회
     return socialAccountRepository.findByProviderAndProviderId(SocialProvider.KAKAO, providerId)
-        .map(SocialAccount::getUser)
-        .orElseGet(() -> createNewUser(userInfo));
+            .map(SocialAccount::getUser)
+            .orElseGet(() -> createNewUser(userInfo));
   }
 
 
-  /**
-   * 신규 회원 생성 (User + SocialAccount)
-   * @param userInfo 카카오 사용자 정보
-   * @return 생성된 User 엔티티
-   */
   private User createNewUser(KakaoUserInfoResponse userInfo) {
     // User 엔티티 생성 (전체 이메일 사용)
     User user = User.builder()
-        .email(userInfo.extractEmail(true))  // true = 전체 이메일 사용
-        .nickname(userInfo.getNickname())
-        .profileImage(userInfo.getProfileImageUrl())
-        .build();
+            .email(userInfo.extractEmail(true))  // true = 전체 이메일 사용
+            .nickname(userInfo.getNickname())
+            .profileImage(userInfo.getProfileImageUrl())
+            .build();
     userRepository.save(user);
 
     // SocialAccount 엔티티 생성
     SocialAccount socialAccount = SocialAccount.builder()
-        .user(user)
-        .provider(SocialProvider.KAKAO)
-        .providerId(String.valueOf(userInfo.id()))
-        .build();
+            .user(user)
+            .provider(SocialProvider.KAKAO)
+            .providerId(String.valueOf(userInfo.id()))
+            .build();
     socialAccountRepository.save(socialAccount);
 
     return user;

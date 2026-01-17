@@ -7,32 +7,33 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
   private static final String[] PUBLIC_ENDPOINTS = {
-      "/actuator/health",
-      "/error",
-      "/",
-      "/auth/**",  // 인증 관련 엔드포인트는 모두 허용
-      // Swagger UI
-      "/swagger-ui/**",
-      "/swagger-ui.html",
-      "/api-docs/**",
-      "/v3/api-docs/**"
+          "/actuator/health",
+          "/error",
+          "/",
+          "/auth/**",  // 인증 관련 엔드포인트는 모두 허용
+          // Swagger UI
+          "/swagger-ui/**",
+          "/swagger-ui.html",
+          "/api-docs/**",
+          "/v3/api-docs/**"
   };
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) {
     return http
-        .csrf(AbstractHttpConfigurer::disable)
-        .formLogin(AbstractHttpConfigurer::disable)
-        .httpBasic(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-            .anyRequest().authenticated()
-        )
-        .build();
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                    .anyRequest().authenticated()
+            )
+            .build();
   }
 }

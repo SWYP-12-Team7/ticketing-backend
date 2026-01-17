@@ -12,6 +12,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+
 /**
  * 카카오 OAuth API 클라이언트
  * - 인가 코드로 액세스 토큰 발급
@@ -29,9 +30,9 @@ public class KakaoOAuthClient {
     this.restClient = RestClient.builder().build();
   }
 
+
   /**
    * 인가 코드로 액세스 토큰 발급
-   * 
    * @param code 카카오 인가 코드
    * @return 카카오 토큰 응답 (액세스 토큰 포함)
    */
@@ -44,27 +45,27 @@ public class KakaoOAuthClient {
     params.add("code", code);
 
     log.info("카카오 토큰 요청 - URI: {}", properties.tokenUri());
-    log.info("카카오 토큰 요청 - Params: grant_type={}, client_id={}, redirect_uri={}", 
-        params.getFirst("grant_type"), 
-        params.getFirst("client_id"), 
-        params.getFirst("redirect_uri"));
+    log.info("카카오 토큰 요청 - Params: grant_type={}, client_id={}, redirect_uri={}",
+            params.getFirst("grant_type"),
+            params.getFirst("client_id"),
+            params.getFirst("redirect_uri"));
 
     try {
       KakaoTokenResponse response = restClient.post()
-          .uri(properties.tokenUri())
-          .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-          .body(params)
-          .retrieve()
-          .body(KakaoTokenResponse.class);
-      
-      log.info("카카오 액세스 토큰 발급 성공 - Token Type: {}, Access Token 존재: {}", 
-          response.tokenType(), response.accessToken() != null);
-      
+              .uri(properties.tokenUri())
+              .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+              .body(params)
+              .retrieve()
+              .body(KakaoTokenResponse.class);
+
+      log.info("카카오 액세스 토큰 발급 성공 - Token Type: {}, Access Token 존재: {}",
+              response.tokenType(), response.accessToken() != null);
+
       if (response.accessToken() == null) {
         log.error("액세스 토큰이 null입니다. Response: {}", response);
         throw new CustomException(ErrorCode.KAKAO_AUTH_FAILED);
       }
-      
+
       return response;
     } catch (Exception e) {
       log.error("카카오 액세스 토큰 발급 실패", e);
@@ -72,30 +73,30 @@ public class KakaoOAuthClient {
     }
   }
 
+
   /**
    * 액세스 토큰으로 사용자 정보 조회
-   * 
    * @param accessToken 카카오 액세스 토큰
    * @return 카카오 사용자 정보
    */
   public KakaoUserInfoResponse getUserInfo(String accessToken) {
     log.info("카카오 사용자 정보 요청 - URI: {}", properties.userInfoUri());
-    log.info("카카오 사용자 정보 요청 - Access Token 앞 20자: {}", 
-        accessToken.substring(0, Math.min(20, accessToken.length())));
+    log.info("카카오 사용자 정보 요청 - Access Token 앞 20자: {}",
+            accessToken.substring(0, Math.min(20, accessToken.length())));
 
     try {
       KakaoUserInfoResponse response = restClient.get()
-          .uri(properties.userInfoUri())
-          .header("Authorization", "Bearer " + accessToken)
-          .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
-          .retrieve()
-          .body(KakaoUserInfoResponse.class);
-      
+              .uri(properties.userInfoUri())
+              .header("Authorization", "Bearer " + accessToken)
+              .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+              .retrieve()
+              .body(KakaoUserInfoResponse.class);
+
       log.info("카카오 사용자 정보 조회 성공 - User ID: {}", response.id());
       return response;
     } catch (Exception e) {
-      log.error("카카오 사용자 정보 조회 실패 - Access Token: {}...", 
-          accessToken.substring(0, Math.min(20, accessToken.length())), e);
+      log.error("카카오 사용자 정보 조회 실패 - Access Token: {}...",
+              accessToken.substring(0, Math.min(20, accessToken.length())), e);
       throw new CustomException(ErrorCode.KAKAO_AUTH_FAILED);
     }
   }
