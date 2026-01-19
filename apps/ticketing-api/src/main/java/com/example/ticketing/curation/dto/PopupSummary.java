@@ -16,9 +16,12 @@ public record PopupSummary(
     List<String> category,
     boolean isFree,
     boolean reservationRequired,
-    List<String> tags
+    List<String> tags,
+    int likeCount,
+    int viewCount,
+    boolean isLiked
 ) {
-    public static PopupSummary from(Popup popup) {
+    public static PopupSummary from(Popup popup, boolean isLiked) {
         return new PopupSummary(
             popup.getPopupId(),
             popup.getTitle(),
@@ -34,7 +37,10 @@ public record PopupSummary(
             popup.getCategory(),
             popup.isFree(),
             popup.isReservationRequired(),
-            popup.getTags()
+            popup.getTags(),
+            popup.getLikeCount(),
+            popup.getViewCount(),
+            isLiked
         );
     }
 }

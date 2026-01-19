@@ -62,6 +62,13 @@ public class Popup extends BaseEntity {
     @Column(name = "reservation_required")
     private boolean reservationRequired;
 
+    // Statistics
+    @Column(name = "view_count")
+    private int viewCount = 0;
+
+    @Column(name = "like_count")
+    private int likeCount = 0;
+
     public PopupStatus calculateStatus() {
         LocalDate today = LocalDate.now();
         if (startDate == null || endDate == null) {
@@ -76,12 +83,27 @@ public class Popup extends BaseEntity {
         }
     }
 
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
     @Builder
     public Popup(String popupId, String title, String thumbnailImageUrl,
                  LocalDate startDate, LocalDate endDate,
                  String city, String district, String placeName,
                  List<String> category, List<String> tags,
-                 boolean isFree, boolean reservationRequired) {
+                 boolean isFree, boolean reservationRequired,
+                 int viewCount, int likeCount) {
         this.popupId = popupId;
         this.title = title;
         this.thumbnailImageUrl = thumbnailImageUrl;
@@ -94,5 +116,7 @@ public class Popup extends BaseEntity {
         this.tags = tags;
         this.isFree = isFree;
         this.reservationRequired = reservationRequired;
+        this.viewCount = viewCount;
+        this.likeCount = likeCount;
     }
 }

@@ -17,11 +17,11 @@ public record PopupDetailResponse(
     boolean isFree,
     boolean reservationRequired,
     List<String> tags,
-    UserContext userContext
+    int likeCount,
+    int viewCount,
+    boolean isLiked
 ) {
-    public static PopupDetailResponse from(Popup popup, List<String> likedPopupIds) {
-        boolean isLiked = likedPopupIds != null && likedPopupIds.contains(popup.getPopupId());
-
+    public static PopupDetailResponse from(Popup popup, boolean isLiked) {
         return new PopupDetailResponse(
             popup.getPopupId(),
             popup.getTitle(),
@@ -38,7 +38,9 @@ public record PopupDetailResponse(
             popup.isFree(),
             popup.isReservationRequired(),
             popup.getTags(),
-            likedPopupIds != null ? new UserContext(likedPopupIds) : null
+            popup.getLikeCount(),
+            popup.getViewCount(),
+            isLiked
         );
     }
 }

@@ -24,15 +24,19 @@ public class PopupController {
         @RequestParam(required = false) String city,
         @RequestParam(required = false) String status,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) Long userId
     ) {
-        PopupListResponse response = popupFacade.getPopups(keyword, city, page, size);
+        PopupListResponse response = popupFacade.getPopups(keyword, city, page, size, userId);
         return ApiResponse.success(response);
     }
 
     @GetMapping("/{popupId}")
-    public ApiResponse<PopupDetailResponse> getPopupDetail(@PathVariable String popupId) {
-        PopupDetailResponse response = popupFacade.getPopupDetail(popupId);
+    public ApiResponse<PopupDetailResponse> getPopupDetail(
+        @PathVariable String popupId,
+        @RequestParam(required = false) Long userId
+    ) {
+        PopupDetailResponse response = popupFacade.getPopupDetail(popupId, userId);
         return ApiResponse.success(response);
     }
 }

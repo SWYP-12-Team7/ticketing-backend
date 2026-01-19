@@ -27,4 +27,12 @@ public class PopupService {
         return popupRepository.findByPopupId(popupId)
             .orElseThrow(() -> new IllegalArgumentException("Popup not found: " + popupId));
     }
+
+    @Transactional
+    public Popup getPopupByPopupIdAndIncrementViewCount(String popupId) {
+        Popup popup = popupRepository.findByPopupId(popupId)
+            .orElseThrow(() -> new IllegalArgumentException("Popup not found: " + popupId));
+        popup.incrementViewCount();
+        return popup;
+    }
 }
