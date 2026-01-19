@@ -22,9 +22,10 @@ public class PopupController {
         @RequestParam(required = false) String city,
         @RequestParam(required = false) String status,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) Long userId
     ) {
-        PopupListResponse response = popupFacade.getPopups(keyword, city, page, size);
+        PopupListResponse response = popupFacade.getPopups(keyword, city, page, size, userId);
         return ApiResponse.success(response);
     }
 }
