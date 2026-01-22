@@ -3,6 +3,8 @@ package com.example.ticketing.curation.domain;
 import com.example.jpa.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -62,12 +64,10 @@ public class Popup extends BaseEntity {
     @Column(name = "reservation_required")
     private boolean reservationRequired;
 
-    // Statistics
-    @Column(name = "view_count")
-    private int viewCount = 0;
-
-    @Column(name = "like_count")
-    private int likeCount = 0;
+    // Review status
+    @Enumerated(EnumType.STRING)
+    @Column(name = "review_status", nullable = false)
+    private ReviewStatus reviewStatus = ReviewStatus.APPROVED;
 
     public PopupStatus calculateStatus() {
         LocalDate today = LocalDate.now();
@@ -83,18 +83,16 @@ public class Popup extends BaseEntity {
         }
     }
 
-    public void incrementViewCount() {
-        this.viewCount++;
+    public void approve() {
+        this.reviewStatus = ReviewStatus.APPROVED;
     }
 
-    public void incrementLikeCount() {
-        this.likeCount++;
+    public void reject() {
+        this.reviewStatus = ReviewStatus.REJECTED;
     }
 
-    public void decrementLikeCount() {
-        if (this.likeCount > 0) {
-            this.likeCount--;
-        }
+    public void updateThumbnailImageUrl(String thumbnailImageUrl) {
+        this.thumbnailImageUrl = thumbnailImageUrl;
     }
 
     @Builder
@@ -103,7 +101,7 @@ public class Popup extends BaseEntity {
                  String city, String district, String placeName,
                  List<String> category, List<String> tags,
                  boolean isFree, boolean reservationRequired,
-                 int viewCount, int likeCount) {
+                 ReviewStatus reviewStatus) {
         this.popupId = popupId;
         this.title = title;
         this.thumbnailImageUrl = thumbnailImageUrl;
@@ -116,7 +114,6 @@ public class Popup extends BaseEntity {
         this.tags = tags;
         this.isFree = isFree;
         this.reservationRequired = reservationRequired;
-        this.viewCount = viewCount;
-        this.likeCount = likeCount;
+        this.reviewStatus = reviewStatus != null ? reviewStatus : ReviewStatus.APPROVED;
     }
 }
