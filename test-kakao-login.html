@@ -47,13 +47,6 @@
         .kakao-btn:hover {
             background-color: #FDD835;
         }
-        .mock-btn {
-            background-color: #4CAF50;
-            color: white;
-        }
-        .mock-btn:hover {
-            background-color: #45a049;
-        }
         .result {
             margin-top: 20px;
             padding: 15px;
@@ -77,158 +70,176 @@
             border-radius: 5px;
             margin: 20px 0;
         }
+        .setup-section {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔐 카카오 로그인 테스트</h1>
-        
-        <div class="info">
-            <strong>⚙️ 설정 확인:</strong><br>
-            • REST API Key: <code>7a5115b25ab6e62d7dc2fecdb6583b44</code><br>
-            • Redirect URI: <code>http://localhost:8080/api/auth/kakao/callback</code><br>
-            • 백엔드 서버: <code>http://localhost:8080</code>
-        </div>
+<div class="container">
+    <h1>🔐 카카오 로그인 테스트</h1>
 
-        <div class="test-section">
-            <h3>1️⃣ 카카오 실제 로그인 테스트</h3>
-            <p>카카오 계정으로 로그인하여 실제 연동을 테스트합니다.</p>
-            <button class="kakao-btn" onclick="kakaoLogin()">
-                🟡 카카오 로그인 시작
-            </button>
-        </div>
-
-        <div class="test-section">
-            <h3>2️⃣ Mock 로그인 테스트</h3>
-            <p>카카오 없이 바로 JWT 토큰을 발급받습니다.</p>
-            <button class="mock-btn" onclick="mockLogin()">
-                ✅ Mock 로그인
-            </button>
-        </div>
-
-        <div id="result" class="result"></div>
+    <div class="setup-section">
+        <h3>⚙️ 초기 설정</h3>
+        <label for="apiKey"><strong>카카오 REST API Key:</strong></label>
+        <input
+                type="text"
+                id="apiKey"
+                placeholder="카카오 Developers에서 발급받은 REST API Key 입력"
+                value=""
+        />
+        <button class="kakao-btn" onclick="saveApiKey()">
+            💾 API Key 저장
+        </button>
+        <p style="font-size: 12px; color: #666; margin-top: 10px;">
+            ℹ️ API Key는 브라우저 로컬스토리지에만 저장되며, 서버로 전송되지 않습니다.
+        </p>
     </div>
 
-    <script>
-        const KAKAO_REST_API_KEY = '7a5115b25ab6e62d7dc2fecdb6583b44';
-        const REDIRECT_URI = 'http://localhost:8080/api/auth/kakao/callback';
-        const BACKEND_URL = 'http://localhost:8080/api';
+    <div class="info">
+        <strong>📋 설정 확인:</strong><br>
+        • REST API Key: <span id="displayApiKey" style="color: #666;">미설정</span><br>
+        • Redirect URI: <code>http://localhost:8080/api/auth/kakao/callback</code><br>
+        • 백엔드 서버: <code>http://localhost:8080</code>
+    </div>
 
-        // 카카오 로그인
-        function kakaoLogin() {
-            const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
-            
-            console.log('카카오 로그인 URL:', kakaoAuthUrl);
-            window.location.href = kakaoAuthUrl;
+    <div class="test-section">
+        <h3>1️⃣ 카카오 로그인 테스트</h3>
+        <p>카카오 계정으로 로그인하여 실제 연동을 테스트합니다.</p>
+        <button class="kakao-btn" onclick="kakaoLogin()">
+            🟡 카카오 로그인 시작
+        </button>
+    </div>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    const REDIRECT_URI = 'http://localhost:8080/api/auth/kakao/callback';
+    const BACKEND_URL = 'http://localhost:8080/api';
+
+    // 페이지 로드 시 저장된 API Key 확인
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedApiKey = localStorage.getItem('kakaoApiKey');
+        if (savedApiKey) {
+            document.getElementById('apiKey').value = savedApiKey;
+            updateDisplayApiKey(savedApiKey);
         }
 
-        // Mock 로그인
-        async function mockLogin() {
-            try {
-                showResult('로그인 중...', false);
-                
-                const response = await fetch(`${BACKEND_URL}/auth/mock/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: 'test@example.com',
-                        nickname: '테스트유저'
-                    })
-                });
+        // URL에서 code 확인 (카카오 콜백 처리)
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        if (code) {
+            handleKakaoCallback(code);
+        }
+    });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
+    // API Key 저장
+    function saveApiKey() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        if (!apiKey) {
+            alert('API Key를 입력해주세요.');
+            return;
+        }
+        localStorage.setItem('kakaoApiKey', apiKey);
+        updateDisplayApiKey(apiKey);
+        showResult(`
+                <h3>✅ API Key가 저장되었습니다!</h3>
+                <p>이제 카카오 로그인을 시작할 수 있습니다.</p>
+            `, false);
+    }
 
-                const data = await response.json();
-                
-                // 로컬스토리지에 저장
-                localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('refreshToken', data.refreshToken);
-                
-                showResult(`
-                    <h3>✅ Mock 로그인 성공!</h3>
-                    <strong>사용자 정보:</strong>
-                    <pre>${JSON.stringify(data.user, null, 2)}</pre>
-                    <strong>Access Token:</strong>
-                    <pre>${data.accessToken}</pre>
-                    <p>토큰이 로컬스토리지에 저장되었습니다.</p>
-                `, false);
-            } catch (error) {
-                showResult(`
-                    <h3>❌ 로그인 실패</h3>
-                    <p>${error.message}</p>
-                `, true);
+    // API Key 표시 업데이트
+    function updateDisplayApiKey(apiKey) {
+        const display = apiKey.substring(0, 10) + '...' + apiKey.substring(apiKey.length - 4);
+        document.getElementById('displayApiKey').textContent = display;
+        document.getElementById('displayApiKey').style.color = '#4CAF50';
+    }
+
+    // 카카오 로그인
+    function kakaoLogin() {
+        const apiKey = localStorage.getItem('kakaoApiKey');
+        if (!apiKey) {
+            alert('먼저 API Key를 설정해주세요.');
+            return;
+        }
+
+        const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${apiKey}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+        console.log('카카오 로그인 URL:', kakaoAuthUrl);
+        window.location.href = kakaoAuthUrl;
+    }
+
+    // 카카오 콜백 처리
+    async function handleKakaoCallback(code) {
+        try {
+            showResult('카카오 로그인 처리 중...', false);
+
+            const response = await fetch(`${BACKEND_URL}/auth/kakao/callback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
-        }
 
-        // 결과 표시
-        function showResult(html, isError) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = html;
-            resultDiv.className = isError ? 'result error' : 'result';
-            resultDiv.style.display = 'block';
-        }
+            const data = await response.json();
 
-        // 페이지 로드 시 URL에서 code 확인 (카카오 콜백 처리)
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            
-            if (code) {
-                handleKakaoCallback(code);
-            }
-        });
+            // 로컬스토리지에 저장
+            localStorage.setItem('accessToken', data.accessToken);
+            localStorage.setItem('refreshToken', data.refreshToken);
 
-        // 카카오 콜백 처리
-        async function handleKakaoCallback(code) {
-            try {
-                showResult('카카오 로그인 처리 중...', false);
-                
-                const response = await fetch(`${BACKEND_URL}/auth/kakao/callback`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ code })
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
-                }
-
-                const data = await response.json();
-                
-                // 로컬스토리지에 저장
-                localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('refreshToken', data.refreshToken);
-                
-                showResult(`
+            showResult(`
                     <h3>🎉 카카오 로그인 성공!</h3>
                     <strong>사용자 정보:</strong>
                     <pre>${JSON.stringify(data.user, null, 2)}</pre>
                     <strong>Access Token:</strong>
                     <pre>${data.accessToken.substring(0, 50)}...</pre>
                     <p>토큰이 로컬스토리지에 저장되었습니다.</p>
-                    <button onclick="location.href='test-kakao-login.html'" style="margin-top:10px;">다시 테스트하기</button>
+                    <button onclick="location.href='test-kakao-login.html'" style="margin-top:10px; background:#4CAF50; color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">
+                        다시 테스트하기
+                    </button>
                 `, false);
-            } catch (error) {
-                showResult(`
+        } catch (error) {
+            showResult(`
                     <h3>❌ 카카오 로그인 실패</h3>
                     <p>${error.message}</p>
                     <p><strong>확인사항:</strong></p>
                     <ul>
                         <li>카카오 Developers에서 Redirect URI가 정확히 등록되었는지 확인</li>
-                        <li>Client Secret이 필요한 경우 application.yml에 등록했는지 확인</li>
-                        <li>백엔드 서버가 정상 실행 중인지 확인</li>
+                        <li>백엔드 서버가 정상 실행 중인지 확인 (http://localhost:8080)</li>
+                        <li>API Key가 올바른지 확인</li>
                     </ul>
-                    <button onclick="location.href='test-kakao-login.html'" style="margin-top:10px;">다시 시도하기</button>
+                    <button onclick="location.href='test-kakao-login.html'" style="margin-top:10px; background:#4CAF50; color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">
+                        다시 시도하기
+                    </button>
                 `, true);
-            }
         }
-    </script>
+    }
+
+    // 결과 표시
+    function showResult(html, isError) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = html;
+        resultDiv.className = isError ? 'result error' : 'result';
+        resultDiv.style.display = 'block';
+    }
+</script>
 </body>
 </html>
