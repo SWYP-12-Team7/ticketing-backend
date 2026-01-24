@@ -76,6 +76,4 @@ public class AuthController {
     RefreshTokenUseCase.TokenPair tokenPair = refreshTokenUseCase.execute(refreshToken);
     return ResponseEntity.ok(RefreshTokenResponse.from(tokenPair));
   }
-
-
 }
