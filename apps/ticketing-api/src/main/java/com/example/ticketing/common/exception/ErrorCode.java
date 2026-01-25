@@ -19,6 +19,10 @@ public enum ErrorCode {
     // Exhibition
     EXHIBITION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 전시입니다"),
 
+    // Auth
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다"),
+    KAKAO_AUTH_FAILED(HttpStatus.BAD_REQUEST, "카카오 인증에 실패했습니다"),
     ;
 
     private final HttpStatus status;
