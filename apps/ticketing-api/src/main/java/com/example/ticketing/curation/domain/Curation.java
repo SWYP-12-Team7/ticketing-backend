@@ -77,6 +77,27 @@ public class Curation extends BaseEntity {
     // 사전예약가능여부
     private ReservationStatus reservationStatus;
 
+    // 좋아요 수
+    @Column(nullable = false)
+    private Long likeCount = 0L;
+
+    // 조회수
+    @Column(nullable = false)
+    private Long viewCount = 0L;
+
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
 
     public void 전시상태() {
 
