@@ -15,16 +15,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -79,27 +75,5 @@ public class AuthController {
     String refreshToken = authorization.replace("Bearer ", "");
     RefreshTokenUseCase.TokenPair tokenPair = refreshTokenUseCase.execute(refreshToken);
     return ResponseEntity.ok(RefreshTokenResponse.from(tokenPair));
-  }
-
-
-  @Operation(summary = "[개발용] 테스트 토큰 발급", description = "로컬 환경에서만 동작. userId로 JWT 토큰 발급")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "토큰 발급 성공"),
-      @ApiResponse(responseCode = "404", description = "존재하지 않는 사용자")
-  })
-  @GetMapping("/test-token/{userId}")
-  public ResponseEntity<Map<String, String>> getTestToken(
-      @Parameter(description = "사용자 ID", required = true)
-      @PathVariable Long userId) {
-    userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-    String accessToken = jwtTokenProvider.createAccessToken(userId);
-    String refreshToken = jwtTokenProvider.createRefreshToken(userId);
-
-    return ResponseEntity.ok(Map.of(
-        "accessToken", accessToken,
-        "refreshToken", refreshToken
-    ));
   }
 }

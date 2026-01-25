@@ -1,0 +1,43 @@
+services:
+  app:
+    image: ${NCP_REGISTRY}/ticketing-api:latest
+    container_name: ticketing-api
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Seoul
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/swyp
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:9.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: swyp
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    restart: unless-stopped
+
+volumes:
+  mysql-data:

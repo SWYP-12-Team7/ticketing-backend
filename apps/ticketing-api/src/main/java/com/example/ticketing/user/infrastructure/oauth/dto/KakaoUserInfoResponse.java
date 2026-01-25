@@ -37,18 +37,38 @@ public record KakaoUserInfoResponse(
      * @return 이메일
      */
     public String extractEmail(boolean useFullEmail) {
+//        String email = kakaoAccount.email();
+//        if (useFullEmail) {
+//            return email;
+//        }
+//        // @ 앞부분만 추출
+//        return email.substring(0, email.indexOf("@"));
+
+        if (kakaoAccount == null || kakaoAccount.email() == null) {
+            return null;
+        }
+
         String email = kakaoAccount.email();
+
         if (useFullEmail) {
             return email;
         }
-        // @ 앞부분만 추출
-        return email.substring(0, email.indexOf("@"));
+
+        int atIndex = email.indexOf("@");
+        if (atIndex == -1) {
+            return email; // @ 없으면 전체 반환
+        }
+
+        return email.substring(0, atIndex);
     }
 
     /**
      * 닉네임 추출
      */
     public String getNickname() {
+        if (kakaoAccount == null || kakaoAccount.profile() == null) {
+            return null;
+        }
         return kakaoAccount.profile().nickname();
     }
 
@@ -56,6 +76,9 @@ public record KakaoUserInfoResponse(
      * 프로필 이미지 URL 추출
      */
     public String getProfileImageUrl() {
+        if (kakaoAccount == null || kakaoAccount.profile() == null) {
+            return null;
+        }
         return kakaoAccount.profile().profileImageUrl();
     }
 }
