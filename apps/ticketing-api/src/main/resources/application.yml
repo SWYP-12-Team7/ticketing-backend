@@ -1,3 +1,7 @@
+server:
+  servlet:
+    context-path: /api
+
 spring:
   profiles:
     active: local
@@ -5,6 +9,11 @@ spring:
   jackson:
     time-zone: Asia/Seoul
 
-  mvc:
-    servlet:
-      path: /api
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-validity: 3600000
+  refresh-token-validity: 604800000
+
+kakao:
+  client-id: ${KAKAO_CLIENT_ID}
+  client-secret: ${KAKAO_CLIENT_SECRET}
