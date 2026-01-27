@@ -35,7 +35,8 @@ public class SecurityConfig {
           "/api-docs/**",
           "/v3/api-docs/**",
           // Popup API
-          "/api/popups/**"
+          "/api/popups/**",
+      "/popups/**"
   };
 
   @Bean
