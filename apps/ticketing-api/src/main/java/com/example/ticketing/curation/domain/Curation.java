@@ -75,6 +75,7 @@ public class Curation extends BaseEntity {
     private String image;
 
     // 사전예약가능여부
+    @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 
     // 좋아요 수
