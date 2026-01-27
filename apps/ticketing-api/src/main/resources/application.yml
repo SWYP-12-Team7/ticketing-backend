@@ -2,9 +2,24 @@ spring:
   profiles:
     active: local
 
+  security:
+    user:
+      name: admin
+      password: ${ADMIN_PASSWORD:admin123}
+
   jackson:
     time-zone: Asia/Seoul
 
   mvc:
     servlet:
       path: /api
+
+  ai:
+    google:
+      genai:
+        api-key: ${GOOGLE_GENAI_API_KEY}
+        chat:
+          options:
+            model: gemini-2.0-flash
+            temperature: 1.0
+            google-search-retrieval: true
