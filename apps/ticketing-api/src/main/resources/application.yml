@@ -5,6 +5,10 @@ server:
 spring:
   profiles:
     active: local
+  config:
+    import:
+      - classpath:jpa-application.yml
+      - classpath:jpa-application-${spring.profiles.active}.yml
 
   jackson:
     time-zone: Asia/Seoul
