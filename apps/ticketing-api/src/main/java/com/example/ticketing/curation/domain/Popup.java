@@ -1,6 +1,7 @@
 package com.example.ticketing.curation.domain;
 
 import com.example.jpa.domain.BaseEntity;
+import com.example.ticketing.collection.domain.PopupRaw;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -94,5 +96,22 @@ public class Popup extends BaseEntity {
         this.tags = tags;
         this.isFree = isFree;
         this.reservationRequired = reservationRequired;
+    }
+
+    public static Popup fromRaw(PopupRaw raw) {
+        return Popup.builder()
+                .popupId(UUID.randomUUID().toString())
+                .title(raw.getTitle())
+                .thumbnailImageUrl(raw.getThumbnailImageUrl())
+                .startDate(raw.getStartDate())
+                .endDate(raw.getEndDate())
+                .city(raw.getCity())
+                .district(raw.getDistrict())
+                .placeName(raw.getPlaceName())
+                .category(raw.getCategory())
+                .tags(raw.getTags())
+                .isFree(raw.isFree())
+                .reservationRequired(raw.isReservationRequired())
+                .build();
     }
 }
