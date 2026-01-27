@@ -50,12 +50,16 @@ jobs:
           DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          GOOGLE_GENAI_API_KEY: ${{ secrets.GOOGLE_GENAI_API_KEY }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           script_stop: true
-          envs: NCP_REGISTRY,DB_ROOT_PASSWORD,DB_USER,DB_PASSWORD
+          envs: NCP_REGISTRY,DB_ROOT_PASSWORD,DB_USER,DB_PASSWORD,JWT_SECRET,KAKAO_CLIENT_ID,KAKAO_CLIENT_SECRET,GOOGLE_GENAI_API_KEY
           script: |
             cd /home/app
             mv docker-compose.prod.yml docker-compose.yml
@@ -63,6 +67,10 @@ jobs:
             export DB_ROOT_PASSWORD=$DB_ROOT_PASSWORD
             export DB_USER=$DB_USER
             export DB_PASSWORD=$DB_PASSWORD
+            export JWT_SECRET=$JWT_SECRET
+            export KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID
+            export KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET
+            export GOOGLE_GENAI_API_KEY=$GOOGLE_GENAI_API_KEY
             docker compose pull
             docker compose up -d
             docker image prune -af

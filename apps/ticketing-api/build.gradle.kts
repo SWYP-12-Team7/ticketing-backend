@@ -1,4 +1,9 @@
+repositories {
+    mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
+}
 
+val springAiVersion = "1.1.1"
 
 dependencies {
     implementation(project(":modules:jpa"))
@@ -25,5 +30,8 @@ dependencies {
 
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3")
+
+    // Spring AI - Google GenAI (Gemini)
+    implementation("org.springframework.ai:spring-ai-starter-model-google-genai:$springAiVersion")
 }
 

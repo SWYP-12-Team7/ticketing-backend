@@ -4,6 +4,8 @@ import com.example.ticketing.common.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,10 +35,32 @@ public class SecurityConfig {
           "/swagger-ui/**",
           "/swagger-ui.html",
           "/api-docs/**",
-          "/v3/api-docs/**"
+          "/v3/api-docs/**",
+          // Popup API
+          "/api/popups/**",
+          "/popups/**"
+  };
+
+  private static final String[] ADMIN_ENDPOINTS = {
+          "/admin/**"
   };
 
   @Bean
+  @Order(1)
+  public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
+    return http
+            .securityMatcher(ADMIN_ENDPOINTS)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                    .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults())
+            .build();
+  }
+
+  @Bean
+  @Order(2)
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
