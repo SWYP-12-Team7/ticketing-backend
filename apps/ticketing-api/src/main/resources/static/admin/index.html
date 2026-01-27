@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>팝업 관리자</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { margin-bottom: 20px; color: #333; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .tab.active { background: #007bff; color: #fff; }
+        .card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; }
+        .card-title { font-size: 18px; font-weight: 600; color: #333; }
+        .card-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        .card-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; font-size: 14px; color: #666; }
+        .card-info span { display: block; }
+        .card-info strong { color: #333; }
+        .card-actions { display: flex; gap: 10px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .btn-approve { background: #28a745; color: #fff; }
+        .btn-reject { background: #dc3545; color: #fff; }
+        .btn-approve:hover { background: #218838; }
+        .btn-reject:hover { background: #c82333; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .empty { text-align: center; padding: 40px; color: #999; }
+        .thumbnail-input { display: flex; gap: 10px; margin-top: 10px; }
+        .thumbnail-input input { flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .thumbnail-input button { padding: 8px 16px; background: #6c757d; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+        .thumbnail-preview { margin-top: 10px; }
+        .thumbnail-preview img { max-width: 200px; max-height: 150px; border-radius: 8px; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: #fff; font-weight: 500; opacity: 0; transition: opacity 0.3s; }
+        .toast.show { opacity: 1; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>팝업 관리자</h1>
+
+        <div class="tabs">
+            <button class="tab active" onclick="loadPopups('PENDING_REVIEW')">검토 대기</button>
+            <button class="tab" onclick="loadPopups('APPROVED')">승인됨</button>
+            <button class="tab" onclick="loadPopups('REJECTED')">거절됨</button>
+        </div>
+
+        <div id="popup-list">
+            <div class="loading">로딩 중...</div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_BASE = '/api/admin';
+        let currentStatus = 'PENDING_REVIEW';
+
+        async function loadPopups(status) {
+            currentStatus = status;
+
+            // Update tab styles
+            document.querySelectorAll('.tab').forEach((tab, i) => {
+                tab.classList.toggle('active',
+                    (status === 'PENDING_REVIEW' && i === 0) ||
+                    (status === 'APPROVED' && i === 1) ||
+                    (status === 'REJECTED' && i === 2)
+                );
+            });
+
+            const listEl = document.getElementById('popup-list');
+            listEl.innerHTML = '<div class="loading">로딩 중...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/review/popups?status=${status}`);
+                const data = await response.json();
+
+                if (data.data && data.data.length > 0) {
+                    listEl.innerHTML = data.data.map(popup => createCard(popup)).join('');
+                } else {
+                    listEl.innerHTML = '<div class="empty">팝업이 없습니다.</div>';
+                }
+            } catch (error) {
+                listEl.innerHTML = '<div class="empty">로딩 실패</div>';
+                console.error(error);
+            }
+        }
+
+        function createCard(popup) {
+            const statusClass = popup.reviewStatus === 'PENDING_REVIEW' ? 'status-pending'
+                : popup.reviewStatus === 'APPROVED' ? 'status-approved' : 'status-rejected';
+            const statusText = popup.reviewStatus === 'PENDING_REVIEW' ? '검토 대기'
+                : popup.reviewStatus === 'APPROVED' ? '승인됨' : '거절됨';
+
+            return `
+                <div class="card" id="card-${popup.popupId}">
+                    <div class="card-header">
+                        <div class="card-title">${popup.title}</div>
+                        <span class="card-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="card-info">
+                        <span><strong>장소:</strong> ${popup.placeName || '-'}</span>
+                        <span><strong>기간:</strong> ${popup.startDate || '?'} ~ ${popup.endDate || '?'}</span>
+                        <span><strong>ID:</strong> ${popup.popupId}</span>
+                    </div>
+                    <div class="thumbnail-section">
+                        <div class="thumbnail-input">
+                            <input type="text" id="thumb-${popup.popupId}" placeholder="썸네일 이미지 URL" value="${popup.thumbnailImageUrl || ''}">
+                            <button onclick="updateThumbnail('${popup.popupId}')">저장</button>
+                        </div>
+                        ${popup.thumbnailImageUrl ? `<div class="thumbnail-preview"><img src="${popup.thumbnailImageUrl}" alt="썸네일" onerror="this.style.display='none'"></div>` : ''}
+                    </div>
+                    ${popup.reviewStatus === 'PENDING_REVIEW' ? `
+                        <div class="card-actions">
+                            <button class="btn btn-approve" onclick="approve('${popup.popupId}')">승인</button>
+                            <button class="btn btn-reject" onclick="reject('${popup.popupId}')">거절</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        async function approve(popupId) {
+            try {
+                const response = await fetch(`${API_BASE}/review/${popupId}/approve`, { method: 'POST' });
+                if (response.ok) {
+                    showToast('승인 완료', 'success');
+                    loadPopups(currentStatus);
+                }
+            } catch (error) {
+                showToast('승인 실패', 'error');
+            }
+        }
+
+        async function reject(popupId) {
+            try {
+                const response = await fetch(`${API_BASE}/review/${popupId}/reject`, { method: 'POST' });
+                if (response.ok) {
+                    showToast('거절 완료', 'success');
+                    loadPopups(currentStatus);
+                }
+            } catch (error) {
+                showToast('거절 실패', 'error');
+            }
+        }
+
+        async function updateThumbnail(popupId) {
+            const input = document.getElementById(`thumb-${popupId}`);
+            const url = input.value.trim();
+
+            try {
+                const response = await fetch(`${API_BASE}/popups/${popupId}/thumbnail`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ thumbnailImageUrl: url })
+                });
+                if (response.ok) {
+                    showToast('썸네일 저장 완료', 'success');
+                    loadPopups(currentStatus);
+                }
+            } catch (error) {
+                showToast('저장 실패', 'error');
+            }
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Initial load
+        loadPopups('PENDING_REVIEW');
+    </script>
+</body>
+</html>
