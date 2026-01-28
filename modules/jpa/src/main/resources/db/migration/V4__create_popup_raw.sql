@@ -16,7 +16,6 @@ CREATE TABLE popup_raw (
     review_status VARCHAR(50) NOT NULL DEFAULT 'PENDING_REVIEW',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at DATETIME,
     INDEX idx_popup_raw_review_status (review_status),
     INDEX idx_popup_raw_title (title)
 );
