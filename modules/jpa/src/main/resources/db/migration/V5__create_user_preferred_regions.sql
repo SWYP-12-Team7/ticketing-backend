@@ -1,8 +1,0 @@
-CREATE TABLE user_preferred_regions (
-                                        id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                        user_id    BIGINT       NOT NULL,
-                                        region     VARCHAR(20)  NOT NULL,
-                                        created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                                        updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                                        deleted_at DATETIME
-);
