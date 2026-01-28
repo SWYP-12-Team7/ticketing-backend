@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserCategoryRepository extends JpaRepository<UserCategory, Long> {
-    List<UserCategory> findByUserId(Long userId);
+public interface UserCategoryPreferenceRepository extends JpaRepository<UserCategoryPreference, Long> {
+    List<UserCategoryPreference> findByUserId(Long userId);
 
     void deleteByUserId(Long userId);
 }

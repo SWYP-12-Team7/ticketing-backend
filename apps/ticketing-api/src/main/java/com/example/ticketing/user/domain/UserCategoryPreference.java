@@ -8,10 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_categories")
+@Table(name = "user_category_preferences")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserCategory extends BaseEntity {
+public class UserCategoryPreference extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class UserCategory extends BaseEntity {
     private String category;
 
     @Builder
-    public UserCategory(Long userId, String category) {
+    public UserCategoryPreference(Long userId, String category) {
         this.userId = userId;
         this.category = category;
     }

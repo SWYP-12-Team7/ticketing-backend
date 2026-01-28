@@ -2,7 +2,6 @@ package com.example.ticketing.user.application.usecase;
 
 import com.example.ticketing.common.exception.CustomException;
 import com.example.ticketing.common.exception.ErrorCode;
-import com.example.ticketing.user.application.dto.RegionDto;
 import com.example.ticketing.user.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,54 +15,47 @@ import java.util.List;
 public class UpdateOnboardingSettingsUseCase {
 
     private final UserRepository userRepository;
-    private final UserCategoryRepository userCategoryRepository;
-    private final UserRegionRepository userRegionRepository;
+    private final UserPreferredRegionRepository userPreferredRegionRepository;
+    private final UserCategoryPreferenceRepository userCategoryPreferenceRepository;
 
-    public void execute(Long userId, List<String> categories, List<RegionDto> regions, Integer maxTravelTime) {
-        User user = userRepository.findById(userId)
+    public void execute(Long userId, List<KoreanRegion> preferredRegions, List<String> categories) {
+        userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 카테고리 검증
-        if (categories != null && (categories.size() < 3 || categories.size() > 10)) {
-            throw new CustomException(ErrorCode.INVALID_INPUT, "카테고리는 최소 3개, 최대 10개 선택해야 합니다.");
+        // 관심 지역 업데이트
+        if (preferredRegions != null) {
+            if (preferredRegions.isEmpty() || preferredRegions.size() > 3) {
+                throw new CustomException(ErrorCode.INVALID_INPUT, "관심 지역은 최소 1개, 최대 3개 선택해야 합니다.");
+            }
+
+            userPreferredRegionRepository.deleteByUserId(userId);
+
+            List<UserPreferredRegion> regionList = preferredRegions.stream()
+                    .map(region -> UserPreferredRegion.builder()
+                            .userId(userId)
+                            .region(region)
+                            .build())
+                    .toList();
+
+            userPreferredRegionRepository.saveAll(regionList);
         }
 
-        // 카테고리 업데이트
+        // 관심 카테고리 업데이트
         if (categories != null) {
-            userCategoryRepository.deleteByUserId(userId);
+            if (categories.isEmpty()) {
+                throw new CustomException(ErrorCode.INVALID_INPUT, "관심 카테고리를 최소 1개 이상 선택해야 합니다.");
+            }
 
-            List<UserCategory> userCategories = categories.stream()
-                    .map(category -> UserCategory.builder()
+            userCategoryPreferenceRepository.deleteByUserId(userId);
+
+            List<UserCategoryPreference> categoryList = categories.stream()
+                    .map(category -> UserCategoryPreference.builder()
                             .userId(userId)
                             .category(category)
                             .build())
                     .toList();
 
-            userCategoryRepository.saveAll(userCategories);
-        }
-
-        // 지역 업데이트
-        // 지역 업데이트
-        if (regions != null) {
-            if (regions.isEmpty() || regions.size() > 3) {
-                throw new CustomException(ErrorCode.INVALID_INPUT, "지역은 최소 1개, 최대 3개 선택해야 합니다.");
-            }
-            userRegionRepository.deleteByUserId(userId);
-            List<UserRegion> userRegions = regions.stream()
-                    .map(region -> UserRegion.builder()
-                            .userId(userId)
-                            .address(region.address())
-                            .latitude(region.latitude())
-                            .longitude(region.longitude())
-                            .tag(region.tag())
-                            .build())
-                    .toList();
-            userRegionRepository.saveAll(userRegions);
-        }
-
-        // 최대 이동시간 업데이트
-        if (maxTravelTime != null) {
-            user.updateMaxTravelTime(maxTravelTime);
+            userCategoryPreferenceRepository.saveAll(categoryList);
         }
     }
 }

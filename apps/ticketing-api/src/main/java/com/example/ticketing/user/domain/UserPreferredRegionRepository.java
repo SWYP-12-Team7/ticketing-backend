@@ -6,10 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserContentPreferenceRepository extends JpaRepository<UserContentPreference, Long> {
-    List<UserContentPreference> findByUserId(Long userId);
+public interface UserPreferredRegionRepository extends JpaRepository<UserPreferredRegion, Long> {
+    List<UserPreferredRegion> findByUserId(Long userId);
 
     void deleteByUserId(Long userId);
-
-    void deleteByUserIdAndContentId(Long userId, Long contentId);
 }

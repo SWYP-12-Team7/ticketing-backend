@@ -16,43 +16,21 @@ import java.util.List;
 public class GetOnboardingSettingsUseCase {
 
     private final UserRepository userRepository;
-    private final UserCategoryRepository userCategoryRepository;
-    private final UserRegionRepository userRegionRepository;
-    private final UserContentPreferenceRepository preferenceRepository;
+    private final UserPreferredRegionRepository userPreferredRegionRepository;
+    private final UserCategoryPreferenceRepository userCategoryPreferenceRepository;
 
     public OnboardingSettingsResponse execute(Long userId) {
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        List<String> categories = userCategoryRepository.findByUserId(userId).stream()
-                .map(UserCategory::getCategory)
+        List<KoreanRegion> preferredRegions = userPreferredRegionRepository.findByUserId(userId).stream()
+                .map(UserPreferredRegion::getRegion)
                 .toList();
 
+        List<String> categories = userCategoryPreferenceRepository.findByUserId(userId).stream()
+                .map(UserCategoryPreference::getCategory)
+                .toList();
 
-        List<OnboardingSettingsResponse.RegionInfo> regions = userRegionRepository.findByUserId(userId).stream()
-                        .map(region -> new OnboardingSettingsResponse.RegionInfo(
-                                region.getAddress(),
-                                region.getLatitude(),
-                                region.getLongitude(),
-                                region.getTag()
-                        ))
-                        .toList();
-
-
-        List<OnboardingSettingsResponse.PreferenceInfo> preferences =
-                preferenceRepository.findByUserId(userId).stream()
-                        .map(pref -> new OnboardingSettingsResponse.PreferenceInfo(
-                                pref.getContentId(),
-                                pref.getContentType().name(),
-                                pref.getPreference().name()
-                        ))
-                        .toList();
-
-        return new OnboardingSettingsResponse(
-                categories,
-                regions,
-                user.getMaxTravelTime(),
-                preferences
-        );
+        return new OnboardingSettingsResponse(preferredRegions, categories);
     }
 }
