@@ -25,7 +25,7 @@ public record PopupDetailResponse(
         return new PopupDetailResponse(
             popup.getPopupId(),
             popup.getTitle(),
-            popup.getThumbnailImageUrl(),
+            popup.getThumbnail(),
             popup.getStartDate(),
             popup.getEndDate(),
             popup.calculateStatus(),

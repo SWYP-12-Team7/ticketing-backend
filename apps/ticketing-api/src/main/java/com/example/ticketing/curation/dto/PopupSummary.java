@@ -22,7 +22,7 @@ public record PopupSummary(
         return new PopupSummary(
             popup.getPopupId(),
             popup.getTitle(),
-            popup.getThumbnailImageUrl(),
+            popup.getThumbnail(),
             popup.getStartDate(),
             popup.getEndDate(),
             popup.calculateStatus(),

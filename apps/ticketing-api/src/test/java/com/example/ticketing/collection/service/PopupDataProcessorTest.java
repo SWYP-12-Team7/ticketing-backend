@@ -51,7 +51,9 @@ class PopupDataProcessorTest {
                     "Y",  // isFree
                     "N",  // reservationRequired
                     List.of("인기", "신규"),
-                    0.85  // 높은 신뢰도
+                    0.85,  // 높은 신뢰도
+                    "https://example.com",  // homepageUrl
+                    "https://instagram.com/test"  // snsUrl
             );
 
             // when
@@ -88,7 +90,8 @@ class PopupDataProcessorTest {
                     "N",
                     "Y",
                     List.of("맛집"),
-                    0.6  // 중간 신뢰도 (0.5 ~ 0.8)
+                    0.6,  // 중간 신뢰도 (0.5 ~ 0.8)
+                    null, null
             );
 
             // when
@@ -118,7 +121,8 @@ class PopupDataProcessorTest {
                     "Y",
                     "N",
                     List.of(),
-                    0.3  // 낮은 신뢰도
+                    0.3,  // 낮은 신뢰도
+                    null, null
             );
 
             // when
@@ -149,7 +153,8 @@ class PopupDataProcessorTest {
                     "Y",
                     "N",
                     List.of(),
-                    0.9
+                    0.9,
+                    null, null
             );
 
             GeminiPopupData duplicatePopup = new GeminiPopupData(
@@ -164,7 +169,8 @@ class PopupDataProcessorTest {
                     "N",
                     "Y",
                     List.of(),
-                    0.9
+                    0.9,
+                    null, null
             );
 
             // when
@@ -196,7 +202,8 @@ class PopupDataProcessorTest {
                     "Y",
                     "N",
                     List.of("전시"),
-                    0.95  // 높은 신뢰도지만 썸네일이 없음
+                    0.95,  // 높은 신뢰도지만 썸네일이 없음
+                    null, null
             );
 
             // when
@@ -216,11 +223,11 @@ class PopupDataProcessorTest {
             // given
             List<GeminiPopupData> popupDataList = List.of(
                     new GeminiPopupData("팝업1", "https://thumb1.jpg", "2025-01-01", "2025-01-31",
-                            "서울", "성동구", "성수동", List.of("패션"), "Y", "N", List.of(), 0.9),
+                            "서울", "성동구", "성수동", List.of("패션"), "Y", "N", List.of(), 0.9, null, null),
                     new GeminiPopupData("팝업2", "https://thumb2.jpg", "2025-02-01", "2025-02-28",
-                            "서울", "강남구", "강남역", List.of("뷰티"), "N", "Y", List.of(), 0.85),
+                            "서울", "강남구", "강남역", List.of("뷰티"), "N", "Y", List.of(), 0.85, null, null),
                     new GeminiPopupData("팝업3", null, "2025-03-01", "2025-03-31",
-                            "서울", "마포구", "홍대", List.of("음식"), "Y", "N", List.of(), 0.4)  // 스킵됨
+                            "서울", "마포구", "홍대", List.of("음식"), "Y", "N", List.of(), 0.4, null, null)  // 스킵됨
             );
 
             // when
