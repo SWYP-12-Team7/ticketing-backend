@@ -41,7 +41,7 @@ public class User extends BaseEntity {
     @Column(name = "onboarding_completed")
     private boolean onboardingCompleted = false;
 
-    // 온보딩 진행 상태 (중간 이탈 대응)
+    // 온보딩 진행 상태 (건너뛰기 대응)
     @Column(name = "onboarding_step")
     private Integer onboardingStep;  // 1, 2 또는 null(미시작/완료)
 
