@@ -36,8 +36,13 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         // SecurityContext에서 userId 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        boolean required = parameter.getParameterAnnotation(CurrentUser.class).required();
+
         if (authentication == null || !(authentication.getPrincipal() instanceof Long)) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND, "인증이 필요합니다.");
+            if (required) {
+                throw new CustomException(ErrorCode.USER_NOT_FOUND, "인증이 필요합니다.");
+            }
+            return null;
         }
 
         Long userId = (Long) authentication.getPrincipal();
