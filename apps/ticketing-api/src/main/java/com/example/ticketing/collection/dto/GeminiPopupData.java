@@ -17,7 +17,9 @@ public record GeminiPopupData(
         String isFree,
         String reservationRequired,
         List<String> tags,
-        Double confidence
+        Double confidence,
+        String homepageUrl,
+        String snsUrl
 ) {
     public boolean isFreeBoolean() {
         return "Y".equalsIgnoreCase(isFree);
