@@ -28,7 +28,7 @@ public class GetOnboardingCategoriesUseCase {
             for (String cat : popup.getCategory()) {
                 categoryMap.putIfAbsent(cat, new OnboardingCategoryResponse(
                         cat,
-                        popup.getThumbnailImageUrl(),
+                        popup.getThumbnail(),
                         "POPUP"
                 ));
             }
