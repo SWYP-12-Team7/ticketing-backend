@@ -2,10 +2,7 @@ package com.example.ticketing.user.controller;
 
 import com.example.ticketing.common.security.CurrentUser;
 import com.example.ticketing.user.application.usecase.WithdrawUserUseCase;
-import com.example.ticketing.user.controller.dto.UserResponse;
-import com.example.ticketing.user.application.usecase.FindUserUseCase;
 import com.example.ticketing.user.domain.User;
-import com.example.ticketing.user.infrastructure.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

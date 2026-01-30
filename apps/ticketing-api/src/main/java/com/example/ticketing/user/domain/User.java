@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -37,6 +36,27 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<SocialAccount> socialAccounts = new ArrayList<>();
+
+    // 온보딩 완료 여부
+    @Column(name = "onboarding_completed")
+    private boolean onboardingCompleted = false;
+
+    // 온보딩 진행 상태 (건너뛰기 대응)
+    @Column(name = "onboarding_step")
+    private Integer onboardingStep;  // 1, 2 또는 null(미시작/완료)
+
+    public void completeOnboarding() {
+        this.onboardingCompleted = true;
+        this.onboardingStep = null;
+    }
+
+    public void updateOnboardingStep(Integer step) {
+        this.onboardingStep = step;
+    }
+
+    public boolean hasInProgressOnboarding() {
+        return this.onboardingStep != null && !this.onboardingCompleted;
+    }
 
     @Builder
     public User(String email, String nickname, String profileImage) {

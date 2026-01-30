@@ -10,12 +10,6 @@ spring:
       - classpath:jpa-application.yml
       - optional:classpath:jpa-application-${spring.profiles.active}.yml
 
-  batch:
-    job:
-      enabled: false
-    jdbc:
-      initialize-schema: always
-
   jackson:
     time-zone: Asia/Seoul
 

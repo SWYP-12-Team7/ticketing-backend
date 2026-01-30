@@ -16,6 +16,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -53,7 +55,12 @@ public class Curation extends BaseEntity {
     // 종료일자
     private LocalDate endDate;
 
+    // 카테고리
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<String> category;
+
     // 태그
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<String> tags;
 
     // URL
