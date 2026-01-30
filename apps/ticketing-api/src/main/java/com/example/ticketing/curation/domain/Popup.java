@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import com.example.ticketing.collection.domain.PopupRaw;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -65,31 +64,6 @@ public class Popup extends BaseEntity {
     @Column(name = "reservation_required")
     private boolean reservationRequired;
 
-    @Column(name = "homepage_url", length = 500)
-    private String homepageUrl;
-
-    @Column(name = "sns_url", length = 500)
-    private String snsUrl;
-
-    public static Popup fromRaw(PopupRaw raw) {
-        return Popup.builder()
-                .popupId(raw.getPopupId())
-                .title(raw.getTitle())
-                .thumbnailImageUrl(raw.getThumbnailImageUrl())
-                .startDate(raw.getStartDate())
-                .endDate(raw.getEndDate())
-                .city(raw.getCity())
-                .district(raw.getDistrict())
-                .placeName(raw.getPlaceName())
-                .category(raw.getCategory())
-                .tags(raw.getTags())
-                .isFree(raw.isFree())
-                .reservationRequired(raw.isReservationRequired())
-                .homepageUrl(raw.getHomepageUrl())
-                .snsUrl(raw.getSnsUrl())
-                .build();
-    }
-
     public PopupStatus calculateStatus() {
         LocalDate today = LocalDate.now();
         if (startDate == null || endDate == null) {
@@ -109,8 +83,7 @@ public class Popup extends BaseEntity {
                  LocalDate startDate, LocalDate endDate,
                  String city, String district, String placeName,
                  List<String> category, List<String> tags,
-                 boolean isFree, boolean reservationRequired,
-                 String homepageUrl, String snsUrl) {
+                 boolean isFree, boolean reservationRequired) {
         this.popupId = popupId;
         this.title = title;
         this.thumbnailImageUrl = thumbnailImageUrl;
@@ -123,8 +96,6 @@ public class Popup extends BaseEntity {
         this.tags = tags;
         this.isFree = isFree;
         this.reservationRequired = reservationRequired;
-        this.homepageUrl = homepageUrl;
-        this.snsUrl = snsUrl;
     }
 
     public static Popup fromRaw(PopupRaw raw) {

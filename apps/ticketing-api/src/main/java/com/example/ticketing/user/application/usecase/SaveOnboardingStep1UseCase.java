@@ -21,7 +21,7 @@ public class SaveOnboardingStep1UseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (regions.isEmpty() || regions.size() > 3) {
+        if (regions == null || regions.isEmpty() || regions.size() > 3) {
             throw new CustomException(ErrorCode.INVALID_INPUT, "관심 지역은 최소 1개, 최대 3개 선택해야 합니다.");
         }
 

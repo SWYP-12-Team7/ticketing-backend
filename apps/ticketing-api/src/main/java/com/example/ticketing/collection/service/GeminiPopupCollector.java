@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -27,13 +26,9 @@ public class GeminiPopupCollector {
 
     private static final List<String> TARGET_LOCATIONS = List.of(
             "서울 성수동",
-            "서울 홍대",
-            "서울 강남",
             "서울 잠실",
             "서울 여의도"
     );
-
-    private static final long DELAY_BETWEEN_REQUESTS_SECONDS = 60;
 
     private String buildPrompt(String location) {
         LocalDate now = LocalDate.now();
@@ -61,9 +56,7 @@ public class GeminiPopupCollector {
                   "isFree": "Y",
                   "reservationRequired": "N",
                   "tags": ["태그1", "태그2"],
-                  "confidence": 0.85,
-                  "homepageUrl": "https://brand.com/popup",
-                  "snsUrl": "https://instagram.com/brand"
+                  "confidence": 0.85
                 }
               ]
             }
@@ -72,8 +65,6 @@ public class GeminiPopupCollector {
             - 실제 브랜드명과 팝업 이름을 사용할 것
             - 실제 장소명(쎈느, 피치스 도원, 성수 에스팩토리, 무신사 테라스 등)을 사용할 것
             - thumbnailImageUrl: 해당 팝업의 공식 홍보 이미지 URL 또는 브랜드 로고 이미지 URL을 찾아서 넣을 것. 찾을 수 없으면 null
-            - homepageUrl: 해당 팝업 또는 브랜드의 공식 홈페이지 URL. 찾을 수 없으면 null
-            - snsUrl: 해당 팝업 또는 브랜드의 공식 SNS URL (인스타그램, 트위터 등). 찾을 수 없으면 null
             - 무료여부는 Y, N으로 표현
             - 예약필요여부는 Y, N으로 표현
             - 신뢰도(confidence)는 정보의 정확성에 따라 0.00~1.00 사이로 표현
@@ -88,22 +79,9 @@ public class GeminiPopupCollector {
         List<GeminiPopupData> allPopups = new ArrayList<>();
         ChatClient chatClient = chatClientBuilder.build();
 
-        for (int i = 0; i < TARGET_LOCATIONS.size(); i++) {
-            String location = TARGET_LOCATIONS.get(i);
-
-            // Rate Limit 방지: 첫 요청 이후 60초 딜레이
-            if (i > 0) {
-                try {
-                    log.info("Rate Limit 방지를 위해 {}초 대기 중...", DELAY_BETWEEN_REQUESTS_SECONDS);
-                    TimeUnit.SECONDS.sleep(DELAY_BETWEEN_REQUESTS_SECONDS);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    log.warn("대기 중 인터럽트 발생");
-                }
-            }
-
+        for (String location : TARGET_LOCATIONS) {
             try {
-                log.info("'{}' 지역 팝업 데이터 수집 중... ({}/{})", location, i + 1, TARGET_LOCATIONS.size());
+                log.info("'{}' 지역 팝업 데이터 수집 중...", location);
 
                 String response = chatClient.prompt()
                         .user(buildPrompt(location))

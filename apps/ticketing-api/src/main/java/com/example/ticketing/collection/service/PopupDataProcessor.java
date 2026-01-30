@@ -102,8 +102,6 @@ public class PopupDataProcessor {
                 .tags(data.tags())
                 .isFree(data.isFreeBoolean())
                 .reservationRequired(data.isReservationRequiredBoolean())
-                .homepageUrl(data.homepageUrl())
-                .snsUrl(data.snsUrl())
                 .reviewStatus(reviewStatus)
                 .build();
 

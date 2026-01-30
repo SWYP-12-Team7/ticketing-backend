@@ -21,8 +21,8 @@ public class SaveOnboardingStep2UseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (categories == null || categories.isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_INPUT, "관심 카테고리를 최소 1개 이상 선택해야 합니다.");
+        if (categories == null || categories.isEmpty() || categories.size() > 3) {
+            throw new CustomException(ErrorCode.INVALID_INPUT, "관심 카테고리는 최소 1개, 최대 3개 선택해야 합니다.");
         }
 
         userCategoryPreferenceRepository.deleteByUserId(userId);
