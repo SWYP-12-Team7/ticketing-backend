@@ -65,6 +65,12 @@ public class PopupRaw extends BaseEntity {
     @Column(name = "reservation_required")
     private boolean reservationRequired;
 
+    @Column(name = "homepage_url", length = 500)
+    private String homepageUrl;
+
+    @Column(name = "sns_url", length = 500)
+    private String snsUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "review_status", nullable = false)
     private ReviewStatus reviewStatus = ReviewStatus.PENDING_REVIEW;
@@ -87,6 +93,7 @@ public class PopupRaw extends BaseEntity {
                     String city, String district, String placeName,
                     List<String> category, List<String> tags,
                     boolean isFree, boolean reservationRequired,
+                    String homepageUrl, String snsUrl,
                     ReviewStatus reviewStatus) {
         this.popupId = popupId;
         this.title = title;
@@ -100,6 +107,8 @@ public class PopupRaw extends BaseEntity {
         this.tags = tags;
         this.isFree = isFree;
         this.reservationRequired = reservationRequired;
+        this.homepageUrl = homepageUrl;
+        this.snsUrl = snsUrl;
         this.reviewStatus = reviewStatus != null ? reviewStatus : ReviewStatus.PENDING_REVIEW;
     }
 }

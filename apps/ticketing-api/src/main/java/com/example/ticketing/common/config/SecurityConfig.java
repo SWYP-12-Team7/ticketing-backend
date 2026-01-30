@@ -26,7 +26,7 @@ public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  private static final String[] PUBLIC_ENDPOINTS = {
+  public static final String[] PUBLIC_ENDPOINTS = {
           "/actuator/health",
           "/error",
           "/",
