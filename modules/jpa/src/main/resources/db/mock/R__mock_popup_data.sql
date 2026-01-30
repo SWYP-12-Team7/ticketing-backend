@@ -1,24 +1,41 @@
 -- Repeatable migration: 로컬 테스트용 mock 데이터
 -- R__ prefix = Flyway repeatable migration (내용 변경 시 자동 재실행)
 
--- 팝업 카테고리: 패션 / 뷰티 / F&B / 캐릭터 / 테크 / 라이프스타일 / 가구·인테리어
+-- 기존 mock 데이터 삭제
 DELETE FROM popup WHERE popup_id LIKE 'mock-%';
-
-INSERT INTO popup (popup_id, title, thumbnail_image_url, start_date, end_date, city, district, place_name, category, tags, is_free, reservation_required)
-VALUES
-('mock-001', '나이키 에어맥스 팝업', 'https://picsum.photos/seed/nike/400/300', '2026-01-15', '2026-02-15', '서울', '강남구', '신사동', '["패션"]', '["나이키", "스니커즈"]', true, false),
-('mock-002', '무신사 뷰티 페스타', 'https://picsum.photos/seed/musinsa/400/300', '2026-02-01', '2026-02-14', '서울', '성동구', '성수동', '["뷰티"]', '["무신사", "뷰티"]', false, false),
-('mock-003', '맛있는 녀석들 푸드 팝업', 'https://picsum.photos/seed/food/400/300', '2026-02-10', '2026-02-20', '서울', '마포구', '홍대', '["F&B"]', '["맛집", "푸드"]', true, false),
-('mock-004', '스누피 X 삼성 팝업스토어', 'https://picsum.photos/seed/snoopy/400/300', '2026-01-10', '2026-02-28', '서울', '성동구', '성수동', '["캐릭터"]', '["스누피", "삼성"]', false, true),
-('mock-005', '삼성 갤럭시 언팩 체험존', 'https://picsum.photos/seed/galaxy/400/300', '2026-01-20', '2026-02-20', '서울', '강남구', '삼성동', '["테크"]', '["삼성", "갤럭시"]', true, false),
-('mock-006', '카카오프렌즈 플래그십', 'https://picsum.photos/seed/kakao/400/300', '2026-01-01', '2026-06-30', '서울', '강남구', '강남역', '["라이프스타일"]', '["카카오", "라이언"]', true, false),
-('mock-007', '이케아 팝업 라운지', 'https://picsum.photos/seed/ikea/400/300', '2026-02-01', '2026-03-15', '서울', '강서구', '마곡동', '["가구·인테리어"]', '["이케아", "인테리어"]', true, false);
-
-
--- 전시 카테고리: 현대미술 / 사진 / 디자인 / 일러스트 / 회화 / 조각 / 설치미술
 DELETE FROM exhibition WHERE id IN (SELECT id FROM curation WHERE title LIKE 'mock-%');
 DELETE FROM curation WHERE title LIKE 'mock-%';
 
+-- 팝업 카테고리: 패션 / 뷰티 / F&B / 캐릭터 / 테크 / 라이프스타일 / 가구·인테리어
+-- 1) curation 테이블에 부모 레코드 삽입
+INSERT INTO curation (type, title, thumbnail, region, place, start_date, end_date, tags)
+VALUES
+('POPUP', '나이키 에어맥스 팝업', 'https://picsum.photos/seed/nike/400/300', '서울 강남구', '신사동', '2026-01-15', '2026-02-15', '["나이키", "스니커즈"]'),
+('POPUP', '무신사 뷰티 페스타', 'https://picsum.photos/seed/musinsa/400/300', '서울 성동구', '성수동', '2026-02-01', '2026-02-14', '["무신사", "뷰티"]'),
+('POPUP', '맛있는 녀석들 푸드 팝업', 'https://picsum.photos/seed/food/400/300', '서울 마포구', '홍대', '2026-02-10', '2026-02-20', '["맛집", "푸드"]'),
+('POPUP', '스누피 X 삼성 팝업스토어', 'https://picsum.photos/seed/snoopy/400/300', '서울 성동구', '성수동', '2026-01-10', '2026-02-28', '["스누피", "삼성"]'),
+('POPUP', '삼성 갤럭시 언팩 체험존', 'https://picsum.photos/seed/galaxy/400/300', '서울 강남구', '삼성동', '2026-01-20', '2026-02-20', '["삼성", "갤럭시"]'),
+('POPUP', '카카오프렌즈 플래그십', 'https://picsum.photos/seed/kakao/400/300', '서울 강남구', '강남역', '2026-01-01', '2026-06-30', '["카카오", "라이언"]'),
+('POPUP', '이케아 팝업 라운지', 'https://picsum.photos/seed/ikea/400/300', '서울 강서구', '마곡동', '2026-02-01', '2026-03-15', '["이케아", "인테리어"]');
+
+-- 2) popup 테이블에 자식 레코드 삽입 (JOINED 상속)
+INSERT INTO popup (id, popup_id, city, district, place_name, category, is_free, reservation_required)
+SELECT id, 'mock-001', '서울', '강남구', '신사동', '["패션"]', true, false FROM curation WHERE title = '나이키 에어맥스 팝업' AND type = 'POPUP';
+INSERT INTO popup (id, popup_id, city, district, place_name, category, is_free, reservation_required)
+SELECT id, 'mock-002', '서울', '성동구', '성수동', '["뷰티"]', false, false FROM curation WHERE title = '무신사 뷰티 페스타' AND type = 'POPUP';
+INSERT INTO popup (id, popup_id, city, district, place_name, category, is_free, reservation_required)
+SELECT id, 'mock-003', '서울', '마포구', '홍대', '["F&B"]', true, false FROM curation WHERE title = '맛있는 녀석들 푸드 팝업' AND type = 'POPUP';
+INSERT INTO popup (id, popup_id, city, district, place_name, category, is_free, reservation_required)
+SELECT id, 'mock-004', '서울', '성동구', '성수동', '["캐릭터"]', false, true FROM curation WHERE title = '스누피 X 삼성 팝업스토어' AND type = 'POPUP';
+INSERT INTO popup (id, popup_id, city, district, place_name, category, is_free, reservation_required)
+SELECT id, 'mock-005', '서울', '강남구', '삼성동', '["테크"]', true, false FROM curation WHERE title = '삼성 갤럭시 언팩 체험존' AND type = 'POPUP';
+INSERT INTO popup (id, popup_id, city, district, place_name, category, is_free, reservation_required)
+SELECT id, 'mock-006', '서울', '강남구', '강남역', '["라이프스타일"]', true, false FROM curation WHERE title = '카카오프렌즈 플래그십' AND type = 'POPUP';
+INSERT INTO popup (id, popup_id, city, district, place_name, category, is_free, reservation_required)
+SELECT id, 'mock-007', '서울', '강서구', '마곡동', '["가구·인테리어"]', true, false FROM curation WHERE title = '이케아 팝업 라운지' AND type = 'POPUP';
+
+
+-- 전시 카테고리: 현대미술 / 사진 / 디자인 / 일러스트 / 회화 / 조각 / 설치미술
 INSERT INTO curation (type, title, sub_title, thumbnail, region, category, place, start_date, end_date, tags, url, address, reservation_status)
 VALUES
 ('EXHIBITION', 'mock-데미안 허스트: 체리블라썸', '영국 현대미술 거장의 신작', 'https://picsum.photos/seed/hirst/400/300', '서울', '["현대미술"]', '리움미술관', '2026-01-15', '2026-04-15', '["데미안허스트", "현대미술"]', NULL, '서울 용산구 이태원로55길 60-16', 'PRE_ORDER'),
@@ -30,4 +47,4 @@ VALUES
 ('EXHIBITION', 'mock-올라퍼 엘리아슨: In Real Life', '빛과 공간의 설치미술', 'https://picsum.photos/seed/olafur/400/300', '서울', '["설치미술"]', '아모레퍼시픽미술관', '2026-02-10', '2026-05-10', '["올라퍼엘리아슨", "설치미술"]', NULL, '서울 용산구 한강대로 100', 'PRE_ORDER');
 
 -- exhibition 테이블에 JOINED 상속 레코드 추가
-INSERT INTO exhibition (id) SELECT id FROM curation WHERE title LIKE 'mock-%';
+INSERT INTO exhibition (id) SELECT id FROM curation WHERE title LIKE 'mock-%' AND type = 'EXHIBITION';
