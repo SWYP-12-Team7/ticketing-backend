@@ -78,14 +78,27 @@ public class Curation extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 
-    public void 전시상태() {
-
+    protected Curation(String title, String subTitle, String thumbnail,
+                       String region, String place,
+                       LocalDate startDate, LocalDate endDate, List<String> tags,
+                       String url, String address,
+                       LocalDateTime startTime, LocalDateTime endTime,
+                       String description, String image,
+                       ReservationStatus reservationStatus) {
+        this.title = title;
+        this.subTitle = subTitle;
+        this.thumbnail = thumbnail;
+        this.region = region;
+        this.place = place;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.tags = tags;
+        this.url = url;
+        this.address = address;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.description = description;
+        this.image = image;
+        this.reservationStatus = reservationStatus;
     }
-
-    public boolean 영업시간여부() {
-        // 계산
-        return false;
-    }
-
-
 }
