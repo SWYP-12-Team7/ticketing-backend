@@ -72,5 +72,5 @@ jobs:
             export KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET
             export GOOGLE_GENAI_API_KEY=$GOOGLE_GENAI_API_KEY
             docker compose pull
-            docker compose up -d
+            docker compose up -d --force-recreate app
             docker image prune -af
