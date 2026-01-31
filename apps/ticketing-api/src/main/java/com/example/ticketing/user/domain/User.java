@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+import com.example.ticketing.common.exception.CustomException;
+import com.example.ticketing.common.exception.ErrorCode;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -37,6 +39,16 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<SocialAccount> socialAccounts = new ArrayList<>();
 
+    @Column(length = 50)
+    private String name; // 실명
+
+    @Column(length = 255)
+    private String address;
+
+    private Double latitude;
+
+    private Double longitude;
+
     // 온보딩 완료 여부
     @Column(name = "onboarding_completed")
     private boolean onboardingCompleted = false;
@@ -63,6 +75,22 @@ public class User extends BaseEntity {
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
+    }
+
+    public void saveProfile(String name, String address, Double latitude, Double longitude) {
+        if (this.name != null) {
+            throw new CustomException(ErrorCode.NAME_ALREADY_SET);
+        }
+        this.name = name;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public void updateAddress(String address, Double latitude, Double longitude) {
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void withdraw() {
