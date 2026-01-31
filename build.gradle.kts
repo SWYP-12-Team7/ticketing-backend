@@ -76,6 +76,7 @@ subprojects {
     }
 
     tasks.test {
+        enabled = !project.hasProperty("skipTests")      // -PskipTests 옵션으로 테스트 스킵 가능
         maxParallelForks = 1                              // 테스트 병렬 실행 안 함 (순차 실행)
         useJUnitPlatform()                                // JUnit 5 사용
         systemProperty("user.timezone", "Asia/Seoul")    // 테스트 시 타임존 설정

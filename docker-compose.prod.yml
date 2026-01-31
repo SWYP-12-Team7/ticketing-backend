@@ -46,3 +46,8 @@ services:
 
 volumes:
   mysql-data:
+    name: swyp-mysql
+
+networks:
+  default:
+    name: swyp-network
