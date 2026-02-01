@@ -22,7 +22,7 @@ COPY apps apps
 COPY modules modules
 
 # 빌드 (테스트 제외)
-RUN ./gradlew :apps:ticketing-api:bootJar --no-daemon -x test
+RUN ./gradlew :apps:ticketing-api:bootJar --no-daemon -PskipTests
 
 # Runtime stage
 FROM eclipse-temurin:25-jre

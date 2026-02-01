@@ -1,12 +1,15 @@
 package com.example.ticketing.user.controller;
 
 import com.example.ticketing.common.security.CurrentUser;
+import com.example.ticketing.user.application.dto.SaveUserProfileRequest;
+import com.example.ticketing.user.application.dto.UpdateUserAddressRequest;
+import com.example.ticketing.user.application.dto.UserResponse;
+import com.example.ticketing.user.application.usecase.SaveUserProfileUseCase;
+import com.example.ticketing.user.application.usecase.UpdateUserAddressUseCase;
 import com.example.ticketing.user.application.usecase.WithdrawUserUseCase;
-import com.example.ticketing.user.controller.dto.UserResponse;
-import com.example.ticketing.user.application.usecase.FindUserUseCase;
 import com.example.ticketing.user.domain.User;
-import com.example.ticketing.user.infrastructure.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,16 +20,42 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final WithdrawUserUseCase withdrawUserUseCase;
+    private final SaveUserProfileUseCase saveUserProfileUseCase;
+    private final UpdateUserAddressUseCase updateUserAddressUseCase;
 
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회")
     public ResponseEntity<UserResponse> getUser(@CurrentUser User user) {
         return ResponseEntity.ok(new UserResponse(
-                user.getId(),
                 user.getEmail(),
                 user.getNickname(),
-                user.getProfileImage()
+                user.getName(),
+                user.getAddress()
         ));
+    }
+
+
+    @PostMapping("/profile")
+    @Operation(summary = "이름/주소 최초 저장")
+    public ResponseEntity<Void> saveProfile(
+            @CurrentUser User user,
+            @Valid @RequestBody SaveUserProfileRequest request) {
+        saveUserProfileUseCase.execute(
+                user.getId(), request.name(), request.address(),
+                request.latitude(), request.longitude());
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PutMapping("/address")
+    @Operation(summary = "주소 변경")
+    public ResponseEntity<Void> updateAddress(
+            @CurrentUser User user,
+            @Valid @RequestBody UpdateUserAddressRequest request) {
+        updateUserAddressUseCase.execute(
+                user.getId(), request.address(),
+                request.latitude(), request.longitude());
+        return ResponseEntity.ok().build();
     }
 
 
@@ -36,13 +65,5 @@ public class UserController {
         withdrawUserUseCase.execute(user.getId());
         return ResponseEntity.noContent().build();
     }
-
-
-    public record UserResponse(
-            Long id,
-            String email,
-            String nickname,
-            String profileImage
-    ) {}
 
 }

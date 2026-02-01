@@ -1,0 +1,1 @@
+ALTER TABLE curation ADD COLUMN category JSON AFTER region;
