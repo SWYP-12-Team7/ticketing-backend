@@ -16,6 +16,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -53,7 +55,12 @@ public class Curation extends BaseEntity {
     // 종료일자
     private LocalDate endDate;
 
+    // 카테고리
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<String> category;
+
     // 태그
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<String> tags;
 
     // URL
@@ -101,13 +108,35 @@ public class Curation extends BaseEntity {
     }
 
     public void 전시상태() {
+    }
 
+    protected Curation(String title, String subTitle, String thumbnail,
+                       String region, String place,
+                       LocalDate startDate, LocalDate endDate, List<String> tags,
+                       String url, String address,
+                       LocalDateTime startTime, LocalDateTime endTime,
+                       String description, String image,
+                       ReservationStatus reservationStatus) {
+        this.title = title;
+        this.subTitle = subTitle;
+        this.thumbnail = thumbnail;
+        this.region = region;
+        this.place = place;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.tags = tags;
+        this.url = url;
+        this.address = address;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.description = description;
+        this.image = image;
+        this.reservationStatus = reservationStatus;
     }
 
     public boolean 영업시간여부() {
         // 계산
         return false;
     }
-
 
 }
