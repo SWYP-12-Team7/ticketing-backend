@@ -85,6 +85,31 @@ public class Curation extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 
+    // 좋아요 수
+    @Column(nullable = false)
+    private Long likeCount = 0L;
+
+    // 조회수
+    @Column(nullable = false)
+    private Long viewCount = 0L;
+
+    public void incrementViewCount() {
+        this.viewCount++;
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void 전시상태() {
+    }
+
     protected Curation(String title, String subTitle, String thumbnail,
                        String region, String place,
                        LocalDate startDate, LocalDate endDate, List<String> tags,
@@ -108,4 +133,10 @@ public class Curation extends BaseEntity {
         this.image = image;
         this.reservationStatus = reservationStatus;
     }
+
+    public boolean 영업시간여부() {
+        // 계산
+        return false;
+    }
+
 }
