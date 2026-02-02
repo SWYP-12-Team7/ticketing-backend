@@ -1,9 +1,15 @@
+val springAiVersion = "1.1.1"
+
 repositories {
     mavenCentral()
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-val springAiVersion = "1.1.1"
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.ai:spring-ai-bom:$springAiVersion")
+    }
+}
 
 dependencies {
     implementation(project(":modules:jpa"))
@@ -32,7 +38,13 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3")
 
+    // Spring AI - OpenAI
+    implementation("org.springframework.ai:spring-ai-openai")
+
     // Spring AI - Google GenAI (Gemini)
     implementation("org.springframework.ai:spring-ai-starter-model-google-genai:$springAiVersion")
+
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+
 }
 

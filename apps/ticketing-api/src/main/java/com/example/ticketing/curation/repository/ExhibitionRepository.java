@@ -35,4 +35,6 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long> {
 
     @Query("SELECT e FROM Exhibition e WHERE e.id = :id AND e.deletedAt IS NULL")
     Optional<Exhibition> findByIdAndNotDeleted(@Param("id") Long id);
+
+    boolean existsByTitle(String title);
 }
