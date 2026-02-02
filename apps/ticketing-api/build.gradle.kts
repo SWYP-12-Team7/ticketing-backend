@@ -25,9 +25,9 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.testcontainers:testcontainers-mysql")
-    
+
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    
+
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
@@ -38,8 +38,8 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3")
 
-    // Spring AI - OpenAI
-    implementation("org.springframework.ai:spring-ai-openai")
+    // Spring AI - OpenAI (Spring Boot 4.0 호환을 위해 starter 대신 core 사용)
+    implementation("com.openai:openai-java-spring-boot-starter:4.17.0")
 
     // Spring AI - Google GenAI (Gemini)
     implementation("org.springframework.ai:spring-ai-starter-model-google-genai:$springAiVersion")

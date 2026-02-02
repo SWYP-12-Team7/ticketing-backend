@@ -25,12 +25,6 @@ spring:
       password: ${ADMIN_PASSWORD}
 
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-      chat:
-        options:
-          model: gpt-4o-mini
-          temperature: 0.7
     google:
       genai:
         api-key: ${GOOGLE_GENAI_API_KEY}
@@ -45,8 +39,9 @@ exhibition:
     base-url: ${EXHIBITION_API_BASE_URL}
     service-key: ${EXHIBITION_API_SERVICE_KEY}
 
-#openai:
-#  api-key: ${OPENAI_API_KEY}
+openai:
+  api-key: ${OPENAI_API_KEY}
+  model: gpt-4o-mini
 
 jwt:
   secret: ${JWT_SECRET}

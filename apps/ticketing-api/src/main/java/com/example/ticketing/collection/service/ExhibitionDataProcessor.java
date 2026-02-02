@@ -39,25 +39,23 @@ public class ExhibitionDataProcessor {
     public ProcessResult processAndSave(List<Item> items) {
         log.info("전시 데이터 처리 시작 - 총 {}건", items.size());
 
-        int savedCount = 0;
-        int skippedCount = 0;
         List<String> skippedReasons = new ArrayList<>();
+        List<Item> validItems = new ArrayList<>();
+        List<Exhibition> exhibitions = new ArrayList<>();
 
+        // 1. 유효한 아이템 필터링 및 Exhibition 생성
         for (Item item : items) {
             try {
                 if (item.title() == null || item.title().isBlank()) {
-                    skippedCount++;
                     skippedReasons.add("제목 없음");
                     continue;
                 }
 
                 if (exhibitionRepository.existsByTitle(item.title())) {
-                    skippedCount++;
                     skippedReasons.add("중복: " + item.title());
                     continue;
                 }
 
-                // eventPeriod 사용 (period는 비어있음)
                 LocalDate[] dates = parsePeriod(item.eventPeriod());
 
                 Exhibition exhibition = Exhibition.builder()
@@ -73,10 +71,31 @@ public class ExhibitionDataProcessor {
                         .contactPoint(item.contactPoint())
                         .build();
 
-                // LLM을 활용한 데이터 보강 (카테고리, 태그, 시간 정보)
-                try {
-                    ExhibitionEnrichmentService.EnrichmentResult enrichment =
-                            enrichmentService.enrich(item.title(), item.description(), item.eventPeriod());
+                validItems.add(item);
+                exhibitions.add(exhibition);
+
+            } catch (Exception e) {
+                skippedReasons.add("처리 오류: " + item.title());
+                log.warn("전시 데이터 처리 중 오류: {}", item.title(), e);
+            }
+        }
+
+        // 2. LLM 배치 보강
+        if (!exhibitions.isEmpty()) {
+            List<ExhibitionEnrichmentService.EnrichmentInput> inputs = validItems.stream()
+                    .map(item -> new ExhibitionEnrichmentService.EnrichmentInput(
+                            item.title(),
+                            item.description(),
+                            item.eventPeriod()
+                    ))
+                    .toList();
+
+            try {
+                List<ExhibitionEnrichmentService.EnrichmentResult> enrichments = enrichmentService.enrich(inputs);
+
+                for (int i = 0; i < exhibitions.size() && i < enrichments.size(); i++) {
+                    ExhibitionEnrichmentService.EnrichmentResult enrichment = enrichments.get(i);
+                    Exhibition exhibition = exhibitions.get(i);
 
                     if (enrichment != null) {
                         exhibition.applyEnrichment(
@@ -85,28 +104,20 @@ public class ExhibitionDataProcessor {
                                 enrichment.startTime(),
                                 enrichment.endTime()
                         );
-                        log.debug("[보강] {} - category: {}, tags: {}, time: {}~{}",
-                                item.title(),
-                                enrichment.category(),
-                                enrichment.tags(),
-                                enrichment.startTime(),
-                                enrichment.endTime()
-                        );
+                        log.debug("[보강] {} - category: {}, tags: {}",
+                                exhibition.getTitle(), enrichment.category(), enrichment.tags());
                     }
-                } catch (Exception e) {
-                    log.warn("[보강 실패] {} - 원본 데이터로 저장", item.title(), e);
                 }
-
-                exhibitionRepository.save(exhibition);
-                savedCount++;
-                log.debug("[저장] {}", item.title());
-
             } catch (Exception e) {
-                skippedCount++;
-                skippedReasons.add("처리 오류: " + item.title());
-                log.warn("전시 데이터 처리 중 오류: {}", item.title(), e);
+                log.warn("[보강 실패] 원본 데이터로 저장 - {}건", exhibitions.size(), e);
             }
+
+            // 3. 저장
+            exhibitionRepository.saveAll(exhibitions);
         }
+
+        int savedCount = exhibitions.size();
+        int skippedCount = skippedReasons.size();
 
         log.info("전시 데이터 처리 완료 - 저장: {}건, 스킵: {}건", savedCount, skippedCount);
         return new ProcessResult(savedCount, skippedCount, skippedReasons);
