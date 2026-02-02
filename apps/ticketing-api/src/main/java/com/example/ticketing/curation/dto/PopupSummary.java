@@ -2,6 +2,7 @@ package com.example.ticketing.curation.dto;
 
 import com.example.ticketing.curation.domain.Popup;
 import com.example.ticketing.curation.domain.PopupStatus;
+import com.example.ticketing.curation.domain.ReservationStatus;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public record PopupSummary(
     LocationSummary location,
     List<String> category,
     boolean isFree,
-    boolean reservationRequired,
+    ReservationStatus reservationStatus,
     List<String> tags
 ) {
     public static PopupSummary from(Popup popup) {
@@ -33,7 +34,7 @@ public record PopupSummary(
             ),
             popup.getCategory(),
             popup.isFree(),
-            popup.isReservationRequired(),
+            popup.getReservationStatus(),
             popup.getTags()
         );
     }

@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,15 +42,19 @@ class PopupDataProcessorTest {
             // given
             GeminiPopupData popupData = new GeminiPopupData(
                     "테스트 팝업스토어",
+                    "테스트 부제목",
+                    "테스트 팝업스토어 상세 설명입니다.",
                     "https://example.com/thumbnail.jpg",
                     "2025-01-01",
                     "2025-01-31",
                     "서울",
                     "성동구",
                     "성수동 테스트 장소",
+                    "서울시 성동구 성수동 123-45",
+                    Map.of("평일", "11:00 - 20:00", "주말", "12:00 - 18:00"),
                     List.of("패션", "뷰티"),
                     "Y",  // isFree
-                    "N",  // reservationRequired
+                    "ALL",  // reservationType
                     List.of("인기", "신규"),
                     0.85,  // 높은 신뢰도
                     "https://example.com",  // homepageUrl
@@ -80,15 +85,19 @@ class PopupDataProcessorTest {
             // given
             GeminiPopupData popupData = new GeminiPopupData(
                     "신뢰도 낮은 팝업",
+                    null,
+                    null,
                     "https://example.com/thumbnail.jpg",
                     "2025-02-01",
                     "2025-02-28",
                     "서울",
                     "강남구",
                     "강남역 근처",
+                    null,
+                    null,
                     List.of("음식"),
                     "N",
-                    "Y",
+                    "PRE_ORDER",
                     List.of("맛집"),
                     0.6,  // 중간 신뢰도 (0.5 ~ 0.8)
                     null, null
@@ -111,15 +120,19 @@ class PopupDataProcessorTest {
             // given
             GeminiPopupData popupData = new GeminiPopupData(
                     "신뢰도 매우 낮은 팝업",
+                    null,
+                    null,
                     "https://example.com/thumbnail.jpg",
                     "2025-03-01",
                     "2025-03-31",
                     "서울",
                     "마포구",
                     "홍대입구",
+                    null,
+                    null,
                     List.of("기타"),
                     "Y",
-                    "N",
+                    "ON_SITE",
                     List.of(),
                     0.3,  // 낮은 신뢰도
                     null, null
@@ -143,15 +156,19 @@ class PopupDataProcessorTest {
             // given
             GeminiPopupData firstPopup = new GeminiPopupData(
                     "중복 테스트 팝업",
+                    null,
+                    null,
                     "https://example.com/thumbnail1.jpg",
                     "2025-01-01",
                     "2025-01-31",
                     "서울",
                     "성동구",
                     "성수동",
+                    null,
+                    null,
                     List.of("패션"),
                     "Y",
-                    "N",
+                    "ON_SITE",
                     List.of(),
                     0.9,
                     null, null
@@ -159,15 +176,19 @@ class PopupDataProcessorTest {
 
             GeminiPopupData duplicatePopup = new GeminiPopupData(
                     "중복 테스트 팝업",  // 같은 제목
+                    null,
+                    null,
                     "https://example.com/thumbnail2.jpg",
                     "2025-02-01",
                     "2025-02-28",
                     "서울",
                     "강남구",
                     "강남역",
+                    null,
+                    null,
                     List.of("뷰티"),
                     "N",
-                    "Y",
+                    "PRE_ORDER",
                     List.of(),
                     0.9,
                     null, null
@@ -192,15 +213,19 @@ class PopupDataProcessorTest {
             // given
             GeminiPopupData popupData = new GeminiPopupData(
                     "썸네일 없는 팝업",
+                    null,
+                    null,
                     null,  // 썸네일 없음
                     "2025-04-01",
                     "2025-04-30",
                     "서울",
                     "서초구",
                     "서초역",
+                    null,
+                    null,
                     List.of("문화"),
                     "Y",
-                    "N",
+                    "ALL",
                     List.of("전시"),
                     0.95,  // 높은 신뢰도지만 썸네일이 없음
                     null, null
@@ -222,12 +247,12 @@ class PopupDataProcessorTest {
         void processMultiplePopups() {
             // given
             List<GeminiPopupData> popupDataList = List.of(
-                    new GeminiPopupData("팝업1", "https://thumb1.jpg", "2025-01-01", "2025-01-31",
-                            "서울", "성동구", "성수동", List.of("패션"), "Y", "N", List.of(), 0.9, null, null),
-                    new GeminiPopupData("팝업2", "https://thumb2.jpg", "2025-02-01", "2025-02-28",
-                            "서울", "강남구", "강남역", List.of("뷰티"), "N", "Y", List.of(), 0.85, null, null),
-                    new GeminiPopupData("팝업3", null, "2025-03-01", "2025-03-31",
-                            "서울", "마포구", "홍대", List.of("음식"), "Y", "N", List.of(), 0.4, null, null)  // 스킵됨
+                    new GeminiPopupData("팝업1", null, null, "https://thumb1.jpg", "2025-01-01", "2025-01-31",
+                            "서울", "성동구", "성수동", null, null, List.of("패션"), "Y", "ON_SITE", List.of(), 0.9, null, null),
+                    new GeminiPopupData("팝업2", null, null, "https://thumb2.jpg", "2025-02-01", "2025-02-28",
+                            "서울", "강남구", "강남역", null, null, List.of("뷰티"), "N", "PRE_ORDER", List.of(), 0.85, null, null),
+                    new GeminiPopupData("팝업3", null, null, null, "2025-03-01", "2025-03-31",
+                            "서울", "마포구", "홍대", null, null, List.of("음식"), "Y", "ALL", List.of(), 0.4, null, null)  // 스킵됨
             );
 
             // when
