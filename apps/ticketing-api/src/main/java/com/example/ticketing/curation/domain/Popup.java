@@ -32,6 +32,9 @@ public class Popup extends Curation {
     @Column(name = "place_name")
     private String placeName;
 
+    private Double latitude;
+    private Double longitude;
+
     // Entry info (Popup 고유)
     @Column(name = "is_free")
     private boolean isFree;
@@ -52,6 +55,7 @@ public class Popup extends Curation {
                  String region, String place, List<String> tags,
                  String url, String address, String description,
                  String city, String district, String placeName,
+                 Double latitude, Double longitude,
                  List<String> category,
                  boolean isFree, ReservationStatus reservationStatus,
                  String homepageUrl, String snsUrl, Map<String, String> operatingHours) {
@@ -61,6 +65,8 @@ public class Popup extends Curation {
         this.city = city;
         this.district = district;
         this.placeName = placeName;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.isFree = isFree;
         this.homepageUrl = homepageUrl;
         this.snsUrl = snsUrl;
@@ -86,6 +92,8 @@ public class Popup extends Curation {
                 .city(raw.getCity())
                 .district(raw.getDistrict())
                 .placeName(raw.getPlaceName())
+                .latitude(raw.getLatitude())
+                .longitude(raw.getLongitude())
                 .category(raw.getCategory())
                 .isFree(raw.isFree())
                 .reservationStatus(reservationStatus)

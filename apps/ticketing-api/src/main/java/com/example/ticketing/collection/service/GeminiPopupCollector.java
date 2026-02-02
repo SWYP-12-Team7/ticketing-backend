@@ -60,6 +60,8 @@ public class GeminiPopupCollector {
                   "district": "성동구",
                   "placeName": "실제 장소명",
                   "address": "서울시 성동구 성수동 123-45",
+                  "latitude": 37.5445,
+                  "longitude": 127.0567,
                   "operatingHours": {
                     "월": "11:00~20:00",
                     "화": "11:00~20:00",
@@ -87,6 +89,8 @@ public class GeminiPopupCollector {
             - description: 팝업스토어에서 진행하는 이벤트, 전시 내용, 체험 프로그램, 한정판 상품 정보, 콜라보레이션 내용 등 상세 설명. 최소 2-3문장 이상으로 작성. 찾을 수 없으면 null
             - thumbnailImageUrl: 해당 팝업의 공식 홍보 이미지 URL 또는 브랜드 로고 이미지 URL을 찾아서 넣을 것. 찾을 수 없으면 null
             - address: 전체 도로명 또는 지번 주소. 찾을 수 없으면 null
+            - latitude: 장소의 위도 (예: 37.5445). 찾을 수 없으면 null
+            - longitude: 장소의 경도 (예: 127.0567). 찾을 수 없으면 null
             - operatingHours: 요일별 운영시간을 JSON 객체로 표현. 키는 "월","화","수","목","금","토","일", 값은 "HH:mm~HH:mm" 형식 또는 "휴무". 찾을 수 없으면 null
             - homepageUrl: 해당 팝업 또는 브랜드의 공식 홈페이지 URL. 찾을 수 없으면 null
             - snsUrl: 해당 팝업 또는 브랜드의 공식 SNS URL (인스타그램, 트위터 등). 찾을 수 없으면 null

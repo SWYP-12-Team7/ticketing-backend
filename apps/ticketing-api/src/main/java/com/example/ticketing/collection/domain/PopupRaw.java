@@ -57,6 +57,9 @@ public class PopupRaw extends BaseEntity {
 
     private String address;
 
+    private Double latitude;
+    private Double longitude;
+
     @Column(name = "sub_title")
     private String subTitle;
 
@@ -107,7 +110,8 @@ public class PopupRaw extends BaseEntity {
                     String description, String thumbnailImageUrl,
                     LocalDate startDate, LocalDate endDate,
                     String city, String district, String placeName,
-                    String address, Map<String, String> operatingHours,
+                    String address, Double latitude, Double longitude,
+                    Map<String, String> operatingHours,
                     List<String> category, List<String> tags,
                     boolean isFree, ReservationStatus reservationStatus,
                     String homepageUrl, String snsUrl,
@@ -123,6 +127,8 @@ public class PopupRaw extends BaseEntity {
         this.district = district;
         this.placeName = placeName;
         this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.operatingHours = operatingHours;
         this.category = category;
         this.tags = tags;

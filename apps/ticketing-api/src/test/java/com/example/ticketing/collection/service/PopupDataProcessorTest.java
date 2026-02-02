@@ -51,6 +51,8 @@ class PopupDataProcessorTest {
                     "성동구",
                     "성수동 테스트 장소",
                     "서울시 성동구 성수동 123-45",
+                    37.5445,  // latitude
+                    127.0567,  // longitude
                     Map.of("평일", "11:00 - 20:00", "주말", "12:00 - 18:00"),
                     List.of("패션", "뷰티"),
                     "Y",  // isFree
@@ -94,7 +96,9 @@ class PopupDataProcessorTest {
                     "강남구",
                     "강남역 근처",
                     null,
-                    null,
+                    null,  // latitude
+                    null,  // longitude
+                    null,  // operatingHours
                     List.of("음식"),
                     "N",
                     "PRE_ORDER",
@@ -129,7 +133,9 @@ class PopupDataProcessorTest {
                     "마포구",
                     "홍대입구",
                     null,
-                    null,
+                    null,  // latitude
+                    null,  // longitude
+                    null,  // operatingHours
                     List.of("기타"),
                     "Y",
                     "ON_SITE",
@@ -165,7 +171,9 @@ class PopupDataProcessorTest {
                     "성동구",
                     "성수동",
                     null,
-                    null,
+                    null,  // latitude
+                    null,  // longitude
+                    null,  // operatingHours
                     List.of("패션"),
                     "Y",
                     "ON_SITE",
@@ -185,7 +193,9 @@ class PopupDataProcessorTest {
                     "강남구",
                     "강남역",
                     null,
-                    null,
+                    null,  // latitude
+                    null,  // longitude
+                    null,  // operatingHours
                     List.of("뷰티"),
                     "N",
                     "PRE_ORDER",
@@ -222,7 +232,9 @@ class PopupDataProcessorTest {
                     "서초구",
                     "서초역",
                     null,
-                    null,
+                    null,  // latitude
+                    null,  // longitude
+                    null,  // operatingHours
                     List.of("문화"),
                     "Y",
                     "ALL",
@@ -248,11 +260,11 @@ class PopupDataProcessorTest {
             // given
             List<GeminiPopupData> popupDataList = List.of(
                     new GeminiPopupData("팝업1", null, null, "https://thumb1.jpg", "2025-01-01", "2025-01-31",
-                            "서울", "성동구", "성수동", null, null, List.of("패션"), "Y", "ON_SITE", List.of(), 0.9, null, null),
+                            "서울", "성동구", "성수동", null, null, null, null, List.of("패션"), "Y", "ON_SITE", List.of(), 0.9, null, null),
                     new GeminiPopupData("팝업2", null, null, "https://thumb2.jpg", "2025-02-01", "2025-02-28",
-                            "서울", "강남구", "강남역", null, null, List.of("뷰티"), "N", "PRE_ORDER", List.of(), 0.85, null, null),
+                            "서울", "강남구", "강남역", null, null, null, null, List.of("뷰티"), "N", "PRE_ORDER", List.of(), 0.85, null, null),
                     new GeminiPopupData("팝업3", null, null, null, "2025-03-01", "2025-03-31",
-                            "서울", "마포구", "홍대", null, null, List.of("음식"), "Y", "ALL", List.of(), 0.4, null, null)  // 스킵됨
+                            "서울", "마포구", "홍대", null, null, null, null, List.of("음식"), "Y", "ALL", List.of(), 0.4, null, null)  // 스킵됨
             );
 
             // when

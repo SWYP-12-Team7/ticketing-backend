@@ -18,6 +18,8 @@ public record GeminiPopupData(
         String district,
         String placeName,
         String address,
+        Double latitude,
+        Double longitude,
         Map<String, String> operatingHours,
         List<String> categories,
         String isFree,

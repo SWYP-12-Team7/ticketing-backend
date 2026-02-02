@@ -101,6 +101,8 @@ public class PopupDataProcessor {
                 .district(data.district() != null ? data.district() : "성동구")
                 .placeName(data.placeName())
                 .address(data.address())
+                .latitude(data.latitude())
+                .longitude(data.longitude())
                 .operatingHours(data.operatingHours())
                 .category(data.categories())
                 .tags(data.tags())

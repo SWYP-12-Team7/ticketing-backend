@@ -30,7 +30,9 @@ public record PopupSummary(
             new LocationSummary(
                 popup.getCity(),
                 popup.getDistrict(),
-                popup.getPlaceName()
+                popup.getPlaceName(),
+                popup.getLatitude(),
+                popup.getLongitude()
             ),
             popup.getCategory(),
             popup.isFree(),
