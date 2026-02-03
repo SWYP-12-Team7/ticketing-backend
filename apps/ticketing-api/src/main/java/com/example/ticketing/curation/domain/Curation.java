@@ -103,10 +103,6 @@ public class Curation extends BaseEntity {
         this.viewCount++;
     }
 
-    public void incrementLikeCount() {
-        this.likeCount++;
-    }
-
     public void decrementLikeCount() {
         if (this.likeCount > 0) {
             this.likeCount--;
@@ -128,6 +124,7 @@ public class Curation extends BaseEntity {
 
     public void 전시상태() {
     }
+
 
     protected Curation(String title, String subTitle, String thumbnail,
                        String region, String place,

@@ -75,9 +75,9 @@ public class ExhibitionDataProcessor {
                         .endDate(dates[1])
                         .url(item.url())
                         .address(locationInfo.map(LocationInfo::address).orElse(null))
-                        .description(item.description())
-                        .charge(item.charge())
-                        .contactPoint(item.contactPoint())
+                        .description(removeHtmlTags(item.description()))
+                        .charge(getValueOrDefault(item.charge()))
+                        .contactPoint(getContactPointWithOperatingHours(item.contactPoint()))
                         .latitude(locationInfo.map(LocationInfo::latitude).orElse(null))
                         .longitude(locationInfo.map(LocationInfo::longitude).orElse(null))
                         .build();
@@ -111,9 +111,7 @@ public class ExhibitionDataProcessor {
                     if (enrichment != null) {
                         exhibition.applyEnrichment(
                                 enrichment.category(),
-                                enrichment.tags(),
-                                enrichment.startTime(),
-                                enrichment.endTime()
+                                enrichment.tags()
                         );
                         log.debug("[보강] {} - category: {}, tags: {}",
                                 exhibition.getTitle(), enrichment.category(), enrichment.tags());
@@ -164,15 +162,31 @@ public class ExhibitionDataProcessor {
         return null;
     }
 
-    private String extractRegion(String eventSite) {
-        if (eventSite == null || eventSite.isBlank()) {
-            return null;
+//    private String extractRegion(String eventSite) {
+//        if (eventSite == null || eventSite.isBlank()) {
+//            return null;
+//        }
+//        String[] parts = eventSite.split("\\s+");
+//        if (parts.length >= 2) {
+//            return parts[0] + " " + parts[1];
+//        }
+//        return parts[0];
+//    }
+
+    private String removeHtmlTags(String text) {
+        if (text == null || text.isBlank()) {
+            return text;
         }
-        String[] parts = eventSite.split("\\s+");
-        if (parts.length >= 2) {
-            return parts[0] + " " + parts[1];
-        }
-        return parts[0];
+        return text.replaceAll("<[^>]*>", "").trim();
+    }
+
+    private String getValueOrDefault(String value) {
+        return (value == null || value.isBlank()) ? "페이지 참고" : value;
+    }
+
+    private String getContactPointWithOperatingHours(String contactPoint) {
+        String baseContact = (contactPoint == null || contactPoint.isBlank()) ? "페이지 참고" : contactPoint;
+        return baseContact + " / 운영시간: 페이지 참고";
     }
 
     public record ProcessResult(

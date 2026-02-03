@@ -31,22 +31,21 @@ public class Exhibition extends Curation {
                       String url, String address, String description, String image,
                       String charge, String contactPoint,
                       Double latitude, Double longitude) {
-        super(title, subTitle, thumbnail, region, place, startDate, endDate, tags,
+        super(title, subTitle, thumbnail, region, place, startDate, endDate,
+                null, null,  // category, tags - will be set via applyEnrichment()
                 url, address, null, null, description, image, null, latitude, longitude);
         this.charge = charge;
         this.contactPoint = contactPoint;
     }
 
-    public void applyEnrichment(List<String> category, List<String> tags,
-                                java.time.LocalDateTime startTime, java.time.LocalDateTime endTime) {
+    public void applyEnrichment(List<String> category, List<String> tags) {
         if (category != null && !category.isEmpty()) {
             updateCategory(category);
         }
         if (tags != null && !tags.isEmpty()) {
             updateTags(tags);
         }
-        if (startTime != null && endTime != null) {
-            updateOperatingHours(startTime, endTime);
-        }
+
+        // startTime/endTime은 설정하지 않음 - contactPoint에 "운영시간: 페이지 참고" 포함됨
     }
 }

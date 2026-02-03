@@ -46,7 +46,11 @@ public class ExhibitionEnrichmentService {
 
         try {
             String inputJson = objectMapper.writeValueAsString(inputs);
+
+            log.info("Open AI 호출 시작");
             String prompt = buildPrompt(inputJson);
+            log.info("Open AI 호출 종료");
+
             String response = openAiChatClient.chat(prompt);
 
             return parseResponse(response);
