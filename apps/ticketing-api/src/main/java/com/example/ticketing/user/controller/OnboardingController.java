@@ -1,10 +1,7 @@
 package com.example.ticketing.user.controller;
 
 import com.example.ticketing.common.security.CurrentUser;
-import com.example.ticketing.user.application.dto.OnboardingCategoryResponse;
-import com.example.ticketing.user.application.dto.OnboardingSettingsResponse;
-import com.example.ticketing.user.application.dto.OnboardingStatusResponse;
-import com.example.ticketing.user.application.dto.UpdateOnboardingSettingsRequest;
+import com.example.ticketing.user.application.dto.*;
 import com.example.ticketing.user.application.usecase.*;
 import com.example.ticketing.user.domain.KoreanRegion;
 import com.example.ticketing.user.domain.User;
@@ -29,7 +26,8 @@ public class OnboardingController {
     private final SkipOnboardingStep2UseCase skipOnboardingStep2UseCase;
     private final GetOnboardingSettingsUseCase getOnboardingSettingsUseCase;
     private final GetOnboardingStatusUseCase getOnboardingStatusUseCase;
-    private final UpdateOnboardingSettingsUseCase updateOnboardingSettingsUseCase;
+    private final UpdateOnboardingRegionUseCase updateOnboardingSettingsUseCase;
+    private final UpdateOnboardingCategoryUseCase updateOnboardingCategoryUseCase;
 
     @PostMapping("/step1")
     @Operation(summary = "Step 1: 관심 행사 지역 선택", description = "최소 1개, 최대 3개 선택")
@@ -85,17 +83,24 @@ public class OnboardingController {
     }
 
 
-    @PutMapping("/settings")
-    @Operation(summary = "온보딩 설정 수정", description = "관심 지역과 관심 카테고리 수정")
-    public ResponseEntity<Void> updateSettings(
+    @PutMapping("/settings/region")
+    @Operation(summary = "온보딩 설정 수정", description = "관심 지역 수정")
+    public ResponseEntity<Void> updateSettingsRegion(
             @CurrentUser User user,
-            @RequestBody UpdateOnboardingSettingsRequest request
+            @RequestBody List<KoreanRegion> preferredRegions
     ) {
-        updateOnboardingSettingsUseCase.execute(
-                user.getId(),
-                request.preferredRegions(),
-                request.categories()
-        );
+        updateOnboardingSettingsUseCase.execute(user.getId(), preferredRegions);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PutMapping("/settings/category")
+    @Operation(summary = "온보딩 설정 수정", description = "관심 카테고리 수정")
+    public ResponseEntity<Void> updateSettingsCategory(
+            @CurrentUser User user,
+            @RequestBody List<String> preferredCategories
+    ) {
+        updateOnboardingCategoryUseCase.execute(user.getId(), preferredCategories);
         return ResponseEntity.ok().build();
     }
 
