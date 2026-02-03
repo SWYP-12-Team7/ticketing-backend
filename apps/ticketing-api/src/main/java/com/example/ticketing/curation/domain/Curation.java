@@ -112,7 +112,8 @@ public class Curation extends BaseEntity {
 
     protected Curation(String title, String subTitle, String thumbnail,
                        String region, String place,
-                       LocalDate startDate, LocalDate endDate, List<String> tags,
+                       LocalDate startDate, LocalDate endDate,
+                       List<String> category, List<String> tags,
                        String url, String address,
                        LocalDateTime startTime, LocalDateTime endTime,
                        String description, String image,
@@ -124,6 +125,7 @@ public class Curation extends BaseEntity {
         this.place = place;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.category = category;
         this.tags = tags;
         this.url = url;
         this.address = address;
