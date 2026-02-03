@@ -27,10 +27,11 @@ public class Exhibition extends Curation {
     @Builder
     public Exhibition(String title, String subTitle, String thumbnail,
                       String region, String place,
-                      LocalDate startDate, LocalDate endDate, List<String> tags,
+                      LocalDate startDate, LocalDate endDate,
                       String url, String address, String description, String image,
                       String charge, String contactPoint) {
-        super(title, subTitle, thumbnail, region, place, startDate, endDate, tags,
+        super(title, subTitle, thumbnail, region, place, startDate, endDate,
+                null, null,  // category, tags - will be set via applyEnrichment()
                 url, address, null, null, description, image, null);
         this.charge = charge;
         this.contactPoint = contactPoint;

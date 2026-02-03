@@ -66,8 +66,8 @@ public class ExhibitionDataProcessor {
                         .startDate(dates[0])
                         .endDate(dates[1])
                         .url(item.url())
-                        .description(item.description())
-                        .charge(item.charge())
+                        .description(removeHtmlTags(item.description()))
+                        .charge(getChargeOrDefault(item.charge()))
                         .contactPoint(item.contactPoint())
                         .build();
 
@@ -162,6 +162,17 @@ public class ExhibitionDataProcessor {
             return parts[0] + " " + parts[1];
         }
         return parts[0];
+    }
+
+    private String removeHtmlTags(String text) {
+        if (text == null || text.isBlank()) {
+            return text;
+        }
+        return text.replaceAll("<[^>]*>", "").trim();
+    }
+
+    private String getChargeOrDefault(String charge) {
+        return (charge == null || charge.isBlank()) ? "페이지 참고" : charge;
     }
 
     public record ProcessResult(

@@ -29,7 +29,8 @@ public class ExhibitionEnrichmentService {
     private final AiChatClient openAiChatClient;
 
     private static final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
     private static final List<String> ALLOWED_CATEGORIES = List.of(
             "현대미술", "사진", "디자인", "일러스트", "회화", "조각", "설치 미술"
@@ -57,36 +58,19 @@ public class ExhibitionEnrichmentService {
 
     private String buildPrompt(String inputJson) {
         return """
-            다음 JSON 배열로 전달되는 전시(exhibition) 정보를 분석해서 동일한 순서로 결과를 반환해줘.
+            전시 정보 분석 후 동일 순서로 JSON 배열 반환.
 
-            입력 데이터:
-            %s
+            입력: %s
 
-            다음 JSON 배열 형식으로 응답해줘 (입력과 동일한 개수, 동일한 순서):
-            [
-              {
-                "category": ["카테고리"],
-                "tags": ["태그1", "태그2", "태그3"],
-                "startTime": "HH:mm",
-                "endTime": "HH:mm"
-              }
-            ]
+            출력 형식 (배열 구조 엄수):
+            [{"category":["카테고리"],"tags":["태그1","태그2","태그3"],"startTime":"HH:mm","endTime":"HH:mm"}]
 
             규칙:
-            1. category: 반드시 다음 중 1개만 선택 - %s
-               - 제목과 설명을 보고 가장 적합한 카테고리 1개를 선택
-               - 정확히 일치하는 단어로만 반환
+            - category: 반드시 배열로 반환. %s 중 1개만 선택해서 ["선택값"] 형식
+            - tags: 배열로 3-5개 (예: ["무료관람","사진전","체험형"])
+            - startTime/endTime: eventPeriod에서 추출, 없으면 null
 
-            2. tags: 3~5개 생성
-               - 전시의 특징을 나타내는 키워드
-               - 예: "무료관람", "사진전", "현대미술", "팝업", "체험형" 등
-
-            3. startTime, endTime: 운영 시간 추출
-               - eventPeriod에서 시간을 찾아서 HH:mm 형식으로 반환
-               - 요일별로 다른 경우 가장 일반적인 시간 선택
-               - 시간 정보가 없으면 null로 반환
-
-            순수 JSON 배열만 반환하고 다른 설명은 하지 마.
+            순수 JSON만 반환.
             """.formatted(inputJson, String.join(", ", ALLOWED_CATEGORIES));
     }
 
