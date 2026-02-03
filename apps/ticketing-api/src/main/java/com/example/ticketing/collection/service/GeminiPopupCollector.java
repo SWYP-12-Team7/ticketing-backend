@@ -51,15 +51,29 @@ public class GeminiPopupCollector {
               "popups": [
                 {
                   "title": "팝업 제목 (브랜드명 포함)",
+                  "subTitle": "팝업 부제목 또는 슬로건",
+                  "description": "팝업스토어 상세 설명 (이벤트 내용, 전시 내용, 체험 프로그램, 한정판 상품 정보 등)",
                   "thumbnailImageUrl": "https://example.com/image.jpg",
                   "startDate": "2026-01-01",
                   "endDate": "2026-01-31",
                   "city": "서울",
                   "district": "성동구",
                   "placeName": "실제 장소명",
+                  "address": "서울시 성동구 성수동 123-45",
+                  "latitude": 37.5445,
+                  "longitude": 127.0567,
+                  "operatingHours": {
+                    "월": "11:00~20:00",
+                    "화": "11:00~20:00",
+                    "수": "11:00~20:00",
+                    "목": "11:00~20:00",
+                    "금": "11:00~21:00",
+                    "토": "10:00~20:00",
+                    "일": "휴무"
+                  },
                   "categories": ["카테고리1", "카테고리2"],
                   "isFree": "Y",
-                  "reservationRequired": "N",
+                  "reservationType": "ALL",
                   "tags": ["태그1", "태그2"],
                   "confidence": 0.85,
                   "homepageUrl": "https://brand.com/popup",
@@ -71,11 +85,20 @@ public class GeminiPopupCollector {
             규칙:
             - 실제 브랜드명과 팝업 이름을 사용할 것
             - 실제 장소명(쎈느, 피치스 도원, 성수 에스팩토리, 무신사 테라스 등)을 사용할 것
+            - subTitle: 팝업의 부제목, 슬로건, 또는 간단한 홍보 문구. 없으면 null
+            - description: 팝업스토어에서 진행하는 이벤트, 전시 내용, 체험 프로그램, 한정판 상품 정보, 콜라보레이션 내용 등 상세 설명. 최소 2-3문장 이상으로 작성. 찾을 수 없으면 null
             - thumbnailImageUrl: 해당 팝업의 공식 홍보 이미지 URL 또는 브랜드 로고 이미지 URL을 찾아서 넣을 것. 찾을 수 없으면 null
+            - address: 전체 도로명 또는 지번 주소. 찾을 수 없으면 null
+            - latitude: 장소의 위도 (예: 37.5445). 찾을 수 없으면 null
+            - longitude: 장소의 경도 (예: 127.0567). 찾을 수 없으면 null
+            - operatingHours: 요일별 운영시간을 JSON 객체로 표현. 키는 "월","화","수","목","금","토","일", 값은 "HH:mm~HH:mm" 형식 또는 "휴무". 찾을 수 없으면 null
             - homepageUrl: 해당 팝업 또는 브랜드의 공식 홈페이지 URL. 찾을 수 없으면 null
             - snsUrl: 해당 팝업 또는 브랜드의 공식 SNS URL (인스타그램, 트위터 등). 찾을 수 없으면 null
-            - 무료여부는 Y, N으로 표현
-            - 예약필요여부는 Y, N으로 표현
+            - 무료여부(isFree)는 Y, N으로 표현
+            - 입장방식(reservationType)은 다음 3가지 중 하나로 표현:
+              - PRE_ORDER: 사전예약 필수
+              - ON_SITE: 현장 대기만 가능
+              - ALL: 사전예약과 현장 대기 모두 가능
             - 신뢰도(confidence)는 정보의 정확성에 따라 0.00~1.00 사이로 표현
             - 날짜는 yyyy-MM-dd 형식
             - 최소 15개에서 최대 30개까지 알려줘
@@ -129,9 +152,20 @@ public class GeminiPopupCollector {
         try {
             // JSON 블록 추출 (```json ... ``` 형식 처리)
             String jsonContent = extractJsonContent(response);
+            log.info("Gemini 원본 응답 (일부): {}", jsonContent.substring(0, Math.min(2000, jsonContent.length())));
 
             GeminiPopupResponse popupResponse = objectMapper.readValue(jsonContent, GeminiPopupResponse.class);
             log.info("파싱된 팝업 수: {}", popupResponse.popups().size());
+
+            // operatingHours 디버깅
+            for (GeminiPopupData popup : popupResponse.popups()) {
+                if (popup.operatingHours() != null) {
+                    log.info("[{}] operatingHours: {}", popup.title(), popup.operatingHours());
+                } else {
+                    log.warn("[{}] operatingHours가 null입니다", popup.title());
+                }
+            }
+
             return popupResponse.popups();
         } catch (JsonProcessingException e) {
             log.error("Gemini 응답 파싱 실패: {}", response, e);

@@ -55,7 +55,7 @@ class PopupInheritanceTest {
                 .category(List.of("패션", "뷰티"))
                 .tags(List.of("인기", "신규"))
                 .isFree(true)
-                .reservationRequired(false)
+                .reservationStatus(ReservationStatus.ON_SITE)
                 .homepageUrl("https://example.com")
                 .snsUrl("https://instagram.com/test")
                 .reviewStatus(ReviewStatus.APPROVED)
@@ -115,7 +115,7 @@ class PopupInheritanceTest {
                 .category(List.of("음식"))
                 .tags(List.of("맛집"))
                 .isFree(false)
-                .reservationRequired(true)
+                .reservationStatus(ReservationStatus.PRE_ORDER)
                 .homepageUrl("https://gangnam.com")
                 .snsUrl(null)
                 .reviewStatus(ReviewStatus.APPROVED)
@@ -145,7 +145,7 @@ class PopupInheritanceTest {
         assertThat(found.getPlaceName()).isEqualTo("강남역 테스트");
         assertThat(found.getCategory()).containsExactly("음식");
         assertThat(found.isFree()).isFalse();
-        assertThat(found.isReservationRequired()).isTrue();
+        assertThat(found.getReservationStatus()).isEqualTo(ReservationStatus.PRE_ORDER);
         assertThat(found.getHomepageUrl()).isEqualTo("https://gangnam.com");
         assertThat(found.getSnsUrl()).isNull();
     }
@@ -166,7 +166,7 @@ class PopupInheritanceTest {
                 .category(List.of("문화", "예술"))
                 .tags(List.of("전시", "아트"))
                 .isFree(true)
-                .reservationRequired(false)
+                .reservationStatus(ReservationStatus.ALL)
                 .homepageUrl("https://hongdae.com")
                 .snsUrl("https://twitter.com/hongdae")
                 .reviewStatus(ReviewStatus.PENDING_REVIEW)
