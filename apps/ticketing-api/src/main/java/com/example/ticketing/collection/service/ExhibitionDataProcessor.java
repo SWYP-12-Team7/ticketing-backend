@@ -1,6 +1,7 @@
 package com.example.ticketing.collection.service;
 
 import com.example.ticketing.collection.dto.ExhibitionApiResponse.Item;
+import com.example.ticketing.collection.service.KakaoMapClient.LocationInfo;
 import com.example.ticketing.curation.domain.Exhibition;
 import com.example.ticketing.curation.repository.ExhibitionRepository;
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class ExhibitionDataProcessor {
 
     private final ExhibitionRepository exhibitionRepository;
     private final ExhibitionEnrichmentService enrichmentService;
+    private final KakaoMapClient kakaoMapClient;
 
     private static final Pattern PERIOD_PATTERN = Pattern.compile(
             "(\\d{4}[.\\-/]?\\d{1,2}[.\\-/]?\\d{1,2})\\s*~\\s*(\\d{4}[.\\-/]?\\d{1,2}[.\\-/]?\\d{1,2})"
@@ -58,17 +61,25 @@ public class ExhibitionDataProcessor {
 
                 LocalDate[] dates = parsePeriod(item.eventPeriod());
 
+                // 카카오 지도 API로 위치 정보 조회
+                Optional<LocationInfo> locationInfo = kakaoMapClient.searchByKeyword(item.eventSite());
+
+                String region = locationInfo.map(LocationInfo::region).orElse(null);
+
                 Exhibition exhibition = Exhibition.builder()
                         .title(item.title())
                         .thumbnail(item.imageObject())
-                        .region(extractRegion(item.eventSite()))
+                        .region(region)
                         .place(item.eventSite())
                         .startDate(dates[0])
                         .endDate(dates[1])
                         .url(item.url())
+                        .address(locationInfo.map(LocationInfo::address).orElse(null))
                         .description(item.description())
                         .charge(item.charge())
                         .contactPoint(item.contactPoint())
+                        .latitude(locationInfo.map(LocationInfo::latitude).orElse(null))
+                        .longitude(locationInfo.map(LocationInfo::longitude).orElse(null))
                         .build();
 
                 validItems.add(item);

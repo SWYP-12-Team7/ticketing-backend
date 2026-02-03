@@ -29,9 +29,10 @@ public class Exhibition extends Curation {
                       String region, String place,
                       LocalDate startDate, LocalDate endDate, List<String> tags,
                       String url, String address, String description, String image,
-                      String charge, String contactPoint) {
+                      String charge, String contactPoint,
+                      Double latitude, Double longitude) {
         super(title, subTitle, thumbnail, region, place, startDate, endDate, tags,
-                url, address, null, null, description, image, null);
+                url, address, null, null, description, image, null, latitude, longitude);
         this.charge = charge;
         this.contactPoint = contactPoint;
     }

@@ -58,7 +58,7 @@ public class Popup extends Curation {
                  boolean isFree, boolean reservationRequired,
                  String homepageUrl, String snsUrl) {
         super(title, null, thumbnail, region, place, startDate, endDate, tags,
-              null, null, null, null, null, null, null);
+              null, null, null, null, null, null, null, null, null);
         this.popupId = popupId;
         this.city = city;
         this.district = district;
