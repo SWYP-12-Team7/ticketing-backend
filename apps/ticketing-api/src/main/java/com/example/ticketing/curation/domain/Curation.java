@@ -93,6 +93,12 @@ public class Curation extends BaseEntity {
     @Column(nullable = false)
     private Long viewCount = 0L;
 
+    // 위도
+    private Double latitude;
+
+    // 경도
+    private Double longitude;
+
     public void incrementViewCount() {
         this.viewCount++;
     }
@@ -130,7 +136,8 @@ public class Curation extends BaseEntity {
                        String url, String address,
                        LocalDateTime startTime, LocalDateTime endTime,
                        String description, String image,
-                       ReservationStatus reservationStatus) {
+                       ReservationStatus reservationStatus,
+                       Double latitude, Double longitude) {
         this.title = title;
         this.subTitle = subTitle;
         this.thumbnail = thumbnail;
@@ -147,6 +154,8 @@ public class Curation extends BaseEntity {
         this.description = description;
         this.image = image;
         this.reservationStatus = reservationStatus;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public boolean 영업시간여부() {
