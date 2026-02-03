@@ -23,6 +23,7 @@ public class UserController {
     private final SaveUserProfileUseCase saveUserProfileUseCase;
     private final UpdateUserAddressUseCase updateUserAddressUseCase;
 
+    // 내 정보 설정 화면
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회")
     public ResponseEntity<UserResponse> getUser(@CurrentUser User user) {
@@ -33,6 +34,8 @@ public class UserController {
                 user.getAddress()
         ));
     }
+
+    //나의 취향 (최근 열람 행사, 찜한 행사 요약, 온보딩 카테고리 기반 추천)
 
 
     @PostMapping("/profile")
