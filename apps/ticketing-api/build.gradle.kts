@@ -1,9 +1,15 @@
+val springAiVersion = "1.1.1"
+
 repositories {
     mavenCentral()
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-val springAiVersion = "1.1.1"
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.ai:spring-ai-bom:$springAiVersion")
+    }
+}
 
 dependencies {
     implementation(project(":modules:jpa"))
@@ -19,9 +25,9 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.testcontainers:testcontainers-mysql")
-    
+
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    
+
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
@@ -32,7 +38,13 @@ dependencies {
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3")
 
+    // Spring AI - OpenAI (Spring Boot 4.0 호환을 위해 starter 대신 core 사용)
+    implementation("com.openai:openai-java-spring-boot-starter:4.17.0")
+
     // Spring AI - Google GenAI (Gemini)
     implementation("org.springframework.ai:spring-ai-starter-model-google-genai:$springAiVersion")
+
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+
 }
 
