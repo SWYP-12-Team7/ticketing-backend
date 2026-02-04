@@ -124,8 +124,7 @@ public class Curation extends BaseEntity {
                        String url, String address,
                        LocalDateTime startTime, LocalDateTime endTime,
                        String description, String image,
-                       ReservationStatus reservationStatus,
-                       Double latitude, Double longitude) {
+                       ReservationStatus reservationStatus) {
         this.title = title;
         this.subTitle = subTitle;
         this.thumbnail = thumbnail;
