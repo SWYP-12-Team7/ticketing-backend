@@ -70,7 +70,7 @@ public class ExhibitionEnrichmentService {
             [{"category":["카테고리"],"tags":["태그1","태그2","태그3"],"startTime":"HH:mm","endTime":"HH:mm"}]
 
             규칙:
-            - category: 반드시 배열로 반환. %s 중 1개만 선택해서 ["선택값"] 형식
+            - category: 반드시 배열로 반환. %s 중 가장 적합한 것 1-3개 선택 (예: ["현대미술","사진"])
             - tags: 배열로 3-5개 (예: ["무료관람","사진전","체험형"])
             - startTime/endTime: eventPeriod에서 추출, 없으면 null
 
@@ -104,7 +104,8 @@ public class ExhibitionEnrichmentService {
         List<String> validCategories = dto.category != null
                 ? dto.category.stream()
                 .filter(ALLOWED_CATEGORIES::contains)
-                .limit(1)
+                .distinct()  // 중복 제거
+                .limit(3)    // 최대 3개
                 .toList()
                 : List.of();
 

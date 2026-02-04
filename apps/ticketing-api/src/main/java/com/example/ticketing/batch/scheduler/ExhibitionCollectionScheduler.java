@@ -20,7 +20,8 @@ public class ExhibitionCollectionScheduler {
     @Qualifier("exhibitionCollectionJob")
     private final Job exhibitionCollectionJob;
 
-    @Scheduled(cron = "0 0 23 * * *", zone = "Asia/Seoul")
+    // TODO: 초기 데이터 설정 후 활성화
+    // @Scheduled(cron = "0 0 23 * * *", zone = "Asia/Seoul")
     public void runExhibitionCollectionJob() {
         log.info("[Scheduler] 전시 수집 스케줄 실행 시작");
 
