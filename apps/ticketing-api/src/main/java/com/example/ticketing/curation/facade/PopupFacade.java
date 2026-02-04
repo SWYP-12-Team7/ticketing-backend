@@ -42,10 +42,6 @@ public class PopupFacade {
 
     public PopupDetailResponse getPopupDetail(String popupId) {
         Popup popup = popupService.getPopupByPopupId(popupId);
-
-        // TODO: 로그인 사용자의 좋아요 목록 조회 (현재는 null)
-        List<String> likedPopupIds = null;
-
-        return PopupDetailResponse.from(popup, likedPopupIds);
+        return PopupDetailResponse.from(popup);
     }
 }
