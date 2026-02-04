@@ -34,6 +34,15 @@ spring:
             temperature: 1.0
             google-search-retrieval: true
 
+exhibition:
+  api:
+    base-url: ${EXHIBITION_API_BASE_URL}
+    service-key: ${EXHIBITION_API_SERVICE_KEY}
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+  model: gpt-4o-mini
+
 jwt:
   secret: ${JWT_SECRET}
   access-token-validity: 3600000

@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/exhibitions")
+@RequestMapping("/exhibitions")
 @RequiredArgsConstructor
 public class ExhibitionController {
 

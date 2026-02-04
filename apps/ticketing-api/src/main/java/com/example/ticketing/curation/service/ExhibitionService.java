@@ -3,17 +3,20 @@ package com.example.ticketing.curation.service;
 import com.example.ticketing.common.exception.CustomException;
 import com.example.ticketing.common.exception.ErrorCode;
 import com.example.ticketing.curation.domain.CurationStatus;
+import com.example.ticketing.curation.domain.CurationType;
 import com.example.ticketing.curation.domain.Exhibition;
 import com.example.ticketing.curation.dto.ExhibitionDetailResponse;
 import com.example.ticketing.curation.dto.ExhibitionListResponse;
 import com.example.ticketing.curation.dto.ExhibitionSummary;
 import com.example.ticketing.curation.dto.Pagination;
-import com.example.ticketing.curation.repository.ExhibitionLikeRepository;
+import com.example.ticketing.curation.event.CurationViewedEvent;
+import com.example.ticketing.curation.repository.CurationLikeRepository;
 import com.example.ticketing.curation.repository.ExhibitionRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,7 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExhibitionService {
 
     private final ExhibitionRepository exhibitionRepository;
-    private final ExhibitionLikeRepository exhibitionLikeRepository;
+    private final CurationLikeRepository curationLikeRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ExhibitionListResponse getExhibitions(
         String keyword,
@@ -61,8 +65,16 @@ public class ExhibitionService {
 
         exhibition.incrementViewCount();
 
+        // 비동기로 조회 이력 기록 (메인 스레드 블로킹 방지)
+        eventPublisher.publishEvent(new CurationViewedEvent(
+                exhibitionId,
+                CurationType.EXHIBITION,
+                userId
+        ));
+
         boolean isLiked = userId != null &&
-            exhibitionLikeRepository.existsByUserIdAndExhibitionId(userId, exhibitionId);
+            curationLikeRepository.existsByUserIdAndCurationIdAndCurationType(
+                userId, exhibitionId, CurationType.EXHIBITION);
 
         return ExhibitionDetailResponse.from(exhibition, isLiked);
     }
@@ -72,7 +84,8 @@ public class ExhibitionService {
             return Collections.emptySet();
         }
         return Set.copyOf(
-            exhibitionLikeRepository.findExhibitionIdsByUserIdAndExhibitionIdIn(userId, exhibitionIds)
+            curationLikeRepository.findCurationIdsByUserIdAndCurationIdInAndCurationType(
+                userId, exhibitionIds, CurationType.EXHIBITION)
         );
     }
 }
