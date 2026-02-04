@@ -103,28 +103,18 @@ public class Curation extends BaseEntity {
         this.viewCount++;
     }
 
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
     public void decrementLikeCount() {
         if (this.likeCount > 0) {
             this.likeCount--;
         }
     }
 
-    public void updateCategory(List<String> category) {
-        this.category = category;
-    }
-
-    public void updateTags(List<String> tags) {
-        this.tags = tags;
-    }
-
-    public void updateOperatingHours(LocalDateTime startTime, LocalDateTime endTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
     public void 전시상태() {
     }
-
 
     protected Curation(String title, String subTitle, String thumbnail,
                        String region, String place,

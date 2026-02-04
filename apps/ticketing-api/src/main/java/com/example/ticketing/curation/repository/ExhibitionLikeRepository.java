@@ -8,6 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+/**
+ * @deprecated CurationLikeRepository로 통합되었습니다.
+ * V23 마이그레이션에서 exhibition_likes 테이블이 curation_likes로 통합됨.
+ * 새로운 코드는 {@link CurationLikeRepository}를 사용하세요.
+ */
+@Deprecated
 @Repository
 public interface ExhibitionLikeRepository extends JpaRepository<ExhibitionLike, Long> {
 
