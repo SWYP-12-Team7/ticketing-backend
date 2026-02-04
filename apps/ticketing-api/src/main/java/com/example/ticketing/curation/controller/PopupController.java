@@ -1,9 +1,11 @@
 package com.example.ticketing.curation.controller;
 
 import com.example.ticketing.common.response.ApiResponse;
+import com.example.ticketing.common.security.CurrentUser;
 import com.example.ticketing.curation.dto.PopupDetailResponse;
 import com.example.ticketing.curation.dto.PopupListResponse;
 import com.example.ticketing.curation.facade.PopupFacade;
+import com.example.ticketing.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +33,12 @@ public class PopupController {
     }
 
     @GetMapping("/{popupId}")
-    public ApiResponse<PopupDetailResponse> getPopupDetail(@PathVariable String popupId) {
-        PopupDetailResponse response = popupFacade.getPopupDetail(popupId);
+    public ApiResponse<PopupDetailResponse> getPopupDetail(
+            @PathVariable String popupId,
+            @CurrentUser(required = false) User user
+    ) {
+        Long userId = user != null ? user.getId() : null;
+        PopupDetailResponse response = popupFacade.getPopupDetail(popupId, userId);
         return ApiResponse.success(response);
     }
 }

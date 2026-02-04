@@ -40,8 +40,8 @@ public class PopupFacade {
         );
     }
 
-    public PopupDetailResponse getPopupDetail(String popupId) {
-        Popup popup = popupService.getPopupByPopupId(popupId);
+    public PopupDetailResponse getPopupDetail(String popupId, Long userId) {
+        Popup popup = popupService.getPopupDetail(popupId, userId);
         return PopupDetailResponse.from(popup);
     }
 }
