@@ -38,7 +38,9 @@ public class SecurityConfig {
           "/v3/api-docs/**",
           // Popup API
           "/api/popups/**",
-          "/popups/**"
+          "/popups/**",
+          // Main Page API
+          "/main/**"
   };
 
   private static final String[] ADMIN_ENDPOINTS = {

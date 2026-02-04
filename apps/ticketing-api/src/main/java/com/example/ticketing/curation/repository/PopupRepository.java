@@ -1,6 +1,7 @@
 package com.example.ticketing.curation.repository;
 
 import com.example.ticketing.curation.domain.Popup;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +25,11 @@ public interface PopupRepository extends JpaRepository<Popup, Long> {
     );
 
     Optional<Popup> findByPopupId(String popupId);
+
+    /**
+     * 무료 행사 조회
+     * 정렬: 제목 오름차순
+     */
+    @Query("SELECT p FROM Popup p WHERE p.isFree = true ORDER BY p.title ASC")
+    List<Popup> findFreePopups();
 }
