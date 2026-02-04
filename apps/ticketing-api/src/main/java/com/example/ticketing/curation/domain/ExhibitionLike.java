@@ -12,6 +12,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * @deprecated CurationLike로 통합되었습니다.
+ * V23 마이그레이션에서 exhibition_likes 테이블이 curation_likes로 통합됨.
+ * 새로운 코드는 {@link CurationLike}를 사용하세요.
+ */
+@Deprecated
 @Entity
 @Table(
     name = "exhibition_likes",
