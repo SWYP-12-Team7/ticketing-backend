@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PopupDataProcessor {
 
     private final PopupRawRepository popupRawRepository;
+    private final KakaoMapClient kakaoMapClient;
 
     private static final double HIGH_CONFIDENCE = 0.8;
     private static final double LOW_CONFIDENCE = 0.5;
@@ -88,7 +89,22 @@ public class PopupDataProcessor {
             reviewStatus = ReviewStatus.PENDING_REVIEW;
         }
 
-        // 6. 엔티티 생성 및 저장
+        // 6. 좌표가 없으면 Kakao Map API로 조회
+        Double latitude = data.latitude();
+        Double longitude = data.longitude();
+        if (latitude == null || longitude == null) {
+            String searchKeyword = data.address() != null ? data.address() : data.placeName();
+            if (searchKeyword != null && !searchKeyword.isBlank()) {
+                var locationOpt = kakaoMapClient.searchByKeyword(searchKeyword);
+                if (locationOpt.isPresent()) {
+                    latitude = locationOpt.get().latitude();
+                    longitude = locationOpt.get().longitude();
+                    log.info("[좌표 조회 성공] {} -> ({}, {})", searchKeyword, latitude, longitude);
+                }
+            }
+        }
+
+        // 7. 엔티티 생성 및 저장
         PopupRaw popup = PopupRaw.builder()
                 .popupId(UUID.randomUUID().toString())
                 .title(data.title())
@@ -101,8 +117,8 @@ public class PopupDataProcessor {
                 .district(data.district() != null ? data.district() : "성동구")
                 .placeName(data.placeName())
                 .address(data.address())
-                .latitude(data.latitude())
-                .longitude(data.longitude())
+                .latitude(latitude)
+                .longitude(longitude)
                 .operatingHours(data.operatingHours())
                 .category(data.categories())
                 .tags(data.tags())
