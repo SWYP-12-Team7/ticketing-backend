@@ -25,6 +25,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.testcontainers:testcontainers-mysql")
+    testImplementation("org.awaitility:awaitility:4.2.0")
 
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 

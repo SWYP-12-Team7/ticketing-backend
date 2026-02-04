@@ -117,15 +117,6 @@ public class Curation extends BaseEntity {
         this.tags = tags;
     }
 
-    public void updateOperatingHours(LocalDateTime startTime, LocalDateTime endTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
-    public void 전시상태() {
-    }
-
-
     protected Curation(String title, String subTitle, String thumbnail,
                        String region, String place,
                        LocalDate startDate, LocalDate endDate,
@@ -155,9 +146,12 @@ public class Curation extends BaseEntity {
         this.longitude = longitude;
     }
 
-    public boolean 영업시간여부() {
-        // 계산
-        return false;
-    }
+//    public boolean 영업시간여부() {
+//        // 계산
+//        return false;
+//    }
+//
+//    public void 전시상태() {
+//    }
 
 }
