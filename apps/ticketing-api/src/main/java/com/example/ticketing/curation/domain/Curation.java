@@ -103,17 +103,18 @@ public class Curation extends BaseEntity {
         this.viewCount++;
     }
 
-    public void incrementLikeCount() {
-        this.likeCount++;
-    }
-
     public void decrementLikeCount() {
         if (this.likeCount > 0) {
             this.likeCount--;
         }
     }
 
-    public void 전시상태() {
+    public void updateCategory(List<String> category) {
+        this.category = category;
+    }
+
+    public void updateTags(List<String> tags) {
+        this.tags = tags;
     }
 
     protected Curation(String title, String subTitle, String thumbnail,
@@ -145,9 +146,12 @@ public class Curation extends BaseEntity {
         this.longitude = longitude;
     }
 
-    public boolean 영업시간여부() {
-        // 계산
-        return false;
-    }
+//    public boolean 영업시간여부() {
+//        // 계산
+//        return false;
+//    }
+//
+//    public void 전시상태() {
+//    }
 
 }

@@ -10,13 +10,13 @@
 
 ## ✅ 이미 구축된 공통 인프라 (손댈 필요 없음)
 
-| 구성요소 | 위치 | 설명 |
-|---------|------|------|
-| `CurationViewHistory` 엔티티 | `curation/domain/` | 팝업/전시 조회 이력 통합 테이블 |
-| `CurationViewedEvent` 이벤트 | `curation/event/` | 조회 이벤트 (팝업/전시 공통) |
-| `CurationViewHistoryListener` | `curation/event/` | 비동기 이력 저장 리스너 |
-| `AsyncConfig` | `common/config/` | 비동기 처리 설정 |
-| DB 마이그레이션 | `V22__create_curation_view_history.sql` | 테이블 생성 완료 |
+| 구성요소 | 위치                                      | 설명 |
+|---------|-----------------------------------------|------|
+| `CurationViewHistory` 엔티티 | `curation/domain/`                      | 팝업/전시 조회 이력 통합 테이블 |
+| `CurationViewedEvent` 이벤트 | `curation/event/`                       | 조회 이벤트 (팝업/전시 공통) |
+| `CurationViewHistoryListener` | `curation/event/`                       | 비동기 이력 저장 리스너 |
+| `AsyncConfig` | `common/config/`                        | 비동기 처리 설정 |
+| DB 마이그레이션 | `V23__create_curation_view_history.sql` | 테이블 생성 완료 |
 
 ---
 
