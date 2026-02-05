@@ -76,12 +76,13 @@ class KakaoLoginUseCaseIntegrationTest {
       assertThat(result.accessToken()).isNotBlank();
       assertThat(result.refreshToken()).isNotBlank();
       assertThat(result.user().email()).isEqualTo(email);
-      assertThat(result.user().nickname()).isEqualTo(nickname);
+      assertThat(result.user().nickname()).isNotBlank();  // 랜덤 닉네임 생성됨
+      assertThat(result.user().nickname().length()).isLessThanOrEqualTo(7);  // 7자 이내
 
       // then - DB 저장 검증
       Optional<User> savedUser = userRepository.findByEmail(email);
       assertThat(savedUser).isPresent();
-      assertThat(savedUser.get().getNickname()).isEqualTo(nickname);
+      assertThat(savedUser.get().getNickname()).isNotBlank();  // 랜덤 닉네임
       assertThat(savedUser.get().getProfileImage()).isEqualTo(profileImage);
 
       Optional<SocialAccount> savedSocialAccount = socialAccountRepository
