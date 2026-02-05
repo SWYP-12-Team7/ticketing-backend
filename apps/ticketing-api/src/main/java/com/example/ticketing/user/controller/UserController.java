@@ -26,6 +26,7 @@ public class UserController {
     private final GetFavoriteListUseCase getFavoriteListUseCase;
     private final FolderUseCase folderUseCase;
     private final GetTimelineUseCase getTimelineUseCase;
+    private final UpdateNicknameUseCase updateNicknameUseCase;
 
     // 내 정보 설정 화면
     @GetMapping("/me")
@@ -130,7 +131,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/address")
+    @PatchMapping("/address")
     @Operation(summary = "주소 변경")
     public ResponseEntity<Void> updateAddress(
             @CurrentUser User user,
@@ -138,6 +139,16 @@ public class UserController {
         updateUserAddressUseCase.execute(
                 user.getId(), request.address(),
                 request.latitude(), request.longitude());
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PatchMapping("/me/nickname")
+    @Operation(summary = "닉네임 수정")
+    public ResponseEntity<Void> updateNickname(
+            @CurrentUser User user,
+            @RequestBody String nickname) {
+        updateNicknameUseCase.updateNickname(user.getId(), nickname);
         return ResponseEntity.ok().build();
     }
 

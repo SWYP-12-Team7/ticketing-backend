@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * 카카오 로그인 UseCase
  * 1. Facade를 통해 카카오 사용자 정보 조회 (트랜잭션 외부)
@@ -30,6 +33,21 @@ public class KakaoLoginUseCase {
   private final JwtTokenProvider jwtTokenProvider;
   private final UserRepository userRepository;
   private final SocialAccountRepository socialAccountRepository;
+
+  // 형용사 (2-3자)
+  private static final List<String> ADJECTIVES = List.of(
+          "행복한", "즐거운", "신나는", "설레는", "포근한",
+          "따뜻한", "밝은", "맑은", "귀여운", "깜찍한",
+          "용감한", "멋진", "씩씩한", "활발한", "상냥한",
+          "다정한", "느긋한", "여유로", "호기심", "똑똑한"
+  );
+
+  // 명사 (2자)
+  private static final List<String> NOUNS = List.of(
+          "냥이", "멍이", "토끼", "여우", "판다",
+          "곰이", "사슴", "다람", "펭귄", "부엉",
+          "수달", "호랑", "사자", "코끼", "기린"
+  );
 
   /**
    * 카카오 로그인 실행
@@ -75,7 +93,7 @@ public class KakaoLoginUseCase {
     // User 엔티티 생성 (전체 이메일 사용)
     User user = User.builder()
             .email(userInfo.extractEmail(true))  // true = 전체 이메일 사용
-            .nickname(userInfo.getNickname())
+            .nickname(generate())
             .profileImage(userInfo.getProfileImageUrl())
             .build();
     userRepository.save(user);
@@ -89,5 +107,15 @@ public class KakaoLoginUseCase {
     socialAccountRepository.save(socialAccount);
 
     return user;
+  }
+
+  // 랜덤 닉네임 생성
+  public String generate() {
+    String adjective = ADJECTIVES.get(ThreadLocalRandom.current().nextInt(ADJECTIVES.size()));
+    String noun = NOUNS.get(ThreadLocalRandom.current().nextInt(NOUNS.size()));
+    int number = ThreadLocalRandom.current().nextInt(10, 100);  // 2자리 숫자
+
+    // 형용사(3자) + 명사(2자) + 숫자(2자) = 7자
+    return adjective + noun + number;
   }
 }

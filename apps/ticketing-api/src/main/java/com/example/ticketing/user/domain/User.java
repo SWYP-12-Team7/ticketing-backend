@@ -93,6 +93,10 @@ public class User extends BaseEntity {
         this.longitude = longitude;
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public void withdraw() {
         this.delete();
     }
