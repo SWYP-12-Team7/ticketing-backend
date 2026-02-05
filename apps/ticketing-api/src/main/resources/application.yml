@@ -30,7 +30,7 @@ spring:
         api-key: ${GOOGLE_GENAI_API_KEY}
         chat:
           options:
-            model: gemini-2.0-flash
+            model: gemini-2.5-flash
             temperature: 1.0
             google-search-retrieval: true
 
