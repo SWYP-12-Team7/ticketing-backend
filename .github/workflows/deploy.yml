@@ -54,10 +54,10 @@ jobs:
           KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           GOOGLE_GENAI_API_KEY: ${{ secrets.GOOGLE_GENAI_API_KEY }}
-          EXHIBITION_API_BASE_URL: ${{ EXHIBITION_API_BASE_URL }}
-          EXHIBITION_API_SERVICE_KEY: ${{ EXHIBITION_API_SERVICE_KEY }}
-          OPENAI_API_KEY: ${{ OPENAI_API_KEY }}
-          ADMIN_PASSWORD: ${{ ADMIN_PASSWORD }}
+          EXHIBITION_API_BASE_URL: ${{ secrets.EXHIBITION_API_BASE_URL }}
+          EXHIBITION_API_SERVICE_KEY: ${{ secrets.EXHIBITION_API_SERVICE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
