@@ -32,6 +32,9 @@ public class Popup extends Curation {
     @Column(name = "place_name")
     private String placeName;
 
+    private Double latitude;
+    private Double longitude;
+
     // Entry info (Popup 고유)
     @Column(name = "is_free")
     private boolean isFree;
@@ -63,6 +66,8 @@ public class Popup extends Curation {
         this.city = city;
         this.district = district;
         this.placeName = placeName;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.isFree = isFree;
         this.homepageUrl = homepageUrl;
         this.snsUrl = snsUrl;

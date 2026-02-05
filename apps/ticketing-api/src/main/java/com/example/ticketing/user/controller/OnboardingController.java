@@ -26,7 +26,7 @@ public class OnboardingController {
     private final SkipOnboardingStep2UseCase skipOnboardingStep2UseCase;
     private final GetOnboardingSettingsUseCase getOnboardingSettingsUseCase;
     private final GetOnboardingStatusUseCase getOnboardingStatusUseCase;
-    private final UpdateOnboardingRegionUseCase updateOnboardingSettingsUseCase;
+    private final UpdateOnboardingRegionUseCase updateOnboardingRegionUseCase;
     private final UpdateOnboardingCategoryUseCase updateOnboardingCategoryUseCase;
 
     @PostMapping("/step1")
@@ -89,7 +89,7 @@ public class OnboardingController {
             @CurrentUser User user,
             @RequestBody List<KoreanRegion> preferredRegions
     ) {
-        updateOnboardingSettingsUseCase.execute(user.getId(), preferredRegions);
+        updateOnboardingRegionUseCase.execute(user.getId(), preferredRegions);
         return ResponseEntity.ok().build();
     }
 

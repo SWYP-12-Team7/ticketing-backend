@@ -1,12 +1,12 @@
 package com.example.ticketing.curation.repository;
 
 import com.example.ticketing.curation.domain.Curation;
-import java.time.LocalDate;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface CurationRepository extends JpaRepository<Curation, Long> {
@@ -42,4 +42,19 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
      */
     @Query("SELECT c FROM Curation c WHERE c.startDate = :today ORDER BY c.title ASC")
     List<Curation> findByStartDate(@Param("today") LocalDate today);
+
+    /**
+     * 카테고리 기반 추천 (JSON_CONTAINS 사용)
+     * 사용자의 선호 카테고리와 일치하는 행사 중 랜덤 추천
+     */
+    @Query(value = """
+        SELECT * FROM curation c
+        WHERE c.deleted_at IS NULL
+        AND JSON_OVERLAPS(c.category, :categories)
+        ORDER BY RAND()
+        """, nativeQuery = true)
+    List<Curation> findByCategoriesRandomly(@Param("categories") String categoriesJson, Pageable pageable);
+
+    @Query("SELECT c FROM Curation c WHERE c.id IN :ids AND c.region = :region")
+    List<Curation> findByIdInAndRegion(@Param("ids") List<Long> ids, @Param("region") String region);
 }

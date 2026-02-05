@@ -15,6 +15,8 @@ import com.example.ticketing.curation.repository.ExhibitionRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import com.example.ticketing.user.domain.UserFavoriteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -28,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExhibitionService {
 
     private final ExhibitionRepository exhibitionRepository;
-    private final CurationLikeRepository curationLikeRepository;
+    private final UserFavoriteRepository userFavoriteRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     public ExhibitionListResponse getExhibitions(
@@ -58,6 +60,7 @@ public class ExhibitionService {
         return ExhibitionListResponse.of(summaries, Pagination.from(exhibitionPage));
     }
 
+
     @Transactional
     public ExhibitionDetailResponse getExhibition(Long exhibitionId, Long userId) {
         Exhibition exhibition = exhibitionRepository.findByIdAndNotDeleted(exhibitionId)
@@ -72,19 +75,19 @@ public class ExhibitionService {
                 userId
         ));
 
-        boolean isLiked = userId != null &&
-            curationLikeRepository.existsByUserIdAndCurationIdAndCurationType(
+        boolean isLiked = userId != null && userFavoriteRepository.existsByUserIdAndCurationIdAndCurationType(
                 userId, exhibitionId, CurationType.EXHIBITION);
 
         return ExhibitionDetailResponse.from(exhibition, isLiked);
     }
 
+    //전시 목록 조회 시 각 전시의 "좋아요 여부"를 표시
     private Set<Long> getLikedExhibitionIds(Long userId, List<Long> exhibitionIds) {
         if (userId == null || exhibitionIds.isEmpty()) {
             return Collections.emptySet();
         }
         return Set.copyOf(
-            curationLikeRepository.findCurationIdsByUserIdAndCurationIdInAndCurationType(
+            userFavoriteRepository.findCurationIdsByUserIdAndCurationIdInAndCurationType(
                 userId, exhibitionIds, CurationType.EXHIBITION)
         );
     }
