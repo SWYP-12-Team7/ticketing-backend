@@ -39,6 +39,8 @@ public class SecurityConfig {
           // Popup API
           "/api/popups/**",
           "/popups/**",
+          // Main Page API
+          "/main/**",
           // Exhibition API
           "/api/exhibitions/**"
   };
