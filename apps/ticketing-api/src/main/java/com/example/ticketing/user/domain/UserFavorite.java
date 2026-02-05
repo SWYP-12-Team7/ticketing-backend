@@ -27,10 +27,21 @@ public class UserFavorite extends BaseEntity {
     @Column(name = "curation_type", nullable = false)
     private CurationType curationType;
 
+    @Column(name = "folder_id")
+    private Long folderId;
+
     @Builder
     public UserFavorite(Long userId, Long curationId, CurationType curationType) {
         this.userId = userId;
         this.curationId = curationId;
         this.curationType = curationType;
+    }
+
+    public void moveToFolder(Long folderId) {
+        this.folderId = folderId;
+    }
+
+    public void removeFromFolder() {
+        this.folderId = null;
     }
 }

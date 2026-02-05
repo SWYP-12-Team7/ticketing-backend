@@ -27,6 +27,11 @@ public enum ErrorCode {
     ALREADY_FAVORITED(HttpStatus.CONFLICT, "이미 찜한 행사입니다"),
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "찜하지 않은 행사입니다"),
 
+    // Folder
+    FOLDER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 폴더입니다"),
+    FOLDER_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "폴더는 최대 10개까지 생성할 수 있습니다"),
+    DUPLICATE_FOLDER_NAME(HttpStatus.CONFLICT, "이미 존재하는 폴더 이름입니다"),
+
     // Auth
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다"),

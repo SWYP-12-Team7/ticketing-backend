@@ -23,4 +23,7 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
         ORDER BY RAND()
         """, nativeQuery = true)
     List<Curation> findByCategoriesRandomly(@Param("categories") String categoriesJson, Pageable pageable);
+
+    @Query("SELECT c FROM Curation c WHERE c.id IN :ids AND c.region = :region")
+    List<Curation> findByIdInAndRegion(@Param("ids") List<Long> ids, @Param("region") String region);
 }

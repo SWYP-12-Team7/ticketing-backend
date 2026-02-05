@@ -1,6 +1,7 @@
 package com.example.ticketing.user.domain;
 
 import com.example.ticketing.curation.domain.CurationType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,14 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavorite, Long
     Optional<UserFavorite> findByUserIdAndCurationId(Long userId, Long curationId);
 
     List<UserFavorite> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    Page<UserFavorite> findByUserId(Long userId, Pageable pageable);
+
+    Page<UserFavorite> findByUserIdAndFolderId(Long userId, Long folderId, Pageable pageable);
+
+    List<UserFavorite> findByUserIdAndFolderIdIsNull(Long userId);
+
+    List<UserFavorite> findByUserIdAndFolderId(Long userId, Long folderId);
 
     boolean existsByUserIdAndCurationId(Long userId, Long curationId);
 
@@ -38,4 +47,7 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavorite, Long
     );
 
     void deleteByUserIdAndCurationId(Long userId, Long curationId);
+
+    // 폴더별 타입별 개수 조회
+    long countByUserIdAndFolderIdAndCurationType(Long userId, Long folderId, CurationType curationType);
 }
