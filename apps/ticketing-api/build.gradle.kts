@@ -49,3 +49,9 @@ dependencies {
 
 }
 
+tasks.test {
+    testLogging {
+        showStandardStreams = true
+    }
+}
+
