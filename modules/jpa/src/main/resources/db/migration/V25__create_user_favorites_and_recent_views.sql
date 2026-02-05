@@ -6,6 +6,7 @@ CREATE TABLE user_favorites (
     curation_type VARCHAR(20) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME NULL,
     CONSTRAINT uk_user_favorites_user_curation UNIQUE (user_id, curation_id),
     CONSTRAINT fk_user_favorites_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_user_favorites_curation FOREIGN KEY (curation_id) REFERENCES curation(id) ON DELETE CASCADE
@@ -22,6 +23,7 @@ CREATE TABLE user_recent_views (
     curation_type VARCHAR(20) NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME NULL,
     CONSTRAINT uk_user_recent_views_user_curation UNIQUE (user_id, curation_id),
     CONSTRAINT fk_user_recent_views_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_user_recent_views_curation FOREIGN KEY (curation_id) REFERENCES curation(id) ON DELETE CASCADE

@@ -3,10 +3,9 @@ package com.example.ticketing.user.domain;
 import com.example.jpa.domain.BaseEntity;
 import com.example.ticketing.curation.domain.CurationType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_favorites")

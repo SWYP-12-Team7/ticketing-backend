@@ -20,6 +20,13 @@ public enum ErrorCode {
     // Exhibition
     EXHIBITION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 전시입니다"),
 
+    // Curation
+    CURATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 행사입니다"),
+
+    // Favorite
+    ALREADY_FAVORITED(HttpStatus.CONFLICT, "이미 찜한 행사입니다"),
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "찜하지 않은 행사입니다"),
+
     // Auth
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다"),

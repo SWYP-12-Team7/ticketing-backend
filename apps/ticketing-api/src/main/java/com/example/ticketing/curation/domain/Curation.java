@@ -103,6 +103,10 @@ public class Curation extends BaseEntity {
         this.viewCount++;
     }
 
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
     public void decrementLikeCount() {
         if (this.likeCount > 0) {
             this.likeCount--;

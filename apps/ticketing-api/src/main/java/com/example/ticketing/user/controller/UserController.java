@@ -1,9 +1,11 @@
 package com.example.ticketing.user.controller;
 
 import com.example.ticketing.common.security.CurrentUser;
+import com.example.ticketing.user.application.dto.MyTasteResponse;
 import com.example.ticketing.user.application.dto.SaveUserProfileRequest;
 import com.example.ticketing.user.application.dto.UpdateUserAddressRequest;
 import com.example.ticketing.user.application.dto.UserResponse;
+import com.example.ticketing.user.application.usecase.GetMyPageUseCase;
 import com.example.ticketing.user.application.usecase.SaveUserProfileUseCase;
 import com.example.ticketing.user.application.usecase.UpdateUserAddressUseCase;
 import com.example.ticketing.user.application.usecase.WithdrawUserUseCase;
@@ -22,6 +24,7 @@ public class UserController {
     private final WithdrawUserUseCase withdrawUserUseCase;
     private final SaveUserProfileUseCase saveUserProfileUseCase;
     private final UpdateUserAddressUseCase updateUserAddressUseCase;
+    private final GetMyPageUseCase getMyPageUseCase;
 
     // 내 정보 설정 화면
     @GetMapping("/me")
@@ -35,7 +38,13 @@ public class UserController {
         ));
     }
 
-    //나의 취향 (최근 열람 행사, 찜한 행사 요약, 온보딩 카테고리 기반 추천)
+    @GetMapping("/me/taste")
+    @Operation(summary = "나의 취향 조회", description = "찜한 행사 5개, 최근 열람 5개, 카테고리 기반 추천 2개")
+    public ResponseEntity<MyTasteResponse> getMyTaste(@CurrentUser User user) {
+        return ResponseEntity.ok(getMyPageUseCase.execute(user.getId()));
+    }
+
+    // 찜 페이지
 
 
     @PostMapping("/profile")
