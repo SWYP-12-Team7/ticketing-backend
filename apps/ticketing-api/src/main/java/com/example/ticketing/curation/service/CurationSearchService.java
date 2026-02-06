@@ -11,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,12 +28,27 @@ public class CurationSearchService {
         String typeStr = type != null ? type.name() : null;
         int offset = page * size;
 
-        List<Curation> curations = curationRepository.searchCurations(keyword, typeStr, category, size, offset);
+        // 1. ID 목록 조회 (native query)
+        List<Long> curationIds = curationRepository.searchCurationIds(keyword, typeStr, category, size, offset);
         long totalElements = curationRepository.countSearchCurations(keyword, typeStr, category);
 
-        List<CurationItem> items = curations.stream()
-                .map(CurationItem::from)
-                .toList();
+        // 2. ID로 엔티티 조회 (JPA - 상속 관계 정상 처리)
+        List<CurationItem> items;
+        if (curationIds.isEmpty()) {
+            items = Collections.emptyList();
+        } else {
+            List<Curation> curations = curationRepository.findAllById(curationIds);
+
+            // 원래 순서 유지
+            Map<Long, Curation> curationMap = curations.stream()
+                    .collect(Collectors.toMap(Curation::getId, c -> c));
+
+            items = curationIds.stream()
+                    .map(curationMap::get)
+                    .filter(c -> c != null)
+                    .map(CurationItem::from)
+                    .toList();
+        }
 
         int totalPages = (int) Math.ceil((double) totalElements / size);
         Pagination pagination = new Pagination(page, size, totalElements, totalPages);

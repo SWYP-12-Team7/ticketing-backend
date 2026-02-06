@@ -91,10 +91,10 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
     List<Curation> findOngoingByDate(@Param("date") LocalDate date);
 
     /**
-     * 통합 검색 (키워드, 타입, 카테고리)
+     * 통합 검색 - ID 목록 조회 (키워드, 타입, 카테고리)
      */
     @Query(value = """
-        SELECT * FROM curation c
+        SELECT c.id FROM curation c
         WHERE c.deleted_at IS NULL
         AND (:keyword IS NULL OR c.title LIKE CONCAT('%', :keyword, '%'))
         AND (:type IS NULL OR c.type = :type)
@@ -102,7 +102,7 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
         ORDER BY c.start_date DESC
         LIMIT :limit OFFSET :offset
         """, nativeQuery = true)
-    List<Curation> searchCurations(
+    List<Long> searchCurationIds(
             @Param("keyword") String keyword,
             @Param("type") String type,
             @Param("category") String category,
