@@ -284,14 +284,12 @@ curl "http://localhost:8080/api/curations/search?keyword=팝업&page=0&size=20"
   "curations": [
     {
       "id": 1,
-      "type": "POPUP",
       "title": "봄날엔 팝업",
       "thumbnail": "https://cdn.popga.co.kr/...",
-      "region": "서울 용산구",
-      "place": "아이파크몰 용산점",
-      "startDate": "2026-02-06",
-      "endDate": "2026-02-20",
-      "category": ["F&B", "카페/디저트"]
+      "type": "POPUP",
+      "tags": ["인기", "추천"],
+      "location": "서울 용산구",
+      "period": "2026-02-06 ~ 2026-02-20"
     }
   ],
   "pagination": {
@@ -315,14 +313,12 @@ curl "http://localhost:8080/api/curations/search?keyword=팝업&page=0&size=20"
 | 필드 | 타입 | 설명 |
 |------|------|------|
 | `id` | long | 행사 ID |
-| `type` | string | 행사 타입 (POPUP, EXHIBITION) |
 | `title` | string | 제목 |
 | `thumbnail` | string | 썸네일 이미지 URL |
-| `region` | string | 지역 (예: 서울 용산구) |
-| `place` | string | 장소명 |
-| `startDate` | string | 시작일 (YYYY-MM-DD) |
-| `endDate` | string | 종료일 (YYYY-MM-DD) |
-| `category` | array | 카테고리 목록 |
+| `type` | string | 행사 타입 (POPUP, EXHIBITION) |
+| `tags` | array | 태그 목록 |
+| `location` | string | 행사 위치 (예: 서울 성수) |
+| `period` | string | 기간 (시작일 ~ 마감일) |
 
 #### Pagination Fields
 

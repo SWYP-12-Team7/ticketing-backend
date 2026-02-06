@@ -54,6 +54,7 @@ class CurationSearchServiceTest {
                 .title(title)
                 .region(region)
                 .category(category)
+                .tags(List.of("인기", "추천"))
                 .startDate(LocalDate.of(2026, 1, 1))
                 .endDate(LocalDate.of(2026, 12, 31))
                 .build();
@@ -66,7 +67,7 @@ class CurationSearchServiceTest {
                 .startDate(LocalDate.of(2026, 1, 1))
                 .endDate(LocalDate.of(2026, 12, 31))
                 .build();
-        exhibition.applyEnrichment(category, null);
+        exhibition.applyEnrichment(category, List.of("전시", "아트"));
         return exhibition;
     }
 
@@ -112,7 +113,7 @@ class CurationSearchServiceTest {
         // then
         assertThat(result.curations()).hasSize(1);
         assertThat(result.curations().get(0).title()).isEqualTo("봄날엔 팝업");
-        assertThat(result.curations().get(0).category()).contains("패션");
+        assertThat(result.curations().get(0).location()).isEqualTo("서울 용산구");
     }
 
     @Test
@@ -180,5 +181,20 @@ class CurationSearchServiceTest {
         // then
         assertThat(result.curations()).hasSize(1);
         assertThat(result.curations().get(0).title()).isEqualTo("봄날엔 팝업");
+    }
+
+    @Test
+    @DisplayName("응답에 제목, 썸네일, 타입, 태그, 위치, 기간이 포함된다")
+    void responseContainsRequiredFields() {
+        // when
+        CurationSearchResponse result = curationSearchService.search(null, CurationType.POPUP, null, 0, 10);
+
+        // then
+        var item = result.curations().get(0);
+        assertThat(item.title()).isNotNull();
+        assertThat(item.type()).isEqualTo(CurationType.POPUP);
+        assertThat(item.tags()).isNotNull();
+        assertThat(item.location()).isNotNull();
+        assertThat(item.period()).isEqualTo("2026-01-01 ~ 2026-12-31");
     }
 }

@@ -12,27 +12,37 @@ public record CurationSearchResponse(
 ) {
     public record CurationItem(
             Long id,
-            CurationType type,
             String title,
             String thumbnail,
-            String region,
-            String place,
-            LocalDate startDate,
-            LocalDate endDate,
-            List<String> category
+            CurationType type,
+            List<String> tags,
+            String location,
+            String period
     ) {
         public static CurationItem from(Curation c) {
+            String period = formatPeriod(c.getStartDate(), c.getEndDate());
             return new CurationItem(
                     c.getId(),
-                    c.getType(),
                     c.getTitle(),
                     c.getThumbnail(),
+                    c.getType(),
+                    c.getTags(),
                     c.getRegion(),
-                    c.getPlace(),
-                    c.getStartDate(),
-                    c.getEndDate(),
-                    c.getCategory()
+                    period
             );
+        }
+
+        private static String formatPeriod(LocalDate startDate, LocalDate endDate) {
+            if (startDate == null && endDate == null) {
+                return null;
+            }
+            if (startDate == null) {
+                return "~ " + endDate;
+            }
+            if (endDate == null) {
+                return startDate + " ~";
+            }
+            return startDate + " ~ " + endDate;
         }
     }
 
