@@ -20,8 +20,8 @@ public class ExhibitionApiClient {
     private final RestClient restClient;
     private final String serviceKey;
 
-    private static final int PAGE_SIZE = 5;
-    private static final int MAX_PAGES = 1;  // 최대 10페이지 = 1000개 제한
+    private static final int PAGE_SIZE = 10;
+    private static final int MAX_PAGES = 10;
 
     public ExhibitionApiClient(
             @Value("${exhibition.api.base-url}") String baseUrl,
