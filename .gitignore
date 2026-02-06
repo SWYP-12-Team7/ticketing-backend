@@ -42,3 +42,5 @@ application-local.yml
 
 ### Claude Code ###
 .claude/settings.local.json
+
+*.sql

@@ -91,34 +91,45 @@ public class ExhibitionDataProcessor {
             }
         }
 
-        // 2. LLM 배치 보강
+        // 2. LLM 배치 보강 (10개씩 나눠서 호출 - 토큰 제한 방지)
         if (!exhibitions.isEmpty()) {
-            List<ExhibitionEnrichmentService.EnrichmentInput> inputs = validItems.stream()
-                    .map(item -> new ExhibitionEnrichmentService.EnrichmentInput(
-                            item.title(),
-                            item.description(),
-                            item.eventPeriod()
-                    ))
-                    .toList();
+            int batchSize = 10;
+            int totalBatches = (int) Math.ceil((double) validItems.size() / batchSize);
+            log.info("[LLM 보강] 총 {}건을 {}개 배치로 처리", validItems.size(), totalBatches);
 
-            try {
-                List<ExhibitionEnrichmentService.EnrichmentResult> enrichments = enrichmentService.enrich(inputs);
+            for (int batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+                int start = batchIndex * batchSize;
+                int end = Math.min(start + batchSize, validItems.size());
 
-                for (int i = 0; i < exhibitions.size() && i < enrichments.size(); i++) {
-                    ExhibitionEnrichmentService.EnrichmentResult enrichment = enrichments.get(i);
-                    Exhibition exhibition = exhibitions.get(i);
+                List<ExhibitionEnrichmentService.EnrichmentInput> batchInputs = validItems.subList(start, end).stream()
+                        .map(item -> new ExhibitionEnrichmentService.EnrichmentInput(
+                                item.title(),
+                                item.description(),
+                                item.eventPeriod()
+                        ))
+                        .toList();
 
-                    if (enrichment != null) {
-                        exhibition.applyEnrichment(
-                                enrichment.category(),
-                                enrichment.tags()
-                        );
-                        log.debug("[보강] {} - category: {}, tags: {}",
-                                exhibition.getTitle(), enrichment.category(), enrichment.tags());
+                try {
+                    log.info("[LLM 보강] 배치 {}/{} 처리 중 ({}~{}번)", batchIndex + 1, totalBatches, start + 1, end);
+                    List<ExhibitionEnrichmentService.EnrichmentResult> enrichments = enrichmentService.enrich(batchInputs);
+
+                    for (int i = 0; i < enrichments.size() && (start + i) < exhibitions.size(); i++) {
+                        ExhibitionEnrichmentService.EnrichmentResult enrichment = enrichments.get(i);
+                        Exhibition exhibition = exhibitions.get(start + i);
+
+                        if (enrichment != null) {
+                            exhibition.applyEnrichment(
+                                    enrichment.category(),
+                                    enrichment.tags()
+                            );
+                            log.debug("[보강] {} - category: {}, tags: {}",
+                                    exhibition.getTitle(), enrichment.category(), enrichment.tags());
+                        }
                     }
+                    log.info("[LLM 보강] 배치 {}/{} 완료", batchIndex + 1, totalBatches);
+                } catch (Exception e) {
+                    log.warn("[보강 실패] 배치 {}/{} ({}~{}번) - {}", batchIndex + 1, totalBatches, start + 1, end, e.getMessage());
                 }
-            } catch (Exception e) {
-                log.warn("[보강 실패] 원본 데이터로 저장 - {}건", exhibitions.size(), e);
             }
 
             // 3. 저장
