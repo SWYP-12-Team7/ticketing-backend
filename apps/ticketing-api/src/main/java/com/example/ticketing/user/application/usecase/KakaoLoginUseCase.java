@@ -73,7 +73,8 @@ public class KakaoLoginUseCase {
                     user.getId(),
                     user.getEmail(),
                     user.getNickname(),
-                    user.getProfileImage()
+                    user.getProfileImage(),
+                    user.isOnboardingCompleted()
             )
     );
   }
