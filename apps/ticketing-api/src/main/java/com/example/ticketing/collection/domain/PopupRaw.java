@@ -105,6 +105,35 @@ public class PopupRaw extends BaseEntity {
         this.thumbnailImageUrl = thumbnailImageUrl;
     }
 
+    public void update(String title, String subTitle, String description,
+                       String thumbnailImageUrl, LocalDate startDate, LocalDate endDate,
+                       String city, String district, String placeName, String address,
+                       Double latitude, Double longitude,
+                       Map<String, String> operatingHours,
+                       List<String> category, List<String> tags,
+                       Boolean isFree, ReservationStatus reservationStatus,
+                       String homepageUrl, String snsUrl) {
+        if (title != null) this.title = title;
+        if (subTitle != null) this.subTitle = subTitle;
+        if (description != null) this.description = description;
+        if (thumbnailImageUrl != null) this.thumbnailImageUrl = thumbnailImageUrl;
+        if (startDate != null) this.startDate = startDate;
+        if (endDate != null) this.endDate = endDate;
+        if (city != null) this.city = city;
+        if (district != null) this.district = district;
+        if (placeName != null) this.placeName = placeName;
+        if (address != null) this.address = address;
+        if (latitude != null) this.latitude = latitude;
+        if (longitude != null) this.longitude = longitude;
+        if (operatingHours != null) this.operatingHours = operatingHours;
+        if (category != null) this.category = category;
+        if (tags != null) this.tags = tags;
+        if (isFree != null) this.isFree = isFree;
+        if (reservationStatus != null) this.reservationStatus = reservationStatus;
+        if (homepageUrl != null) this.homepageUrl = homepageUrl;
+        if (snsUrl != null) this.snsUrl = snsUrl;
+    }
+
     @Builder
     public PopupRaw(String popupId, String title, String subTitle,
                     String description, String thumbnailImageUrl,
