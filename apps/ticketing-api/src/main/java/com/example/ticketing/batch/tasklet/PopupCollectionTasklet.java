@@ -1,7 +1,7 @@
 package com.example.ticketing.batch.tasklet;
 
-import com.example.ticketing.collection.facade.PopupCollectionFacade;
-import com.example.ticketing.collection.facade.PopupCollectionFacade.CollectionResult;
+import com.example.ticketing.collection.facade.PopgaCollectionFacade;
+import com.example.ticketing.collection.facade.PopgaCollectionFacade.CollectionResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.step.StepContribution;
@@ -15,18 +15,22 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PopupCollectionTasklet implements Tasklet {
 
-    private final PopupCollectionFacade popupCollectionFacade;
+    private final PopgaCollectionFacade popgaCollectionFacade;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
-        log.info("[Batch] 팝업 데이터 수집 Tasklet 시작");
+        log.info("[Batch] Popga 팝업 데이터 수집 Tasklet 시작");
 
-        CollectionResult result = popupCollectionFacade.collectAndSavePopups();
+        CollectionResult result = popgaCollectionFacade.collectAndSavePopups(0);
 
         chunkContext.getStepContext()
                 .getStepExecution()
                 .getExecutionContext()
-                .put("collectedCount", result.collectedCount());
+                .put("urlCount", result.urlCount());
+        chunkContext.getStepContext()
+                .getStepExecution()
+                .getExecutionContext()
+                .put("crawledCount", result.crawledCount());
         chunkContext.getStepContext()
                 .getStepExecution()
                 .getExecutionContext()
@@ -36,8 +40,8 @@ public class PopupCollectionTasklet implements Tasklet {
                 .getExecutionContext()
                 .put("skippedCount", result.skippedCount());
 
-        log.info("[Batch] 팝업 데이터 수집 Tasklet 완료 - 수집: {}, 저장: {}, 스킵: {}",
-                result.collectedCount(), result.savedCount(), result.skippedCount());
+        log.info("[Batch] Popga 팝업 데이터 수집 Tasklet 완료 - URL: {}, 크롤링: {}, 저장: {}, 스킵: {}",
+                result.urlCount(), result.crawledCount(), result.savedCount(), result.skippedCount());
 
         return RepeatStatus.FINISHED;
     }

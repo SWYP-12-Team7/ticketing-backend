@@ -1,11 +1,14 @@
 package com.example.ticketing.curation.controller;
 
 import com.example.ticketing.common.security.CurrentUser;
+import com.example.ticketing.curation.domain.CurationType;
 import com.example.ticketing.curation.dto.CalendarResponse;
+import com.example.ticketing.curation.dto.CurationSearchResponse;
 import com.example.ticketing.curation.dto.MapCurationResponse;
 import com.example.ticketing.curation.dto.ToggleFavoriteRequest;
 import com.example.ticketing.curation.facade.CurationFacade;
 import com.example.ticketing.curation.service.CalendarService;
+import com.example.ticketing.curation.service.CurationSearchService;
 import com.example.ticketing.curation.service.MapCurationService;
 import com.example.ticketing.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +27,19 @@ public class CurationController {
     private final CurationFacade curationFacade;
     private final MapCurationService mapCurationService;
     private final CalendarService calendarService;
+    private final CurationSearchService curationSearchService;
 
+    @GetMapping("/search")
+    @Operation(summary = "통합 검색", description = "검색어, 행사 타입(POPUP/EXHIBITION), 카테고리별 행사 목록 조회")
+    public ResponseEntity<CurationSearchResponse> search(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) CurationType type,
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(curationSearchService.search(keyword, type, category, page, size));
+    }
 
     @GetMapping("/map")
     @Operation(summary = "지도뷰 행사 조회", description = "해당 날짜에 진행 중인 행사 목록 (좌표 포함). 지역/카테고리 필터 적용 가능")

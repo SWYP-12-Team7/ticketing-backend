@@ -12,6 +12,8 @@ public interface PopupRawRepository extends JpaRepository<PopupRaw, Long> {
 
     Optional<PopupRaw> findByPopupId(String popupId);
 
+    boolean existsByPopupId(String popupId);
+
     boolean existsByTitle(String title);
 
     List<PopupRaw> findByReviewStatus(ReviewStatus reviewStatus);

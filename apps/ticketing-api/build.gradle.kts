@@ -47,6 +47,8 @@ dependencies {
 
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 
+    // Jsoup (웹 크롤링)
+    implementation("org.jsoup:jsoup:1.17.2")
 }
 
 tasks.test {
