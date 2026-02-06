@@ -10,7 +10,8 @@ public record LoginResult(
           Long id,
           String email,
           String nickname,
-          String profileImage
+          String profileImage,
+          boolean onboardingCompleted
   ) {
   }
 }
