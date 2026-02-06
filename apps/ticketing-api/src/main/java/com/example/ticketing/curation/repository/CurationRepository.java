@@ -59,4 +59,34 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
 
     @Query("SELECT c FROM Curation c WHERE c.id IN :ids AND c.region = :region")
     List<Curation> findByIdInAndRegion(@Param("ids") List<Long> ids, @Param("region") String region);
+
+    /**
+     * 지도뷰용 행사 조회 (해당 날짜에 진행 중인 행사)
+     * 좌표가 있는 행사만 조회
+     */
+    @Query("SELECT c FROM Curation c WHERE " +
+           "c.latitude IS NOT NULL AND c.longitude IS NOT NULL " +
+           "AND c.startDate <= :date " +
+           "AND (c.endDate IS NULL OR c.endDate >= :date) " +
+           "ORDER BY c.likeCount DESC")
+    List<Curation> findOngoingWithCoordinates(@Param("date") LocalDate date);
+
+    /**
+     * 캘린더뷰용 행사 조회 (해당 월과 겹치는 행사)
+     */
+    @Query("SELECT c FROM Curation c WHERE " +
+           "c.startDate <= :endDate " +
+           "AND (c.endDate IS NULL OR c.endDate >= :startDate)")
+    List<Curation> findOverlappingWithPeriod(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    /**
+     * 해당 날짜에 진행 중인 행사 (좌표 무관)
+     */
+    @Query("SELECT c FROM Curation c WHERE " +
+           "c.startDate <= :date " +
+           "AND (c.endDate IS NULL OR c.endDate >= :date) " +
+           "ORDER BY c.likeCount DESC")
+    List<Curation> findOngoingByDate(@Param("date") LocalDate date);
 }
