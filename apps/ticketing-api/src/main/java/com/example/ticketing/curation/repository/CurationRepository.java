@@ -89,4 +89,40 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
            "AND (c.endDate IS NULL OR c.endDate >= :date) " +
            "ORDER BY c.likeCount DESC")
     List<Curation> findOngoingByDate(@Param("date") LocalDate date);
+
+    /**
+     * 통합 검색 (키워드, 타입, 카테고리)
+     */
+    @Query(value = """
+        SELECT * FROM curation c
+        WHERE c.deleted_at IS NULL
+        AND (:keyword IS NULL OR c.title LIKE CONCAT('%', :keyword, '%'))
+        AND (:type IS NULL OR c.type = :type)
+        AND (:category IS NULL OR JSON_CONTAINS(c.category, JSON_QUOTE(:category)))
+        ORDER BY c.start_date DESC
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<Curation> searchCurations(
+            @Param("keyword") String keyword,
+            @Param("type") String type,
+            @Param("category") String category,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
+
+    /**
+     * 통합 검색 카운트
+     */
+    @Query(value = """
+        SELECT COUNT(*) FROM curation c
+        WHERE c.deleted_at IS NULL
+        AND (:keyword IS NULL OR c.title LIKE CONCAT('%', :keyword, '%'))
+        AND (:type IS NULL OR c.type = :type)
+        AND (:category IS NULL OR JSON_CONTAINS(c.category, JSON_QUOTE(:category)))
+        """, nativeQuery = true)
+    long countSearchCurations(
+            @Param("keyword") String keyword,
+            @Param("type") String type,
+            @Param("category") String category
+    );
 }

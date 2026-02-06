@@ -6,6 +6,7 @@
 - [메인페이지 조회](#메인페이지-조회)
 - [인기행사 조회](#인기행사-조회)
 - [나의 취향 조회](#나의-취향-조회)
+- [통합 검색](#통합-검색)
 
 ---
 
@@ -229,9 +230,115 @@ curl "http://localhost:8080/api/users/me/taste" \
 
 ---
 
+## 통합 검색
+
+검색어, 행사 타입, 카테고리별로 전시/팝업 목록을 통합 검색합니다.
+
+### Request
+
+```
+GET /curations/search
+```
+
+#### Query Parameters
+
+| 파라미터 | 타입 | 필수 | 기본값 | 설명 |
+|---------|------|------|--------|------|
+| `keyword` | string | N | - | 검색어 (제목에서 검색) |
+| `type` | string | N | - | 행사 타입 (POPUP, EXHIBITION) |
+| `category` | string | N | - | 카테고리 |
+| `page` | int | N | 0 | 페이지 번호 (0부터 시작) |
+| `size` | int | N | 10 | 페이지 크기 |
+
+#### 카테고리 목록
+
+**팝업 카테고리:**
+- 패션, 뷰티, F&B, 캐릭터, 테크, 라이프스타일, 가구&인테리어
+
+**전시 카테고리:**
+- 현대미술, 사진, 디자인, 일러스트, 회화, 조각, 설치미술
+
+#### Example
+
+```bash
+# 검색어로 검색
+curl "http://localhost:8080/api/curations/search?keyword=봄"
+
+# 팝업만 조회
+curl "http://localhost:8080/api/curations/search?type=POPUP"
+
+# 팝업 + 패션 카테고리
+curl "http://localhost:8080/api/curations/search?type=POPUP&category=패션"
+
+# 전시 + 현대미술 카테고리
+curl "http://localhost:8080/api/curations/search?type=EXHIBITION&category=현대미술"
+
+# 페이지네이션
+curl "http://localhost:8080/api/curations/search?keyword=팝업&page=0&size=20"
+```
+
+### Response
+
+```json
+{
+  "curations": [
+    {
+      "id": 1,
+      "type": "POPUP",
+      "title": "봄날엔 팝업",
+      "thumbnail": "https://cdn.popga.co.kr/...",
+      "region": "서울 용산구",
+      "place": "아이파크몰 용산점",
+      "startDate": "2026-02-06",
+      "endDate": "2026-02-20",
+      "category": ["F&B", "카페/디저트"]
+    }
+  ],
+  "pagination": {
+    "page": 0,
+    "size": 10,
+    "totalElements": 25,
+    "totalPages": 3
+  }
+}
+```
+
+#### Response Fields
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `curations` | array | 행사 목록 |
+| `pagination` | object | 페이지네이션 정보 |
+
+#### CurationItem Fields
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `id` | long | 행사 ID |
+| `type` | string | 행사 타입 (POPUP, EXHIBITION) |
+| `title` | string | 제목 |
+| `thumbnail` | string | 썸네일 이미지 URL |
+| `region` | string | 지역 (예: 서울 용산구) |
+| `place` | string | 장소명 |
+| `startDate` | string | 시작일 (YYYY-MM-DD) |
+| `endDate` | string | 종료일 (YYYY-MM-DD) |
+| `category` | array | 카테고리 목록 |
+
+#### Pagination Fields
+
+| 필드 | 타입 | 설명 |
+|------|------|------|
+| `page` | int | 현재 페이지 (0부터 시작) |
+| `size` | int | 페이지 크기 |
+| `totalElements` | long | 전체 결과 개수 |
+| `totalPages` | int | 전체 페이지 수 |
+
+---
+
 ## 변경 이력
 
 | 날짜 | 버전 | 변경 내용 |
 |------|------|----------|
+| 2026-02-06 | v1.2 | 통합 검색 API 추가 |
 | 2026-02-06 | v1.1 | 인기행사 API 추가 |
 | 2026-02-05 | v1.0 | 최초 작성 - 메인페이지/나의취향 API |
