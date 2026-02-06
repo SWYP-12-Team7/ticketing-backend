@@ -92,6 +92,7 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
 
     /**
      * 통합 검색 - ID 목록 조회 (키워드, 타입, 카테고리)
+     * 정렬: 시작일 기준 오늘과 가까운 순, 제목 가나다순
      */
     @Query(value = """
         SELECT c.id FROM curation c
@@ -99,7 +100,7 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
         AND (:keyword IS NULL OR c.title LIKE CONCAT('%', :keyword, '%'))
         AND (:type IS NULL OR c.type = :type)
         AND (:category IS NULL OR JSON_CONTAINS(c.category, JSON_QUOTE(:category)))
-        ORDER BY c.start_date DESC
+        ORDER BY ABS(DATEDIFF(c.start_date, CURDATE())) ASC, c.title ASC
         LIMIT :limit OFFSET :offset
         """, nativeQuery = true)
     List<Long> searchCurationIds(
