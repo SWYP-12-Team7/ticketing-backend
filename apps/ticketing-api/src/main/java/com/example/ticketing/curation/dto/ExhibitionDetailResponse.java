@@ -1,6 +1,6 @@
 package com.example.ticketing.curation.dto;
 
-import com.example.ticketing.curation.domain.Exhibition;
+import com.example.ticketing.curation.domain.Curation;
 import com.example.ticketing.curation.domain.ReservationStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,26 +30,26 @@ public record ExhibitionDetailResponse(
     Long viewCount,
     boolean isLiked
 ) {
-    public static ExhibitionDetailResponse from(Exhibition exhibition, boolean isLiked) {
+    public static ExhibitionDetailResponse from(Curation curation, boolean isLiked) {
         return ExhibitionDetailResponse.builder()
-            .exhibitionId(exhibition.getId())
-            .title(exhibition.getTitle())
-            .subTitle(exhibition.getSubTitle())
-            .thumbnail(exhibition.getThumbnail())
-            .region(exhibition.getRegion())
-            .place(exhibition.getPlace())
-            .address(exhibition.getAddress())
-            .startDate(exhibition.getStartDate())
-            .endDate(exhibition.getEndDate())
-            .startTime(exhibition.getStartTime())
-            .endTime(exhibition.getEndTime())
-            .tags(exhibition.getTags())
-            .url(exhibition.getUrl())
-            .description(exhibition.getDescription())
-            .image(exhibition.getImage())
-            .reservationStatus(exhibition.getReservationStatus())
-            .likeCount(exhibition.getLikeCount())
-            .viewCount(exhibition.getViewCount())
+            .exhibitionId(curation.getId())
+            .title(curation.getTitle())
+            .subTitle(curation.getSubTitle())
+            .thumbnail(curation.getThumbnail())
+            .region(curation.getRegion())
+            .place(curation.getPlace())
+            .address(curation.getAddress())
+            .startDate(curation.getStartDate())
+            .endDate(curation.getEndDate())
+            .startTime(curation.getStartTime())
+            .endTime(curation.getEndTime())
+            .tags(curation.getTags())
+            .url(curation.getUrl())
+            .description(curation.getDescription())
+            .image(curation.getImage())
+            .reservationStatus(curation.getReservationStatus())
+            .likeCount(curation.getLikeCount())
+            .viewCount(curation.getViewCount())
             .isLiked(isLiked)
             .build();
     }

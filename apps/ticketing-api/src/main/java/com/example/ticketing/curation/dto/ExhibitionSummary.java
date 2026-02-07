@@ -1,6 +1,6 @@
 package com.example.ticketing.curation.dto;
 
-import com.example.ticketing.curation.domain.Exhibition;
+import com.example.ticketing.curation.domain.Curation;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AccessLevel;
@@ -21,19 +21,19 @@ public record ExhibitionSummary(
     Long viewCount,
     boolean isLiked
 ) {
-    public static ExhibitionSummary from(Exhibition exhibition, boolean isLiked) {
+    public static ExhibitionSummary from(Curation curation, boolean isLiked) {
         return ExhibitionSummary.builder()
-            .exhibitionId(exhibition.getId())
-            .title(exhibition.getTitle())
-            .subTitle(exhibition.getSubTitle())
-            .thumbnail(exhibition.getThumbnail())
-            .region(exhibition.getRegion())
-            .place(exhibition.getPlace())
-            .startDate(exhibition.getStartDate())
-            .endDate(exhibition.getEndDate())
-            .tags(exhibition.getTags())
-            .likeCount(exhibition.getLikeCount())
-            .viewCount(exhibition.getViewCount())
+            .exhibitionId(curation.getId())
+            .title(curation.getTitle())
+            .subTitle(curation.getSubTitle())
+            .thumbnail(curation.getThumbnail())
+            .region(curation.getRegion())
+            .place(curation.getPlace())
+            .startDate(curation.getStartDate())
+            .endDate(curation.getEndDate())
+            .tags(curation.getTags())
+            .likeCount(curation.getLikeCount())
+            .viewCount(curation.getViewCount())
             .isLiked(isLiked)
             .build();
     }
