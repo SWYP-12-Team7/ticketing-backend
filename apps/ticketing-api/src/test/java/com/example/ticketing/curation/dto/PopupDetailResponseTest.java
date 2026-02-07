@@ -37,7 +37,7 @@ class PopupDetailResponseTest {
         Popup popup = createTestPopup();
 
         // when
-        PopupDetailResponse response = PopupDetailResponse.from(popup);
+        PopupDetailResponse response = PopupDetailResponse.from(popup, false);
 
         // then
         // Curation 필드 (부모) 확인

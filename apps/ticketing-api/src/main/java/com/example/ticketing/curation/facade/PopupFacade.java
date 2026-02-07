@@ -1,11 +1,15 @@
 package com.example.ticketing.curation.facade;
 
+import com.example.ticketing.curation.domain.CurationType;
 import com.example.ticketing.curation.domain.Popup;
 import com.example.ticketing.curation.dto.PopupDetailResponse;
 import com.example.ticketing.curation.dto.PopupListResponse;
 import com.example.ticketing.curation.dto.PopupSummary;
 import com.example.ticketing.curation.service.PopupService;
+import com.example.ticketing.user.domain.UserFavoriteRepository;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -19,20 +23,24 @@ import org.springframework.stereotype.Component;
 public class PopupFacade {
 
     private final PopupService popupService;
+    private final UserFavoriteRepository userFavoriteRepository;
 
-    public PopupListResponse getPopups(String keyword, String city, int page, int size) {
+    public PopupListResponse getPopups(String keyword, String city, int page, int size, Long userId) {
         Page<Popup> popupPage = popupService.getPopups(keyword, city, page, size);
 
-        List<PopupSummary> popups = popupPage.getContent().stream()
-            .map(PopupSummary::from)
+        List<Long> popupIds = popupPage.getContent().stream()
+            .map(Popup::getId)
             .toList();
 
-        // TODO: 로그인 사용자의 좋아요 목록 조회 (현재는 null)
-        List<String> likedPopupIds = null;
+        Set<Long> likedPopupIds = getLikedPopupIds(userId, popupIds);
+
+        List<PopupSummary> popups = popupPage.getContent().stream()
+            .map(popup -> PopupSummary.from(popup, likedPopupIds.contains(popup.getId())))
+            .toList();
 
         return PopupListResponse.of(
             popups,
-            likedPopupIds,
+            null,
             popupPage.getNumber(),
             popupPage.getSize(),
             popupPage.getTotalElements(),
@@ -42,6 +50,20 @@ public class PopupFacade {
 
     public PopupDetailResponse getPopupDetail(String popupId, Long userId) {
         Popup popup = popupService.getPopupDetail(popupId, userId);
-        return PopupDetailResponse.from(popup);
+
+        boolean isLiked = userId != null && userFavoriteRepository.existsByUserIdAndCurationIdAndCurationType(
+                userId, popup.getId(), CurationType.POPUP);
+
+        return PopupDetailResponse.from(popup, isLiked);
+    }
+
+    private Set<Long> getLikedPopupIds(Long userId, List<Long> popupIds) {
+        if (userId == null || popupIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+        return Set.copyOf(
+            userFavoriteRepository.findCurationIdsByUserIdAndCurationIdInAndCurationType(
+                userId, popupIds, CurationType.POPUP)
+        );
     }
 }
