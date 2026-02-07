@@ -1,8 +1,12 @@
 package com.example.ticketing.curation.repository;
 
 import com.example.ticketing.curation.domain.Curation;
+import com.example.ticketing.curation.domain.CurationStatus;
+import com.example.ticketing.curation.domain.CurationType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -140,4 +144,33 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
     List<Curation> findNearbyOngoing(
             @Param("excludeId") Long excludeId,
             @Param("today") LocalDate today);
+
+    /**
+     * 전시 목록 조회 (type=EXHIBITION인 Curation)
+     */
+    @Query("""
+        SELECT c FROM Curation c
+        WHERE c.type = 'EXHIBITION'
+        AND c.deletedAt IS NULL
+        AND (:keyword IS NULL OR c.title LIKE %:keyword% OR c.subTitle LIKE %:keyword%)
+        AND (:region IS NULL OR c.region = :region)
+        AND (
+            :#{#status} IS NULL
+            OR (:#{#status?.name()} = 'ONGOING' AND c.startDate <= CURRENT_DATE AND c.endDate >= CURRENT_DATE)
+            OR (:#{#status?.name()} = 'UPCOMING' AND c.startDate > CURRENT_DATE)
+            OR (:#{#status?.name()} = 'ENDED' AND c.endDate < CURRENT_DATE)
+        )
+        ORDER BY c.createdAt DESC
+        """)
+    Page<Curation> findExhibitionsWithFilters(
+            @Param("keyword") String keyword,
+            @Param("region") String region,
+            @Param("status") CurationStatus status,
+            Pageable pageable);
+
+    /**
+     * 전시 단건 조회 (type=EXHIBITION인 Curation)
+     */
+    @Query("SELECT c FROM Curation c WHERE c.id = :id AND c.type = 'EXHIBITION' AND c.deletedAt IS NULL")
+    Optional<Curation> findExhibitionByIdAndNotDeleted(@Param("id") Long id);
 }

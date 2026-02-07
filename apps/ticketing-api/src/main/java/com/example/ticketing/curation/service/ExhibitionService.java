@@ -2,16 +2,15 @@ package com.example.ticketing.curation.service;
 
 import com.example.ticketing.common.exception.CustomException;
 import com.example.ticketing.common.exception.ErrorCode;
+import com.example.ticketing.curation.domain.Curation;
 import com.example.ticketing.curation.domain.CurationStatus;
 import com.example.ticketing.curation.domain.CurationType;
-import com.example.ticketing.curation.domain.Exhibition;
 import com.example.ticketing.curation.dto.ExhibitionDetailResponse;
 import com.example.ticketing.curation.dto.ExhibitionListResponse;
 import com.example.ticketing.curation.dto.ExhibitionSummary;
 import com.example.ticketing.curation.dto.Pagination;
 import com.example.ticketing.curation.event.CurationViewedEvent;
-import com.example.ticketing.curation.repository.CurationLikeRepository;
-import com.example.ticketing.curation.repository.ExhibitionRepository;
+import com.example.ticketing.curation.repository.CurationRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ExhibitionService {
 
-    private final ExhibitionRepository exhibitionRepository;
+    private final CurationRepository curationRepository;
     private final UserFavoriteRepository userFavoriteRepository;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -40,20 +39,20 @@ public class ExhibitionService {
         Long userId,
         Pageable pageable
     ) {
-        Page<Exhibition> exhibitionPage = exhibitionRepository.findAllWithFilters(
+        Page<Curation> exhibitionPage = curationRepository.findExhibitionsWithFilters(
             keyword, region, status, pageable
         );
 
         List<Long> exhibitionIds = exhibitionPage.getContent().stream()
-            .map(Exhibition::getId)
+            .map(Curation::getId)
             .toList();
 
         Set<Long> likedExhibitionIds = getLikedExhibitionIds(userId, exhibitionIds);
 
         List<ExhibitionSummary> summaries = exhibitionPage.getContent().stream()
-            .map(exhibition -> ExhibitionSummary.from(
-                exhibition,
-                likedExhibitionIds.contains(exhibition.getId())
+            .map(curation -> ExhibitionSummary.from(
+                curation,
+                likedExhibitionIds.contains(curation.getId())
             ))
             .toList();
 
@@ -63,10 +62,10 @@ public class ExhibitionService {
 
     @Transactional
     public ExhibitionDetailResponse getExhibition(Long exhibitionId, Long userId) {
-        Exhibition exhibition = exhibitionRepository.findByIdAndNotDeleted(exhibitionId)
+        Curation curation = curationRepository.findExhibitionByIdAndNotDeleted(exhibitionId)
             .orElseThrow(() -> new CustomException(ErrorCode.EXHIBITION_NOT_FOUND));
 
-        exhibition.incrementViewCount();
+        curation.incrementViewCount();
 
         // 비동기로 조회 이력 기록 (메인 스레드 블로킹 방지)
         eventPublisher.publishEvent(new CurationViewedEvent(
@@ -78,7 +77,7 @@ public class ExhibitionService {
         boolean isLiked = userId != null && userFavoriteRepository.existsByUserIdAndCurationIdAndCurationType(
                 userId, exhibitionId, CurationType.EXHIBITION);
 
-        return ExhibitionDetailResponse.from(exhibition, isLiked);
+        return ExhibitionDetailResponse.from(curation, isLiked);
     }
 
     //전시 목록 조회 시 각 전시의 "좋아요 여부"를 표시
