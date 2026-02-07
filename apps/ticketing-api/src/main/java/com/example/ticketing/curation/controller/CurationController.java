@@ -5,11 +5,13 @@ import com.example.ticketing.curation.domain.CurationType;
 import com.example.ticketing.curation.dto.CalendarResponse;
 import com.example.ticketing.curation.dto.CurationSearchResponse;
 import com.example.ticketing.curation.dto.MapCurationResponse;
+import com.example.ticketing.curation.dto.CurationKeywordResponse;
 import com.example.ticketing.curation.dto.ToggleFavoriteRequest;
 import com.example.ticketing.curation.facade.CurationFacade;
 import com.example.ticketing.curation.service.CalendarService;
 import com.example.ticketing.curation.service.CurationSearchService;
 import com.example.ticketing.curation.service.MapCurationService;
+import com.example.ticketing.curation.service.CurationKeywordService;
 import com.example.ticketing.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class CurationController {
     private final MapCurationService mapCurationService;
     private final CalendarService calendarService;
     private final CurationSearchService curationSearchService;
+    private final CurationKeywordService curationKeywordService;
 
     @GetMapping("/search")
     @Operation(summary = "통합 검색", description = "검색어, 행사 타입(POPUP/EXHIBITION), 카테고리별 행사 목록 조회")
@@ -82,6 +85,12 @@ public class CurationController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         return ResponseEntity.ok(mapCurationService.getNearbyCurations(curationId, limit));
+    }
+
+    @GetMapping("/search/recommended")
+    @Operation(summary = "추천 검색어 조회", description = "이번 주(일~토) 진행 중인 행사 태그 기반 인기 검색어 Top 10")
+    public ResponseEntity<CurationKeywordResponse> getRecommendedKeywords() {
+        return ResponseEntity.ok(curationKeywordService.getRecommendedKeywords());
     }
 
     @PostMapping("/favorites")
