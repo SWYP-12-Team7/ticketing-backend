@@ -63,6 +63,7 @@ public class CurationController {
         return ResponseEntity.ok(calendarService.getCalendar(year, month, region, category));
     }
 
+
     @GetMapping("/calendar/list")
     @Operation(summary = "캘린더 날짜별 행사 리스트", description = "캘린더에서 날짜 클릭 시 해당 날짜 진행 중인 행사 목록")
     public ResponseEntity<MapCurationResponse> getCalendarList(
@@ -71,6 +72,16 @@ public class CurationController {
             @RequestParam(required = false) String category
     ) {
         return ResponseEntity.ok(calendarService.getListByDate(date, region, category));
+    }
+
+
+    @GetMapping("/{curationId}/nearby")
+    @Operation(summary = "주변 행사 조회", description = "해당 행사와 같은 지역의 진행 중인 행사 목록 (지도 표시용)")
+    public ResponseEntity<MapCurationResponse> getNearbyCurations(
+            @PathVariable Long curationId,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return ResponseEntity.ok(mapCurationService.getNearbyCurations(curationId, limit));
     }
 
     @PostMapping("/favorites")
