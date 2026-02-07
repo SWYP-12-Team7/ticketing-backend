@@ -173,4 +173,10 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
      */
     @Query("SELECT c FROM Curation c WHERE c.id = :id AND c.type = 'EXHIBITION' AND c.deletedAt IS NULL")
     Optional<Curation> findExhibitionByIdAndNotDeleted(@Param("id") Long id);
+
+    /**
+     * 추천검색어용 - 해당 주(일~토) 기간과 겹치는 행사 중 태그가 있는 행사 조회
+     */
+    @Query("SELECT c FROM Curation c WHERE c.startDate <= :endDate AND (c.endDate IS NULL OR c.endDate >= :startDate) AND c.tags IS NOT NULL AND c.deletedAt IS NULL")
+    List<Curation> findRecentWithTags(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
