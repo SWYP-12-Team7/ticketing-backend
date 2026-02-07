@@ -8,6 +8,7 @@ import java.util.List;
 
 public record PopupSummary(
     String popupId,
+    Long id,
     String title,
     String thumbnailImageUrl,
     LocalDate startDate,
@@ -17,11 +18,13 @@ public record PopupSummary(
     List<String> category,
     boolean isFree,
     ReservationStatus reservationStatus,
-    List<String> tags
+    List<String> tags,
+    boolean isLiked
 ) {
-    public static PopupSummary from(Popup popup) {
+    public static PopupSummary from(Popup popup, boolean isLiked) {
         return new PopupSummary(
             popup.getPopupId(),
+            popup.getId(),
             popup.getTitle(),
             popup.getThumbnail(),
             popup.getStartDate(),
@@ -37,7 +40,8 @@ public record PopupSummary(
             popup.getCategory(),
             popup.isFree(),
             popup.getReservationStatus(),
-            popup.getTags()
+            popup.getTags(),
+            isLiked
         );
     }
 }

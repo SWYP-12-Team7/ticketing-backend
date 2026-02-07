@@ -43,9 +43,10 @@ public record PopupDetailResponse(
     String snsUrl,
     Map<String, String> operatingHours,
     // 계산된 필드
-    PopupStatus status
+    PopupStatus status,
+    boolean isLiked
 ) {
-    public static PopupDetailResponse from(Popup popup) {
+    public static PopupDetailResponse from(Popup popup, boolean isLiked) {
         return new PopupDetailResponse(
             // Curation 필드 (부모)
             popup.getId(),
@@ -80,7 +81,8 @@ public record PopupDetailResponse(
             popup.getSnsUrl(),
             popup.getOperatingHours(),
             // 계산된 필드
-            popup.calculateStatus()
+            popup.calculateStatus(),
+            isLiked
         );
     }
 }
