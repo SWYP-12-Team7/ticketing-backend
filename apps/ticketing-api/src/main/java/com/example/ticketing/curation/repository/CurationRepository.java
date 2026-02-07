@@ -126,4 +126,25 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
             @Param("type") String type,
             @Param("category") String category
     );
+
+    /**
+     * 주변 행사 조회 (같은 구, 진행중, 좌표 있는 행사)
+     * address에서 "OO구" 추출하여 매칭
+     */
+    @Query(value = """
+        SELECT * FROM curation c
+        WHERE c.id != :excludeId
+        AND c.deleted_at IS NULL
+        AND c.latitude IS NOT NULL AND c.longitude IS NOT NULL
+        AND c.start_date <= :today
+        AND (c.end_date IS NULL OR c.end_date >= :today)
+        AND c.address REGEXP :district
+        ORDER BY c.like_count DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<Curation> findNearbyByDistrict(
+            @Param("excludeId") Long excludeId,
+            @Param("district") String district,
+            @Param("today") LocalDate today,
+            @Param("limit") int limit);
 }
