@@ -30,7 +30,7 @@ public class SecurityConfig {
           "/actuator/health",
           "/error",
           "/",
-          "/auth/**",  // 인증 관련 엔드포인트는 모두 허용
+          "/auth/**",
           // Swagger UI
           "/swagger-ui/**",
           "/swagger-ui.html",
@@ -42,7 +42,10 @@ public class SecurityConfig {
           // Main Page API
           "/main/**",
           // Exhibition API
-          "/api/exhibitions/**"
+          "/api/exhibitions/**",
+          "/exhibitions/**",
+          // Curations API
+          "/curations/**"
   };
 
   private static final String[] ADMIN_ENDPOINTS = {

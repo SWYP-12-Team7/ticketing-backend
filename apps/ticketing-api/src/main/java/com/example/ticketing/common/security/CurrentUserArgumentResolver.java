@@ -40,7 +40,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
         if (authentication == null || !(authentication.getPrincipal() instanceof Long)) {
             if (required) {
-                throw new CustomException(ErrorCode.USER_NOT_FOUND, "인증이 필요합니다.");
+                throw new CustomException(ErrorCode.UNAUTHORIZED);
             }
             return null;
         }
