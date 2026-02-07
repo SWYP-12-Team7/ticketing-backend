@@ -43,7 +43,9 @@ public class SecurityConfig {
           "/main/**",
           // Exhibition API
           "/api/exhibitions/**",
-          "/exhibitions/**"
+          "/exhibitions/**",
+          // Curations API
+          "/curations/**"
   };
 
   private static final String[] ADMIN_ENDPOINTS = {

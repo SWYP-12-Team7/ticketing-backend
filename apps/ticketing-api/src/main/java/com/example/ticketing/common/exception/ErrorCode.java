@@ -34,6 +34,7 @@ public enum ErrorCode {
     DUPLICATE_FOLDER_NAME(HttpStatus.CONFLICT, "이미 존재하는 폴더 이름입니다"),
 
     // Auth
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다"),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다"),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다"),
     KAKAO_AUTH_FAILED(HttpStatus.BAD_REQUEST, "카카오 인증에 실패했습니다"),
