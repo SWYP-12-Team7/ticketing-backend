@@ -34,26 +34,24 @@ public class MapCurationService {
     }
 
     /**
-     * 주변 행사 조회 (같은 구 기준)
+     * 주변 행사 조회 (같은 구/시 기준)
      */
     public MapCurationResponse getNearbyCurations(Long curationId, int limit) {
         Curation baseCuration = curationRepository.findById(curationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CURATION_NOT_FOUND));
 
-        // 주소에서 "OO구" 추출
+        // 주소에서 "OO구" 또는 "OO시" 추출
         String district = extractDistrict(baseCuration.getAddress());
         if (district == null) {
             return new MapCurationResponse(Collections.emptyList());
         }
 
-        List<Curation> nearbyCurations = curationRepository.findNearbyByDistrict(
-                curationId,
-                district,
-                LocalDate.now(),
-                limit
-        );
+        // JPQL로 진행중인 행사 조회 후 Java에서 district 필터링
+        List<Curation> allNearby = curationRepository.findNearbyOngoing(curationId, LocalDate.now());
 
-        List<MapCurationResponse.MapCurationItem> items = nearbyCurations.stream()
+        List<MapCurationResponse.MapCurationItem> items = allNearby.stream()
+                .filter(c -> c.getAddress() != null && c.getAddress().contains(district))
+                .limit(limit)
                 .map(MapCurationResponse.MapCurationItem::from)
                 .toList();
 
@@ -61,21 +59,29 @@ public class MapCurationService {
     }
 
     /**
-     * 주소에서 "OO구" 추출
+     * 주소에서 "OO구" 또는 "OO시" 추출
      * 예: "서울 서초구 남부순환로 2406" → "서초구"
+     * 예: "강원 강릉시 경포로 123" → "강릉시"
      */
     private String extractDistrict(String address) {
         if (address == null || address.isBlank()) {
             return null;
         }
 
-        // 정규식으로 "OO구" 패턴 추출
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("([가-힣]+구)");
-        java.util.regex.Matcher matcher = pattern.matcher(address);
-
-        if (matcher.find()) {
-            return matcher.group(1);
+        // 1. 먼저 "OO구" 패턴 찾기 (서울/광역시 내 구)
+        java.util.regex.Pattern guPattern = java.util.regex.Pattern.compile("([가-힣]+구)");
+        java.util.regex.Matcher guMatcher = guPattern.matcher(address);
+        if (guMatcher.find()) {
+            return guMatcher.group(1);
         }
+
+        // 2. "OO구"가 없으면 "OO시" 패턴 찾기 (강릉시, 춘천시 등)
+        java.util.regex.Pattern siPattern = java.util.regex.Pattern.compile("([가-힣]+시)");
+        java.util.regex.Matcher siMatcher = siPattern.matcher(address);
+        if (siMatcher.find()) {
+            return siMatcher.group(1);
+        }
+
         return null;
     }
 }
