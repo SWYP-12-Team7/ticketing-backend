@@ -26,6 +26,8 @@ public record ExhibitionDetailResponse(
     String description,
     String image,
     ReservationStatus reservationStatus,
+    Double latitude,
+    Double longitude,
     Long likeCount,
     Long viewCount,
     boolean isLiked
@@ -48,6 +50,8 @@ public record ExhibitionDetailResponse(
             .description(curation.getDescription())
             .image(curation.getImage())
             .reservationStatus(curation.getReservationStatus())
+            .latitude(curation.getLatitude())
+            .longitude(curation.getLongitude())
             .likeCount(curation.getLikeCount())
             .viewCount(curation.getViewCount())
             .isLiked(isLiked)
