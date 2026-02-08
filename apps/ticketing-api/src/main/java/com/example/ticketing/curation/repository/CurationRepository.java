@@ -27,7 +27,7 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
         AND c.region IN (:regions)
         AND JSON_OVERLAPS(c.category, :categoriesJson)
         ORDER BY c.start_date ASC, DATEDIFF(c.end_date, c.start_date) ASC, c.title ASC
-        """, nativeQuery = true)
+        """, nativeQuery = true) // Native Query + JSON_OVERLAPS
     List<Curation> findByRegionsAndCategories(
             @Param("regions") List<String> regions,
             @Param("categoriesJson") String categoriesJson
