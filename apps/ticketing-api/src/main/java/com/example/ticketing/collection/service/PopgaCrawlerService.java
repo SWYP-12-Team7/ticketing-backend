@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,10 +25,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
  * popga.co.kr 사이트에서 팝업 데이터를 크롤링하고 Gemini로 파싱하는 서비스
+ *
+ * 2단계 파이프라인 방식:
+ * Phase 1 - HTML 페이지 병렬 수집 (Jsoup, 멀티스레드)
+ * Phase 2 - Gemini API 파싱 (RPM/RPD rate limiting 적용)
  */
 @Slf4j
 @Service
@@ -37,12 +46,38 @@ public class PopgaCrawlerService {
     private static final String SITEMAP_URL_TEMPLATE = BASE_URL + "/sitemap/%d.xml";
     private static final int[] SITEMAP_INDICES = {2, 3, 4, 5};
     private static final Pattern POPUP_URL_PATTERN = Pattern.compile("/popup/(\\d+)");
-    private static final int REQUEST_DELAY_MS = 1000;
-    private static final long GEMINI_DELAY_SECONDS = 5;
+
+    @Value("${crawler.sitemap.delay-ms:500}")
+    private int sitemapDelayMs;
+
+    @Value("${crawler.gemini.rpm:5}")
+    private int geminiRpm;
+
+    @Value("${crawler.gemini.rpd:20}")
+    private int geminiRpd;
+
+    @Value("${crawler.html-fetch.thread-pool-size:5}")
+    private int htmlFetchThreadPoolSize;
+
+    @Value("${crawler.html-fetch.timeout-ms:15000}")
+    private int htmlFetchTimeoutMs;
 
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .registerModule(new JavaTimeModule());
+
+    /**
+     * HTML 수집 결과를 담는 중간 DTO
+     */
+    private record HtmlFetchResult(String url, String popgaId, String pageContent, String ogImage) {}
+
+    /**
+     * URL에서 popgaId를 추출
+     */
+    public String extractPopgaId(String url) {
+        Matcher matcher = POPUP_URL_PATTERN.matcher(url);
+        return matcher.find() ? matcher.group(1) : null;
+    }
 
     /**
      * sitemap에서 팝업 URL 목록을 추출
@@ -67,7 +102,7 @@ public class PopgaCrawlerService {
                     }
                 }
                 log.info("Sitemap {} 에서 {} 개 팝업 URL 발견", index, locs.size());
-                Thread.sleep(REQUEST_DELAY_MS);
+                Thread.sleep(sitemapDelayMs);
             } catch (IOException e) {
                 log.error("Sitemap 수집 실패: {}", sitemapUrl, e);
             } catch (InterruptedException e) {
@@ -81,52 +116,65 @@ public class PopgaCrawlerService {
     }
 
     /**
-     * 여러 팝업 페이지를 크롤링하고 Gemini로 파싱
+     * 여러 팝업 페이지를 크롤링하고 Gemini로 파싱 (2단계 파이프라인)
+     *
+     * Phase 1: HTML 페이지를 멀티스레드로 병렬 수집
+     * Phase 2: Gemini API를 RPM 기반 rate limiting으로 순차 호출
      */
     public List<PopgaPopupData> crawlPopups(List<String> urls, int limit) {
-        List<PopgaPopupData> results = new ArrayList<>();
-        ChatClient chatClient = chatClientBuilder.build();
-        int count = 0;
+        int effectiveLimit = limit > 0 ? Math.min(limit, geminiRpd) : Math.min(urls.size(), geminiRpd);
+        List<String> targetUrls = urls.subList(0, Math.min(urls.size(), effectiveLimit));
 
-        for (String url : urls) {
-            if (limit > 0 && count >= limit) {
-                break;
-            }
+        log.info("=== Phase 1: HTML 페이지 병렬 수집 시작 ({} 건, 스레드 풀: {}) ===",
+                targetUrls.size(), htmlFetchThreadPoolSize);
+        long phase1Start = System.currentTimeMillis();
+        List<HtmlFetchResult> htmlResults = fetchHtmlPagesParallel(targetUrls);
+        long phase1Duration = System.currentTimeMillis() - phase1Start;
+        log.info("=== Phase 1 완료: {} 건 성공 (소요시간: {}ms) ===", htmlResults.size(), phase1Duration);
 
-            try {
-                log.info("크롤링 중 ({}/{}): {}", count + 1, Math.min(urls.size(), limit > 0 ? limit : urls.size()), url);
+        long minIntervalMs = (60_000L / geminiRpm) + 1_000L;
+        log.info("=== Phase 2: Gemini 파싱 시작 (RPM: {}, 호출 간격: {}ms, 최대: {}건) ===",
+                geminiRpm, minIntervalMs, effectiveLimit);
+        long phase2Start = System.currentTimeMillis();
+        List<PopgaPopupData> results = parseWithGeminiRateLimited(htmlResults, effectiveLimit, minIntervalMs);
+        long phase2Duration = System.currentTimeMillis() - phase2Start;
+        log.info("=== Phase 2 완료: {} 건 파싱 성공 (소요시간: {}ms) ===", results.size(), phase2Duration);
 
-                PopgaPopupData data = crawlAndParseWithGemini(chatClient, url);
-                if (data != null && data.getTitle() != null) {
-                    results.add(data);
-                    count++;
-                    log.info("파싱 완료: {}", data.getTitle());
-                }
-
-                TimeUnit.SECONDS.sleep(GEMINI_DELAY_SECONDS);
-
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            } catch (Exception e) {
-                log.error("크롤링 실패: {}", url, e);
-            }
-        }
-
-        log.info("총 {} 개 팝업 크롤링 완료", results.size());
+        log.info("총 소요시간: {}ms", phase1Duration + phase2Duration);
         return results;
     }
 
     /**
-     * 단일 페이지를 크롤링하고 Gemini로 모든 필드 추출
+     * Phase 1: HTML 페이지를 병렬로 수집
      */
-    private PopgaPopupData crawlAndParseWithGemini(ChatClient chatClient, String url) {
+    private List<HtmlFetchResult> fetchHtmlPagesParallel(List<String> urls) {
+        ExecutorService executor = Executors.newFixedThreadPool(htmlFetchThreadPoolSize);
         try {
-            Document doc = Jsoup.connect(url)
-                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
-                    .timeout(15000)
-                    .get();
+            List<CompletableFuture<HtmlFetchResult>> futures = urls.stream()
+                    .map(url -> CompletableFuture.supplyAsync(() -> fetchSinglePage(url), executor))
+                    .toList();
 
+            return futures.stream()
+                    .map(future -> {
+                        try {
+                            return future.get(htmlFetchTimeoutMs + 5_000L, TimeUnit.MILLISECONDS);
+                        } catch (Exception e) {
+                            log.warn("HTML 수집 타임아웃 또는 오류", e);
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    /**
+     * 단일 HTML 페이지 수집 (Gemini 호출 없이 HTML만 가져옴)
+     */
+    private HtmlFetchResult fetchSinglePage(String url) {
+        try {
             Matcher matcher = POPUP_URL_PATTERN.matcher(url);
             String popgaId = matcher.find() ? matcher.group(1) : null;
             if (popgaId == null) {
@@ -134,47 +182,79 @@ public class PopgaCrawlerService {
                 return null;
             }
 
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
+                    .timeout(htmlFetchTimeoutMs)
+                    .get();
+
             String pageContent = extractPageContent(doc);
-            String prompt = buildExtractionPrompt(pageContent, url);
-            String response = chatClient.prompt()
-                    .user(prompt)
-                    .call()
-                    .content();
-
-            PopgaPopupData data = parseGeminiResponse(response, popgaId);
-
             String ogImage = doc.select("meta[property=og:image]").attr("content");
-            if (ogImage != null && !ogImage.isEmpty() && data != null) {
-                data = PopgaPopupData.builder()
-                        .popgaId(data.getPopgaId())
-                        .title(data.getTitle())
-                        .subTitle(data.getSubTitle())
-                        .description(data.getDescription())
-                        .thumbnailImageUrl(ogImage)
-                        .startDate(data.getStartDate())
-                        .endDate(data.getEndDate())
-                        .city(data.getCity())
-                        .district(data.getDistrict())
-                        .placeName(data.getPlaceName())
-                        .address(data.getAddress())
-                        .latitude(data.getLatitude())
-                        .longitude(data.getLongitude())
-                        .operatingHours(data.getOperatingHours())
-                        .categories(data.getCategories())
-                        .tags(data.getTags())
-                        .homepageUrl(data.getHomepageUrl())
-                        .snsUrl(data.getSnsUrl())
-                        .isFree(data.getIsFree())
-                        .reservationType(data.getReservationType())
-                        .build();
-            }
 
-            return data;
+            log.debug("HTML 수집 완료: {} (popgaId={})", url, popgaId);
+            return new HtmlFetchResult(url, popgaId, pageContent, ogImage);
 
         } catch (IOException e) {
-            log.error("페이지 크롤링 실패: {}", url, e);
+            log.error("HTML 페이지 수집 실패: {}", url, e);
             return null;
         }
+    }
+
+    /**
+     * Phase 2: Gemini API로 파싱 (RPM 기반 rate limiting 적용)
+     *
+     * API 호출 간 최소 간격을 유지하되, API 응답 시간도 간격에 포함하여
+     * 불필요한 대기를 최소화함
+     */
+    private List<PopgaPopupData> parseWithGeminiRateLimited(
+            List<HtmlFetchResult> htmlResults, int limit, long minIntervalMs) {
+        List<PopgaPopupData> results = new ArrayList<>();
+        ChatClient chatClient = chatClientBuilder.build();
+        long lastCallTimeMs = 0;
+        int count = 0;
+
+        for (HtmlFetchResult html : htmlResults) {
+            if (count >= limit) break;
+
+            try {
+                // RPM 기반 rate limiting: 이전 호출로부터 최소 간격 보장
+                if (lastCallTimeMs > 0) {
+                    long elapsed = System.currentTimeMillis() - lastCallTimeMs;
+                    long waitTime = minIntervalMs - elapsed;
+                    if (waitTime > 0) {
+                        log.debug("Gemini rate limit 대기: {}ms", waitTime);
+                        Thread.sleep(waitTime);
+                    }
+                }
+
+                log.info("Gemini 파싱 중 ({}/{}): {}", count + 1,
+                        Math.min(htmlResults.size(), limit), html.url());
+
+                lastCallTimeMs = System.currentTimeMillis();
+                String prompt = buildExtractionPrompt(html.pageContent(), html.url());
+                String response = chatClient.prompt()
+                        .user(prompt)
+                        .call()
+                        .content();
+
+                PopgaPopupData data = parseGeminiResponse(response, html.popgaId());
+                if (data != null && data.getTitle() != null) {
+                    if (html.ogImage() != null && !html.ogImage().isEmpty()) {
+                        data = data.toBuilder().thumbnailImageUrl(html.ogImage()).build();
+                    }
+                    results.add(data);
+                    count++;
+                    log.info("파싱 완료: {}", data.getTitle());
+                }
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                log.error("Gemini 파싱 실패: {}", html.url(), e);
+            }
+        }
+
+        return results;
     }
 
     private String extractPageContent(Document doc) {
@@ -230,7 +310,7 @@ public class PopgaCrawlerService {
                     "월": "11:00~20:00",
                     "화": "11:00~20:00"
                 },
-                "categories": ["카테고리1", "카테고리2"],
+                "categories": ["패션"],
                 "tags": ["태그1", "태그2"],
                 "homepageUrl": "공식 홈페이지 URL (없으면 null)",
                 "snsUrl": "SNS URL (없으면 null)",
@@ -245,6 +325,8 @@ public class PopgaCrawlerService {
             - 정보를 찾을 수 없으면 해당 필드는 null
             - operatingHours는 요일별 운영시간, 정보 없으면 null
             - 위도/경도를 찾을 수 없으면 null
+            - categories는 반드시 다음 7개 중에서만 선택: 패션, 뷰티, F&B, 캐릭터, 테크, 라이프스타일, 가구&인테리어
+            - 팝업 내용을 분석하여 가장 적합한 카테고리 1~2개를 선택
             """.formatted(url, pageContent);
     }
 

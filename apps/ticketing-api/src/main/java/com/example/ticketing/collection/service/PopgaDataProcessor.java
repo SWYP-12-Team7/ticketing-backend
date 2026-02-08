@@ -1,5 +1,6 @@
 package com.example.ticketing.collection.service;
 
+import com.example.ticketing.collection.constant.PopupCategory;
 import com.example.ticketing.collection.domain.PopupRaw;
 import com.example.ticketing.collection.domain.ReviewStatus;
 import com.example.ticketing.collection.dto.PopgaPopupData;
@@ -70,6 +71,9 @@ public class PopgaDataProcessor {
             }
         }
 
+        // 허용된 카테고리만 필터링
+        List<String> filteredCategories = PopupCategory.filterAllowed(data.getCategories());
+
         return PopupRaw.builder()
                 .popupId(popupId)
                 .title(data.getTitle())
@@ -85,7 +89,7 @@ public class PopgaDataProcessor {
                 .latitude(data.getLatitude())
                 .longitude(data.getLongitude())
                 .operatingHours(data.getOperatingHours())
-                .category(data.getCategories())
+                .category(filteredCategories.isEmpty() ? null : filteredCategories)
                 .tags(data.getTags())
                 .isFree(data.getIsFree() != null ? data.getIsFree() : true)
                 .reservationStatus(reservationStatus != null ? reservationStatus : ReservationStatus.ALL)

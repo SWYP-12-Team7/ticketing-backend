@@ -10,7 +10,7 @@ import lombok.Getter;
  * popga.co.kr에서 크롤링한 팝업 데이터를 담는 DTO
  */
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class PopgaPopupData {
     private String popgaId;
     private String title;

@@ -23,25 +23,18 @@ public class PopupCollectionTasklet implements Tasklet {
 
         CollectionResult result = popgaCollectionFacade.collectAndSavePopups(0);
 
-        chunkContext.getStepContext()
+        var executionContext = chunkContext.getStepContext()
                 .getStepExecution()
-                .getExecutionContext()
-                .put("urlCount", result.urlCount());
-        chunkContext.getStepContext()
-                .getStepExecution()
-                .getExecutionContext()
-                .put("crawledCount", result.crawledCount());
-        chunkContext.getStepContext()
-                .getStepExecution()
-                .getExecutionContext()
-                .put("savedCount", result.savedCount());
-        chunkContext.getStepContext()
-                .getStepExecution()
-                .getExecutionContext()
-                .put("skippedCount", result.skippedCount());
+                .getExecutionContext();
+        executionContext.put("urlCount", result.urlCount());
+        executionContext.put("filteredUrlCount", result.filteredUrlCount());
+        executionContext.put("crawledCount", result.crawledCount());
+        executionContext.put("savedCount", result.savedCount());
+        executionContext.put("skippedCount", result.skippedCount());
 
-        log.info("[Batch] Popga 팝업 데이터 수집 Tasklet 완료 - URL: {}, 크롤링: {}, 저장: {}, 스킵: {}",
-                result.urlCount(), result.crawledCount(), result.savedCount(), result.skippedCount());
+        log.info("[Batch] Popga 팝업 데이터 수집 Tasklet 완료 - URL: {}, 신규: {}, 크롤링: {}, 저장: {}, 스킵: {}",
+                result.urlCount(), result.filteredUrlCount(), result.crawledCount(),
+                result.savedCount(), result.skippedCount());
 
         return RepeatStatus.FINISHED;
     }
