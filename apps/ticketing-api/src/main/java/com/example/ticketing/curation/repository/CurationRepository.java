@@ -18,18 +18,18 @@ import java.util.List;
 public interface CurationRepository extends JpaRepository<Curation, Long> {
 
     /**
-     * 유저 선호 지역/카테고리 기반 행사 조회
+     * 유저 선호 지역/카테고리 기반 행사 ID 조회
      * 정렬: 시작일 빠른순 -> 기간 짧은순 -> 제목 오름차순
      */
     @Query(value = """
-        SELECT * FROM curation c
+        SELECT c.id FROM curation c
         WHERE c.deleted_at IS NULL
         AND c.region IN (:regions)
         AND JSON_OVERLAPS(c.category, :categoriesJson)
         ORDER BY c.start_date ASC, DATEDIFF(c.end_date, c.start_date) ASC, c.title ASC
         LIMIT 20
         """, nativeQuery = true)
-    List<Curation> findByRegionsAndCategories(
+    List<Long> findIdsByRegionsAndCategories(
             @Param("regions") List<String> regions,
             @Param("categoriesJson") String categoriesJson
     );

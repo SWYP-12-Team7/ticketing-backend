@@ -71,7 +71,13 @@ public class MainPageService {
                 .map(c -> "\"" + c + "\"")
                 .collect(java.util.stream.Collectors.joining(",", "[", "]"));
 
-        return curationRepository.findByRegionsAndCategories(regions, categoriesJson).stream()
+        // Native Query로 ID만 조회 후, findAllById로 엔티티 조회 (상속 구조 지원)
+        List<Long> ids = curationRepository.findIdsByRegionsAndCategories(regions, categoriesJson);
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return curationRepository.findAllById(ids).stream()
                 .map(this::toCurationSummary)
                 .toList();
     }

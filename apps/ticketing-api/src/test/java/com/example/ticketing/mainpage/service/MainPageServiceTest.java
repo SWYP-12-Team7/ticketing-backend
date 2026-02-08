@@ -102,7 +102,9 @@ class MainPageServiceTest {
                     .willReturn(List.of(region));
             given(userCategoryPreferenceRepository.findByUserId(userId))
                     .willReturn(List.of(category));
-            given(curationRepository.findByRegionsAndCategories(List.of("서울"), "[\"패션\"]"))
+            given(curationRepository.findIdsByRegionsAndCategories(List.of("서울"), "[\"패션\"]"))
+                    .willReturn(List.of(1L));
+            given(curationRepository.findAllById(List.of(1L)))
                     .willReturn(List.of(userCuration));
             given(curationRepository.findUpcomingWithin7Days(today, sevenDaysLater))
                     .willReturn(Collections.emptyList());
@@ -148,7 +150,7 @@ class MainPageServiceTest {
 
             // then
             assertThat(response.userCurations()).isEmpty();
-            verify(curationRepository, never()).findByRegionsAndCategories(anyList(), anyString());
+            verify(curationRepository, never()).findIdsByRegionsAndCategories(anyList(), anyString());
         }
 
         @Test
@@ -180,7 +182,7 @@ class MainPageServiceTest {
 
             // then
             assertThat(response.userCurations()).isEmpty();
-            verify(curationRepository, never()).findByRegionsAndCategories(anyList(), anyString());
+            verify(curationRepository, never()).findIdsByRegionsAndCategories(anyList(), anyString());
         }
     }
 
@@ -386,7 +388,9 @@ class MainPageServiceTest {
                     .willReturn(List.of(region));
             given(userCategoryPreferenceRepository.findByUserId(userId))
                     .willReturn(List.of(category));
-            given(curationRepository.findByRegionsAndCategories(List.of("서울"), "[\"패션\"]"))
+            given(curationRepository.findIdsByRegionsAndCategories(List.of("서울"), "[\"패션\"]"))
+                    .willReturn(List.of(1L));
+            given(curationRepository.findAllById(List.of(1L)))
                     .willReturn(List.of(userCuration));
             given(curationRepository.findUpcomingWithin7Days(today, sevenDaysLater))
                     .willReturn(List.of(upcomingCuration));
