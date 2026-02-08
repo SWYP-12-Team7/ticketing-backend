@@ -25,25 +25,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MainPageService {
 
+    private static final int MAX_ITEMS = 10;
+
     private final CurationRepository curationRepository;
     private final PopupRepository popupRepository;
     private final UserPreferredRegionRepository userPreferredRegionRepository;
     private final UserCategoryPreferenceRepository userCategoryPreferenceRepository;
 
     public MainPageResponse getMainPageData(Long userId) {
-        // 1. 유저 행사 데이터
-        List<CurationSummary> userCurations = getUserCurations(userId);
-
-        // 2. 오픈예정 행사 데이터 (D-7 이내)
-        List<CurationSummary> upcomingCurations = getUpcomingCurations();
-
-        // 3. 무료 행사 데이터
-        List<CurationSummary> freeCurations = getFreeCurations();
-
-        // 4. 오늘 오픈한 행사 데이터
-        List<CurationSummary> todayOpenCurations = getTodayOpenCurations();
+        // 각 섹션을 안전하게 조회 (에러 시 빈 리스트 반환)
+        List<CurationSummary> userCurations = safeGet(() -> getUserCurations(userId));
+        List<CurationSummary> upcomingCurations = safeGet(this::getUpcomingCurations);
+        List<CurationSummary> freeCurations = safeGet(this::getFreeCurations);
+        List<CurationSummary> todayOpenCurations = safeGet(this::getTodayOpenCurations);
 
         return new MainPageResponse(userCurations, upcomingCurations, freeCurations, todayOpenCurations);
+    }
+
+    private List<CurationSummary> safeGet(java.util.function.Supplier<List<CurationSummary>> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            log.warn("메인페이지 데이터 조회 실패: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private List<CurationSummary> getUserCurations(Long userId) {
@@ -78,6 +83,7 @@ public class MainPageService {
         }
 
         return curationRepository.findAllById(ids).stream()
+                .limit(MAX_ITEMS)
                 .map(this::toCurationSummary)
                 .toList();
     }
@@ -87,12 +93,14 @@ public class MainPageService {
         LocalDate sevenDaysLater = today.plusDays(7);
 
         return curationRepository.findUpcomingWithin7Days(today, sevenDaysLater).stream()
+                .limit(MAX_ITEMS)
                 .map(this::toCurationSummary)
                 .toList();
     }
 
     private List<CurationSummary> getFreeCurations() {
         return popupRepository.findFreePopups().stream()
+                .limit(MAX_ITEMS)
                 .map(this::toCurationSummary)
                 .toList();
     }
@@ -101,6 +109,7 @@ public class MainPageService {
         LocalDate today = LocalDate.now();
 
         return curationRepository.findByStartDate(today).stream()
+                .limit(MAX_ITEMS)
                 .map(this::toCurationSummary)
                 .toList();
     }
