@@ -7,10 +7,13 @@ import com.example.ticketing.user.infrastructure.oauth.dto.KakaoTokenResponse;
 import com.example.ticketing.user.infrastructure.oauth.dto.KakaoUserInfoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+import java.time.Duration;
 
 
 /**
@@ -22,12 +25,22 @@ import org.springframework.web.client.RestClient;
 @Component
 public class KakaoOAuthClient {
 
+  private static final int CONNECT_TIMEOUT_SECONDS = 10;    //연결 대기
+  private static final int READ_TIMEOUT_SECONDS = 30;     //응답 대기
+
   private final RestClient restClient;
   private final KakaoOAuthProperties properties;
 
   public KakaoOAuthClient(KakaoOAuthProperties properties) {
     this.properties = properties;
-    this.restClient = RestClient.builder().build();
+
+    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+    factory.setConnectTimeout(Duration.ofSeconds(CONNECT_TIMEOUT_SECONDS));
+    factory.setReadTimeout(Duration.ofSeconds(READ_TIMEOUT_SECONDS));
+
+    this.restClient = RestClient.builder()
+            .requestFactory(factory)
+            .build();
   }
 
 
