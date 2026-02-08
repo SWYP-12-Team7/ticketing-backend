@@ -9,7 +9,6 @@ public record NearbyPlaceResponse(
     public record PlaceItem(
         String placeName,
         String category,
-        String roadAddress,
         String placeUrl,
         Double latitude,
         Double longitude,

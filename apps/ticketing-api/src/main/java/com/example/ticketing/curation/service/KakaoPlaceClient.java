@@ -63,8 +63,7 @@ public class KakaoPlaceClient {
             return documents.stream()
                     .map(doc -> new NearbyPlaceResponse.PlaceItem(
                             (String) doc.get("place_name"),
-                            (String) doc.get("category_name"),
-                            (String) doc.get("road_address_name"),
+                            extractSubCategory((String) doc.get("category_name")),
                             (String) doc.get("place_url"),
                             Double.parseDouble((String) doc.get("y")),  // 위도
                             Double.parseDouble((String) doc.get("x")),  // 경도
@@ -76,5 +75,21 @@ public class KakaoPlaceClient {
             log.error("카카오 장소 검색 실패: {}", e.getMessage());
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * 카테고리에서 두 번째 상위 카테고리 추출
+     * 예: "음식점 > 한식 > 수제비" → "한식"
+     * 예: "음식점 > 카페 > 디저트 카페" → "카페"
+     */
+    private String extractSubCategory(String categoryName) {
+        if (categoryName == null || categoryName.isBlank()) {
+            return "";
+        }
+        String[] parts = categoryName.split(" > ");
+        if (parts.length >= 2) {
+            return parts[1];  // 두 번째 카테고리 반환
+        }
+        return parts[0];  // 하나만 있으면 그대로 반환
     }
 }
