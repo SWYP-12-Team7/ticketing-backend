@@ -66,7 +66,12 @@ public class MainPageService {
             return Collections.emptyList();
         }
 
-        return curationRepository.findByRegionsAndCategories(regions, categories).stream()
+        // JSON 배열 형태로 변환: ["카테고리1", "카테고리2"]
+        String categoriesJson = categories.stream()
+                .map(c -> "\"" + c + "\"")
+                .collect(java.util.stream.Collectors.joining(",", "[", "]"));
+
+        return curationRepository.findByRegionsAndCategories(regions, categoriesJson).stream()
                 .map(this::toCurationSummary)
                 .toList();
     }

@@ -21,13 +21,16 @@ public interface CurationRepository extends JpaRepository<Curation, Long> {
      * 유저 선호 지역/카테고리 기반 행사 조회
      * 정렬: 시작일 빠른순 -> 기간 짧은순 -> 제목 오름차순
      */
-    @Query("SELECT c FROM Curation c WHERE " +
-           "c.region IN :regions AND " +
-           "EXISTS (SELECT 1 FROM c.category cat WHERE cat IN :categories) " +
-           "ORDER BY c.startDate ASC, (c.endDate - c.startDate) ASC, c.title ASC")
+    @Query(value = """
+        SELECT * FROM curation c
+        WHERE c.deleted_at IS NULL
+        AND c.region IN (:regions)
+        AND JSON_OVERLAPS(c.category, :categoriesJson)
+        ORDER BY c.start_date ASC, DATEDIFF(c.end_date, c.start_date) ASC, c.title ASC
+        """, nativeQuery = true)
     List<Curation> findByRegionsAndCategories(
             @Param("regions") List<String> regions,
-            @Param("categories") List<String> categories
+            @Param("categoriesJson") String categoriesJson
     );
 
     /**

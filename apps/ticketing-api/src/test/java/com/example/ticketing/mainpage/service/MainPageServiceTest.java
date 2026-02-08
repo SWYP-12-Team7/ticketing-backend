@@ -27,6 +27,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -101,7 +102,7 @@ class MainPageServiceTest {
                     .willReturn(List.of(region));
             given(userCategoryPreferenceRepository.findByUserId(userId))
                     .willReturn(List.of(category));
-            given(curationRepository.findByRegionsAndCategories(List.of("서울"), List.of("패션")))
+            given(curationRepository.findByRegionsAndCategories(List.of("서울"), "[\"패션\"]"))
                     .willReturn(List.of(userCuration));
             given(curationRepository.findUpcomingWithin7Days(today, sevenDaysLater))
                     .willReturn(Collections.emptyList());
@@ -147,7 +148,7 @@ class MainPageServiceTest {
 
             // then
             assertThat(response.userCurations()).isEmpty();
-            verify(curationRepository, never()).findByRegionsAndCategories(anyList(), anyList());
+            verify(curationRepository, never()).findByRegionsAndCategories(anyList(), anyString());
         }
 
         @Test
@@ -179,7 +180,7 @@ class MainPageServiceTest {
 
             // then
             assertThat(response.userCurations()).isEmpty();
-            verify(curationRepository, never()).findByRegionsAndCategories(anyList(), anyList());
+            verify(curationRepository, never()).findByRegionsAndCategories(anyList(), anyString());
         }
     }
 
@@ -385,7 +386,7 @@ class MainPageServiceTest {
                     .willReturn(List.of(region));
             given(userCategoryPreferenceRepository.findByUserId(userId))
                     .willReturn(List.of(category));
-            given(curationRepository.findByRegionsAndCategories(List.of("서울"), List.of("패션")))
+            given(curationRepository.findByRegionsAndCategories(List.of("서울"), "[\"패션\"]"))
                     .willReturn(List.of(userCuration));
             given(curationRepository.findUpcomingWithin7Days(today, sevenDaysLater))
                     .willReturn(List.of(upcomingCuration));
