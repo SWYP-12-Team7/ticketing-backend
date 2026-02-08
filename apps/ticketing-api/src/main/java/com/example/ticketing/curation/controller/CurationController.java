@@ -6,12 +6,14 @@ import com.example.ticketing.curation.dto.CalendarResponse;
 import com.example.ticketing.curation.dto.CurationSearchResponse;
 import com.example.ticketing.curation.dto.MapCurationResponse;
 import com.example.ticketing.curation.dto.CurationKeywordResponse;
+import com.example.ticketing.curation.dto.NearbyPlaceResponse;
 import com.example.ticketing.curation.dto.ToggleFavoriteRequest;
 import com.example.ticketing.curation.facade.CurationFacade;
 import com.example.ticketing.curation.service.CalendarService;
 import com.example.ticketing.curation.service.CurationSearchService;
 import com.example.ticketing.curation.service.MapCurationService;
 import com.example.ticketing.curation.service.CurationKeywordService;
+import com.example.ticketing.curation.service.NearbyPlaceService;
 import com.example.ticketing.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class CurationController {
     private final CalendarService calendarService;
     private final CurationSearchService curationSearchService;
     private final CurationKeywordService curationKeywordService;
+    private final NearbyPlaceService nearbyPlaceService;
 
     @GetMapping("/search")
     @Operation(summary = "통합 검색", description = "검색어, 행사 타입(POPUP/EXHIBITION), 카테고리별 행사 목록 조회")
@@ -85,6 +88,14 @@ public class CurationController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         return ResponseEntity.ok(mapCurationService.getNearbyCurations(curationId, limit));
+    }
+
+    @GetMapping("/{curationId}/nearby-places")
+    @Operation(summary = "주변 맛집/카페 조회", description = "행사 위치 기준 반경 1km 내 인기 식당 및 카페 목록")
+    public ResponseEntity<NearbyPlaceResponse> getNearbyPlaces(
+            @PathVariable Long curationId
+    ) {
+        return ResponseEntity.ok(nearbyPlaceService.getNearbyPlaces(curationId));
     }
 
     @GetMapping("/search/recommended")
