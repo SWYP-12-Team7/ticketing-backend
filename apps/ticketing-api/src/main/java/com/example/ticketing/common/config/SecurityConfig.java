@@ -92,6 +92,8 @@ public class SecurityConfig {
             "http://localhost:3000",
             "http://localhost:5500",
             "http://127.0.0.1:5500",
+            "https://www.warrr.site",
+            "https://warrr.site",
             "null"  // file:// 프로토콜용
     ));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
