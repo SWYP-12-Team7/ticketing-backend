@@ -45,7 +45,10 @@ public class KakaoOAuthClient {
     params.add("code", code);
 
     log.info("카카오 토큰 요청 - URI: {}", properties.tokenUri());
-    log.info("카카오 토큰 요청 - Params: grant_type={}, client_id={}, redirect_uri={}",
+    log.info("카카오 토큰 요청 -" +
+             "Params: grant_type={}, " +
+             "client_id={}, " +
+             "redirect_uri={}",
             params.getFirst("grant_type"),
             params.getFirst("client_id"),
             params.getFirst("redirect_uri"));
