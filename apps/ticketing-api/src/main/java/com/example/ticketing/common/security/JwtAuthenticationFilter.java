@@ -28,19 +28,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = extractToken(request);
+        try {
+            String token = extractToken(request);
 
-        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-            Long userId = jwtTokenProvider.getUserIdFromToken(token);
-            log.info("✅ Token Valid - User ID: {}", userId);
+            if (StringUtils.hasText(token)) {
+                if (jwtTokenProvider.validateToken(token)) {
+                    Long userId = jwtTokenProvider.getUserIdFromToken(token);
+                    log.debug("Token Valid - User ID: {}", userId);
 
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            log.warn("❌ Token Invalid or Missing");
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    log.warn("Invalid JWT token for request: {}", request.getRequestURI());
+                }
+            }
+        } catch (Exception e) {
+            log.error("JWT 인증 처리 중 오류 발생: {}", e.getMessage());
+            // 인증 실패해도 필터 체인은 계속 진행 (public endpoint일 수 있음)
         }
 
         filterChain.doFilter(request, response);
