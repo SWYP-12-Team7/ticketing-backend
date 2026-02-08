@@ -48,6 +48,10 @@ jwt:
   access-token-validity: 3600000
   refresh-token-validity: 604800000
 
+crawler:
+  gemini:
+    rpd: 1000
+
 kakao:
   oauth:
     client-id: ${KAKAO_CLIENT_ID}
