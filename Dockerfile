@@ -15,14 +15,16 @@ COPY apps/ticketing-api/build.gradle.kts apps/ticketing-api/
 COPY modules/jpa/build.gradle.kts modules/jpa/
 
 # 의존성 다운로드 (캐싱 활용)
-RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
+RUN --mount=type=cache,target=/root/.gradle/caches \
+    chmod +x gradlew && ./gradlew dependencies --no-daemon || true
 
 # 소스 코드 복사
 COPY apps apps
 COPY modules modules
 
 # 빌드 (테스트 제외)
-RUN ./gradlew :apps:ticketing-api:bootJar --no-daemon -PskipTests
+RUN --mount=type=cache,target=/root/.gradle/caches \
+    ./gradlew :apps:ticketing-api:bootJar --no-daemon -PskipTests
 
 # Runtime stage
 FROM eclipse-temurin:25-jre

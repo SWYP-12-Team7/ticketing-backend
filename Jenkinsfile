@@ -28,8 +28,8 @@ pipeline {
                     string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY'),
                     string(credentialsId: 'ADMIN_PASSWORD', variable: 'ADMIN_PASSWORD')
                 ]) {
-                    sh 'docker compose -f docker-compose.prod.yml build --no-cache app'
-                    sh 'docker compose -f docker-compose.prod.yml up -d'
+                    sh 'DOCKER_BUILDKIT=1 docker compose -f docker-compose.prod.yml build app'
+                    sh 'docker compose -f docker-compose.prod.yml up -d --force-recreate'
                 }
             }
         }
