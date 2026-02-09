@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        NETWORK_NAME = 'swyp-network'
-    }
-
     triggers {
         githubPush()
     }
@@ -13,12 +9,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Ensure Network Exists') {
-            steps {
-                sh "docker network inspect ${NETWORK_NAME} >/dev/null 2>&1 || docker network create ${NETWORK_NAME}"
             }
         }
 
