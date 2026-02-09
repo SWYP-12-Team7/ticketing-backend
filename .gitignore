@@ -39,6 +39,7 @@ application-local.yml
 
 ### Environment ###
 .env
+*.env
 
 ### Claude Code ###
 .claude/settings.local.json
