@@ -29,7 +29,7 @@ services:
     image: mysql:9.0
     container_name: mysql
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     environment:
       TZ: Asia/Seoul
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
