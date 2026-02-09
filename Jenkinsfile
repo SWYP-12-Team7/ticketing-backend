@@ -29,7 +29,7 @@ pipeline {
                     string(credentialsId: 'ADMIN_PASSWORD', variable: 'ADMIN_PASSWORD')
                 ]) {
                     sh 'docker compose -f docker-compose.prod.yml build --no-cache app'
-                    sh 'docker compose -f docker-compose.prod.yml up -d app'
+                    sh 'docker compose -f docker-compose.prod.yml up -d'
                 }
             }
         }
