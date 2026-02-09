@@ -1,6 +1,7 @@
 services:
   app:
-    image: ${NCP_REGISTRY}/ticketing-api:latest
+    build: .
+    image: ticketing-api:latest
     container_name: ticketing-api
     ports:
       - "8080:8080"
