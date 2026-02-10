@@ -63,7 +63,8 @@ class KakaoLoginUseCaseIntegrationTest {
           kakaoUserId,
           new KakaoUserInfoResponse.KakaoAccount(
               new KakaoUserInfoResponse.Profile(nickname, profileImage),
-              email
+              email,
+              "홍길동"  // name 추가
           )
       );
 
@@ -115,7 +116,8 @@ class KakaoLoginUseCaseIntegrationTest {
           kakaoUserId,
           new KakaoUserInfoResponse.KakaoAccount(
               new KakaoUserInfoResponse.Profile("기존유저", "http://example.com/old.jpg"),
-              "existing@kakao.com"
+              "existing@kakao.com",
+              "기존유저이름"  // name 추가
           )
       );
 

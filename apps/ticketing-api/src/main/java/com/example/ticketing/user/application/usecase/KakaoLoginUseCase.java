@@ -73,6 +73,7 @@ public class KakaoLoginUseCase {
                     user.getId(),
                     user.getEmail(),
                     user.getNickname(),
+                    user.getName(),
                     user.getProfileImage(),
                     user.isOnboardingCompleted()
             )
@@ -95,6 +96,7 @@ public class KakaoLoginUseCase {
     User user = User.builder()
             .email(userInfo.extractEmail(true))  // true = 전체 이메일 사용
             .nickname(generate())
+            .name(userInfo.getName())
             .profileImage(userInfo.getProfileImageUrl())
             .build();
     userRepository.save(user);

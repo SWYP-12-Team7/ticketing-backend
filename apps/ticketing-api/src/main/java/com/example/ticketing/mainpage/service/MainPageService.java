@@ -100,17 +100,17 @@ public class MainPageService {
 
     private List<CurationSummary> getFreeCurations() {
         // TODO: 시연 후 원래 코드로 복원
-        // return popupRepository.findFreePopups().stream()
-        //         .limit(MAX_ITEMS)
-        //         .map(this::toCurationSummary)
-        //         .toList();
-
-        // 임시: 전시 데이터 목록 반환
-        return curationRepository.findAll().stream()
-                .filter(c -> c.getType() != null && c.getType().name().equals("EXHIBITION"))
-                .limit(MAX_ITEMS)
-                .map(this::toCurationSummary)
-                .toList();
+         return popupRepository.findFreePopups().stream()
+                 .limit(MAX_ITEMS)
+                 .map(this::toCurationSummary)
+                 .toList();
+// 임시: 전시 데이터 목록 반환
+//        return curationRepository.findAll().stream()
+//                .filter(c -> c.getType() != null && c.getType().name().equals("EXHIBITION"))
+//                .limit(MAX_ITEMS)
+//                .map(this::toCurationSummary)
+//                .toList();
+//
     }
 
     private List<CurationSummary> getTodayOpenCurations() {

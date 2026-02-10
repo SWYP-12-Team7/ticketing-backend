@@ -18,7 +18,10 @@ public record KakaoUserInfoResponse(
             Profile profile,
 
             @JsonProperty("email")
-            String email
+            String email,
+
+            @JsonProperty("name")
+            String name
     ) {
     }
 
@@ -80,5 +83,12 @@ public record KakaoUserInfoResponse(
             return null;
         }
         return kakaoAccount.profile().profileImageUrl();
+    }
+
+    public String getName() {
+        if (kakaoAccount == null || kakaoAccount.profile() == null) {
+            return null;
+        }
+        return kakaoAccount.name();
     }
 }
