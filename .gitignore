@@ -45,5 +45,6 @@ application-local.yml
 .claude/settings.local.json
 
 *.sql
+!init.sql
 
 nul
