@@ -23,7 +23,7 @@
       "type": "timeseries",
       "id": 1,
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -56,7 +56,7 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_memory_used_bytes{area=\"heap\", application=\"$application\"}",
           "legendFormat": "{{id}}",
           "refId": "A"
@@ -68,7 +68,7 @@
       "type": "timeseries",
       "id": 2,
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -101,7 +101,7 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_memory_used_bytes{area=\"nonheap\", application=\"$application\"}",
           "legendFormat": "{{id}}",
           "refId": "A"
@@ -113,7 +113,7 @@
       "type": "timeseries",
       "id": 3,
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -154,13 +154,13 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "sum(jvm_memory_max_bytes{application=\"$application\"})",
           "legendFormat": "Max",
           "refId": "A"
         },
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "sum(jvm_memory_used_bytes{application=\"$application\"})",
           "legendFormat": "Used",
           "refId": "B"
@@ -172,7 +172,7 @@
       "type": "timeseries",
       "id": 4,
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -207,7 +207,7 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "rate(jvm_gc_pause_seconds_sum{application=\"$application\"}[1m]) / rate(jvm_gc_pause_seconds_count{application=\"$application\"}[1m])",
           "legendFormat": "{{gc}} - {{action}}",
           "refId": "A"
@@ -219,7 +219,7 @@
       "type": "timeseries",
       "id": 5,
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -252,7 +252,7 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "rate(jvm_gc_pause_seconds_count{application=\"$application\"}[1m])",
           "legendFormat": "{{gc}} - {{action}}",
           "refId": "A"
@@ -264,7 +264,7 @@
       "type": "timeseries",
       "id": 6,
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -297,19 +297,19 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_threads_live_threads{application=\"$application\"}",
           "legendFormat": "Live Threads",
           "refId": "A"
         },
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_threads_daemon_threads{application=\"$application\"}",
           "legendFormat": "Daemon Threads",
           "refId": "B"
         },
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_threads_peak_threads{application=\"$application\"}",
           "legendFormat": "Peak Threads",
           "refId": "C"
@@ -321,7 +321,7 @@
       "type": "timeseries",
       "id": 7,
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -354,7 +354,7 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_threads_states_threads{application=\"$application\"}",
           "legendFormat": "{{state}}",
           "refId": "A"
@@ -366,7 +366,7 @@
       "type": "timeseries",
       "id": 8,
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -403,13 +403,13 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "process_cpu_usage{application=\"$application\"}",
           "legendFormat": "Process CPU Usage",
           "refId": "A"
         },
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "system_cpu_usage{application=\"$application\"}",
           "legendFormat": "System CPU Usage",
           "refId": "B"
@@ -421,7 +421,7 @@
       "type": "timeseries",
       "id": 9,
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -454,7 +454,7 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_classes_loaded_classes{application=\"$application\"}",
           "legendFormat": "Loaded Classes",
           "refId": "A"
@@ -466,7 +466,7 @@
       "type": "timeseries",
       "id": 10,
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
-      "datasource": "prometheus",
+      "datasource": {"type": "prometheus", "uid": "prom"},
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "palette-classic" },
@@ -499,7 +499,7 @@
       },
       "targets": [
         {
-          "datasource": "prometheus",
+          "datasource": {"type": "prometheus", "uid": "prom"},
           "expr": "jvm_buffer_memory_used_bytes{application=\"$application\"}",
           "legendFormat": "{{id}}",
           "refId": "A"
@@ -515,7 +515,7 @@
     "list": [
       {
         "current": {},
-        "datasource": "prometheus",
+        "datasource": {"type": "prometheus", "uid": "prom"},
         "definition": "label_values(jvm_memory_used_bytes, application)",
         "hide": 0,
         "includeAll": false,

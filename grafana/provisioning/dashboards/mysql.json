@@ -34,7 +34,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -103,7 +103,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_queries[1m])",
           "legendFormat": "QPS",
@@ -124,7 +124,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -220,7 +220,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "mysql_global_status_threads_connected",
           "legendFormat": "Connected Threads",
@@ -229,7 +229,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "mysql_global_variables_max_connections",
           "legendFormat": "Max Connections",
@@ -250,7 +250,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -319,7 +319,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "mysql_global_status_threads_running",
           "legendFormat": "Threads Running",
@@ -328,7 +328,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "mysql_global_status_threads_connected",
           "legendFormat": "Threads Connected",
@@ -349,7 +349,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -445,7 +445,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "mysql_global_status_innodb_buffer_pool_bytes_data",
           "legendFormat": "Buffer Pool Data",
@@ -454,7 +454,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "mysql_global_variables_innodb_buffer_pool_size",
           "legendFormat": "Buffer Pool Size (Allocated)",
@@ -475,7 +475,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -554,7 +554,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_innodb_buffer_pool_read_requests[1m]) / (rate(mysql_global_status_innodb_buffer_pool_read_requests[1m]) + rate(mysql_global_status_innodb_buffer_pool_reads[1m]))",
           "legendFormat": "Buffer Pool Hit Rate",
@@ -575,7 +575,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -675,7 +675,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_bytes_received[1m])",
           "legendFormat": "Bytes Received",
@@ -684,7 +684,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_bytes_sent[1m])",
           "legendFormat": "Bytes Sent",
@@ -705,7 +705,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -775,7 +775,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_slow_queries[1m])",
           "legendFormat": "Slow Queries",
@@ -796,7 +796,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -896,7 +896,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_table_locks_waited[1m])",
           "legendFormat": "Table Locks Waited",
@@ -905,7 +905,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_table_locks_immediate[1m])",
           "legendFormat": "Table Locks Immediate",
@@ -926,7 +926,7 @@
       },
       "datasource": {
         "type": "prometheus",
-        "uid": "prometheus"
+        "uid": "prom"
       },
       "fieldConfig": {
         "defaults": {
@@ -1056,7 +1056,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_commands_total{command=\"select\"}[1m])",
           "legendFormat": "SELECT",
@@ -1065,7 +1065,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_commands_total{command=\"insert\"}[1m])",
           "legendFormat": "INSERT",
@@ -1074,7 +1074,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_commands_total{command=\"update\"}[1m])",
           "legendFormat": "UPDATE",
@@ -1083,7 +1083,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "prometheus"
+            "uid": "prom"
           },
           "expr": "rate(mysql_global_status_commands_total{command=\"delete\"}[1m])",
           "legendFormat": "DELETE",
