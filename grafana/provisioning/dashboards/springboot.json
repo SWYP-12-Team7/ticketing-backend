@@ -769,7 +769,7 @@
         "showCommonLabels": false,
         "showLabels": false,
         "showTime": true,
-        "sortOrder": "Descending",
+        "sortOrder": "Ascending",
         "wrapLogMessage": true
       },
       "title": "Spring Boot Logs",
@@ -801,7 +801,7 @@
         "showCommonLabels": false,
         "showLabels": false,
         "showTime": true,
-        "sortOrder": "Descending",
+        "sortOrder": "Ascending",
         "wrapLogMessage": true
       },
       "title": "MySQL Logs",
