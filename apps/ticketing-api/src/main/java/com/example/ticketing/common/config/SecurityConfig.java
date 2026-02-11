@@ -28,6 +28,7 @@ public class SecurityConfig {
 
   private static final String[] PUBLIC_ENDPOINTS = {
           "/actuator/health",
+          "/actuator/prometheus",
           "/error",
           "/",
           "/auth/**",

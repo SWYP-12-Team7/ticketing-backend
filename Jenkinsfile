@@ -29,7 +29,8 @@ pipeline {
                     string(credentialsId: 'ADMIN_PASSWORD', variable: 'ADMIN_PASSWORD')
                 ]) {
                     sh 'DOCKER_BUILDKIT=1 docker compose -f docker-compose.prod.yml build app'
-                    sh 'docker compose -f docker-compose.prod.yml up -d --force-recreate'
+                    sh 'docker compose -f docker-compose.prod.yml up -d'
+                    sh 'docker compose -f docker-compose.prod.yml up -d --force-recreate app'
                 }
             }
         }
