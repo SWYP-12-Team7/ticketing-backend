@@ -1,6 +1,9 @@
 server:
   servlet:
     context-path: /api
+  tomcat:
+    mbeanregistry:
+      enabled: true
 
 management:
   endpoints:
@@ -10,6 +13,9 @@ management:
   metrics:
     tags:
       application: ticketing-api
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
 
 spring:
   profiles:
