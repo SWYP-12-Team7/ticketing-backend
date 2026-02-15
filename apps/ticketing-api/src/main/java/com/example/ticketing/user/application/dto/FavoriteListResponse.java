@@ -28,10 +28,10 @@ public record FavoriteListResponse(
             LocalDate endDate,
             Long folderId
     ) {
-        public static FavoriteItem from(Curation curation, Long folderId) {
+        public static FavoriteItem from(Curation curation, Long favoriteId, Long folderId) {
             return new FavoriteItem(
-                    curation.getId(),
-                    curation.getId(),
+                    favoriteId,        // UserFavorite의 ID (찜 항목 ID)
+                    curation.getId(),  // Curation의 ID (행사 ID)
                     curation.getType(),
                     curation.getTitle(),
                     curation.getThumbnail(),

@@ -60,7 +60,7 @@ public class GetFavoriteListUseCase {
         List<FavoriteItem> items = curations.stream()
                 .map(curation -> {
                     UserFavorite favorite = favoriteMap.get(curation.getId());
-                    return FavoriteItem.from(curation, favorite.getFolderId());
+                    return FavoriteItem.from(curation, favorite.getId(), favorite.getFolderId());
                 })
                 .toList();
 
