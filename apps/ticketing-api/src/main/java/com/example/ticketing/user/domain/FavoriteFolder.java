@@ -20,13 +20,21 @@ public class FavoriteFolder extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column(length = 7)
+    private String color;
+
     @Builder
-    public FavoriteFolder(Long userId, String name) {
+    public FavoriteFolder(Long userId, String name, String color) {
         this.userId = userId;
         this.name = name;
+        this.color = color;
     }
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void updateColor(String color) {
+        this.color = color;
     }
 }

@@ -91,9 +91,9 @@ public class UserController {
     @Operation(summary = "폴더 생성")
     public ResponseEntity<FolderResponse> createFolder(
             @CurrentUser User user,
-            @RequestBody String name
+            @RequestBody CreateFolderRequest request
     ) {
-        return ResponseEntity.ok(folderUseCase.createFolder(user.getId(), name));
+        return ResponseEntity.ok(folderUseCase.createFolder(user.getId(), request.name(), request.color()));
     }
 
     @PutMapping("/me/folders/{folderId}")

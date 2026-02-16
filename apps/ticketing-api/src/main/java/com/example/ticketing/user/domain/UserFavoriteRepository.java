@@ -50,4 +50,13 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavorite, Long
 
     // 폴더별 타입별 개수 조회
     long countByUserIdAndFolderIdAndCurationType(Long userId, Long folderId, CurationType curationType);
+
+    // 폴더별 최근 찜한 curationId 조회 (썸네일용)
+    @Query("SELECT f.curationId FROM UserFavorite f " +
+           "WHERE f.userId = :userId AND f.folderId = :folderId " +
+           "ORDER BY f.createdAt DESC")
+    List<Long> findCurationIdsByUserIdAndFolderId(
+            @Param("userId") Long userId,
+            @Param("folderId") Long folderId,
+            Pageable pageable);
 }

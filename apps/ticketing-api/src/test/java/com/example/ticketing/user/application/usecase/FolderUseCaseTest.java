@@ -3,6 +3,7 @@ package com.example.ticketing.user.application.usecase;
 import com.example.ticketing.common.exception.CustomException;
 import com.example.ticketing.common.exception.ErrorCode;
 import com.example.ticketing.curation.domain.CurationType;
+import com.example.ticketing.curation.repository.CurationRepository;
 import com.example.ticketing.user.application.dto.FolderResponse;
 import com.example.ticketing.user.domain.FavoriteFolder;
 import com.example.ticketing.user.domain.FavoriteFolderRepository;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class FolderUseCaseTest {
@@ -32,6 +33,8 @@ class FolderUseCaseTest {
     private FavoriteFolderRepository folderRepository;
     @Mock
     private UserFavoriteRepository favoriteRepository;
+    @Mock
+    private CurationRepository curationRepository;
 
     @InjectMocks
     private FolderUseCase folderUseCase;
@@ -79,9 +82,11 @@ class FolderUseCaseTest {
             // given
             Long userId = 1L;
             String name = "새 폴더";
+            String color = "#F36012";
             FavoriteFolder folder = FavoriteFolder.builder()
                     .userId(userId)
                     .name(name)
+                    .color(color)
                     .build();
 
             given(folderRepository.countByUserId(userId)).willReturn(0);
@@ -89,10 +94,11 @@ class FolderUseCaseTest {
             given(folderRepository.save(any(FavoriteFolder.class))).willReturn(folder);
 
             // when
-            FolderResponse response = folderUseCase.createFolder(userId, name);
+            FolderResponse response = folderUseCase.createFolder(userId, name, color);
 
             // then
             assertThat(response.name()).isEqualTo(name);
+            assertThat(response.color()).isEqualTo(color);
             assertThat(response.totalCount()).isEqualTo(0);
         }
 
@@ -104,7 +110,7 @@ class FolderUseCaseTest {
             given(folderRepository.countByUserId(userId)).willReturn(10);
 
             // when & then
-            assertThatThrownBy(() -> folderUseCase.createFolder(userId, "새 폴더"))
+            assertThatThrownBy(() -> folderUseCase.createFolder(userId, "새 폴더", "#F36012"))
                     .isInstanceOf(CustomException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.FOLDER_LIMIT_EXCEEDED);
         }
@@ -119,7 +125,7 @@ class FolderUseCaseTest {
             given(folderRepository.existsByUserIdAndName(userId, name)).willReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> folderUseCase.createFolder(userId, name))
+            assertThatThrownBy(() -> folderUseCase.createFolder(userId, name, "#F36012"))
                     .isInstanceOf(CustomException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_FOLDER_NAME);
         }
