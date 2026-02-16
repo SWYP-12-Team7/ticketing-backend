@@ -28,7 +28,7 @@ public class FolderUseCase {
     private final CurationRepository curationRepository;
 
     private static final int MAX_FOLDER_COUNT = 10;
-    private static final int MAX_THUMBNAILS = 2;
+    private static final int MAX_THUMBNAILS = 3;
 
     @Transactional(readOnly = true)
     public List<FolderResponse> getFolders(Long userId) {
@@ -39,7 +39,7 @@ public class FolderUseCase {
                     long exhibitionCount = favoriteRepository.countByUserIdAndFolderIdAndCurationType(
                             userId, folder.getId(), CurationType.EXHIBITION);
 
-                    // 최근 찜한 행사 썸네일 최대 2개 조회
+                    // 최근 찜한 행사 썸네일 최대 3개 조회
                     List<Long> curationIds = favoriteRepository.findCurationIdsByUserIdAndFolderId(
                             userId, folder.getId(), PageRequest.of(0, MAX_THUMBNAILS));
                     List<String> thumbnails = curationIds.isEmpty()
