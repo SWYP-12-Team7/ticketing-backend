@@ -75,6 +75,18 @@ public class UserController {
         return ResponseEntity.ok(folderUseCase.getFolders(user.getId()));
     }
 
+    @GetMapping("/me/folders/{folderId}")
+    @Operation(summary = "폴더 상세 조회", description = "폴더에 담긴 찜 항목 목록 조회")
+    public ResponseEntity<FavoriteListResponse> getFolderDetail(
+            @CurrentUser User user,
+            @PathVariable Long folderId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(getFavoriteListUseCase.execute(user.getId(), null, folderId, pageable));
+    }
+
     @PostMapping("/me/folders")
     @Operation(summary = "폴더 생성")
     public ResponseEntity<FolderResponse> createFolder(
