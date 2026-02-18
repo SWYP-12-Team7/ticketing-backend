@@ -53,7 +53,7 @@ public class MainPageService {
 
     private List<CurationSummary> getUserCurations(Long userId) {
         if (userId == null) {
-            return getFallbackCurations();
+            return getFallbackCurations(0);
         }
 
         // 유저 선호 지역 조회
@@ -68,7 +68,7 @@ public class MainPageService {
                 .toList();
 
         if (regions.isEmpty() || categories.isEmpty()) {
-            return getFallbackCurations();
+            return getFallbackCurations(0);
         }
 
         // JSON 배열 형태로 변환: ["카테고리1", "카테고리2"]
@@ -79,7 +79,7 @@ public class MainPageService {
         // Native Query로 ID만 조회 후, findAllById로 엔티티 조회 (상속 구조 지원)
         List<Long> ids = curationRepository.findIdsByRegionsAndCategories(regions, categoriesJson);
         if (ids.isEmpty()) {
-            return getFallbackCurations();
+            return getFallbackCurations(0);
         }
 
         return curationRepository.findAllById(ids).stream()
@@ -94,7 +94,7 @@ public class MainPageService {
 
         List<Curation> upcoming = curationRepository.findUpcomingWithin7Days(today, sevenDaysLater);
         if (upcoming.isEmpty()) {
-            return getFallbackCurations();
+            return getFallbackCurations(10);
         }
         return upcoming.stream()
                 .limit(MAX_ITEMS)
@@ -106,12 +106,7 @@ public class MainPageService {
         // TODO: 시연 후 원래 코드로 복원
         List<Popup> freePopups = popupRepository.findFreePopups();
         if (freePopups.isEmpty()) {
-            // 무료 팝업 없으면 전시 전체 반환
-            return curationRepository.findAll().stream()
-                    .filter(c -> c.getType() != null && c.getType().name().equals("EXHIBITION"))
-                    .limit(MAX_ITEMS)
-                    .map(this::toCurationSummary)
-                    .toList();
+            return getFallbackCurations(30);
         }
         return freePopups.stream()
                 .limit(MAX_ITEMS)
@@ -124,7 +119,7 @@ public class MainPageService {
 
         List<Curation> todayOpen = curationRepository.findByStartDate(today);
         if (todayOpen.isEmpty()) {
-            return getFallbackCurations();
+            return getFallbackCurations(20);
         }
         return todayOpen.stream()
                 .limit(MAX_ITEMS)
@@ -132,10 +127,11 @@ public class MainPageService {
                 .toList();
     }
 
-    // 시연용: 데이터 없을 때 최근 전시 반환
-    private List<CurationSummary> getFallbackCurations() {
+    // 시연용: 데이터 없을 때 전시 반환 (offset으로 각 섹션 다른 데이터)
+    private List<CurationSummary> getFallbackCurations(int offset) {
         return curationRepository.findAll().stream()
                 .filter(c -> c.getType() != null && c.getType().name().equals("EXHIBITION"))
+                .skip(offset)
                 .limit(MAX_ITEMS)
                 .map(this::toCurationSummary)
                 .toList();
