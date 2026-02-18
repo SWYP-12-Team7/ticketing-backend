@@ -25,7 +25,7 @@ public class GetMyPageUseCase {
     private final CurationRepository curationRepository;
 
     private static final int SUMMARY_LIMIT = 5;
-    private static final int RECOMMENDATION_LIMIT = 2;
+    private static final int RECOMMENDATION_LIMIT = 10;
 
     public MyTasteResponse execute(Long userId) {
         // 1. 찜한 행사 5개 조회 (최신순)
@@ -73,7 +73,11 @@ public class GetMyPageUseCase {
                 .toList();
 
         if (categories.isEmpty()) {
-            return Collections.emptyList();
+            // 시연용: 카테고리 없으면 전시 목록 반환
+            return curationRepository.findAll().stream()
+                    .limit(RECOMMENDATION_LIMIT)
+                    .map(CurationSummary::from)
+                    .toList();
         }
 
         // JSON 배열 형태로 변환: ["카테고리1", "카테고리2"]
@@ -84,6 +88,14 @@ public class GetMyPageUseCase {
         // 카테고리 기반 랜덤 추천
         List<Curation> recommendations = curationRepository
                 .findByCategoriesRandomly(categoriesJson, PageRequest.of(0, RECOMMENDATION_LIMIT));
+
+        // 시연용: 추천 결과 없으면 전시 목록 반환
+        if (recommendations.isEmpty()) {
+            return curationRepository.findAll().stream()
+                    .limit(RECOMMENDATION_LIMIT)
+                    .map(CurationSummary::from)
+                    .toList();
+        }
 
         return recommendations.stream()
                 .map(CurationSummary::from)
