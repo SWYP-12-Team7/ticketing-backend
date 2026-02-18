@@ -85,10 +85,4 @@ public record KakaoUserInfoResponse(
         return kakaoAccount.profile().profileImageUrl();
     }
 
-    public String getName() {
-        if (kakaoAccount == null || kakaoAccount.profile() == null) {
-            return null;
-        }
-        return kakaoAccount.name();
-    }
 }

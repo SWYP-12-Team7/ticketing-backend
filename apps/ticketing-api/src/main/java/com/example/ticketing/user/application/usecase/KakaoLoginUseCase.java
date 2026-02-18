@@ -95,8 +95,8 @@ public class KakaoLoginUseCase {
     // User 엔티티 생성 (전체 이메일 사용)
     User user = User.builder()
             .email(userInfo.extractEmail(true))  // true = 전체 이메일 사용
-            .nickname(generate())
-            .name(userInfo.getName())
+            .nickname(generate())                // 랜덤 닉네임
+            .name(userInfo.getNickname())        // 카카오 닉네임 → 우리 서비스 name
             .profileImage(userInfo.getProfileImageUrl())
             .build();
     userRepository.save(user);
