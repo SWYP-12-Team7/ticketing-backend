@@ -13,6 +13,7 @@ public record LoginResponse(
           Long id,
           String email,
           String nickname,
+          String name,
           String profileImage,
           boolean onboardingCompleted
   ) {
@@ -26,6 +27,7 @@ public record LoginResponse(
                     result.user().id(),
                     result.user().email(),
                     result.user().nickname(),
+                    result.user().name(),
                     result.user().profileImage(),
                     result.user().onboardingCompleted()
             )
