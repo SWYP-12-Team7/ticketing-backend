@@ -159,8 +159,8 @@ public class UserController {
     @Operation(summary = "닉네임 수정")
     public ResponseEntity<Void> updateNickname(
             @CurrentUser User user,
-            @RequestBody String nickname) {
-        updateNicknameUseCase.updateNickname(user.getId(), nickname);
+            @RequestBody UpdateNicknameRequest request) {
+        updateNicknameUseCase.updateNickname(user.getId(), request.nickname());
         return ResponseEntity.ok().build();
     }
 
