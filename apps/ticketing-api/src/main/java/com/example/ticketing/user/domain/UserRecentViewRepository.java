@@ -11,4 +11,6 @@ public interface UserRecentViewRepository extends JpaRepository<UserRecentView, 
     Optional<UserRecentView> findByUserIdAndCurationId(Long userId, Long curationId);
 
     List<UserRecentView> findByUserIdOrderByUpdatedAtDesc(Long userId, Pageable pageable);
+
+    void deleteByUserId(Long userId);
 }

@@ -14,4 +14,6 @@ public interface FavoriteFolderRepository extends JpaRepository<FavoriteFolder, 
     boolean existsByUserIdAndName(Long userId, String name);
 
     int countByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

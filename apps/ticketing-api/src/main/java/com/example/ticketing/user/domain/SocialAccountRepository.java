@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SocialAccountRepository extends JpaRepository<SocialAccount, Long> {
   Optional<SocialAccount> findByProviderAndProviderId(SocialProvider provider, String providerId);
+
+  void deleteByUserId(Long userId);
 }

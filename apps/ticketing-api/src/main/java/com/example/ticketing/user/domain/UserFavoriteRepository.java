@@ -48,6 +48,8 @@ public interface UserFavoriteRepository extends JpaRepository<UserFavorite, Long
 
     void deleteByUserIdAndCurationId(Long userId, Long curationId);
 
+    void deleteByUserId(Long userId);
+
     // 폴더별 타입별 개수 조회
     long countByUserIdAndFolderIdAndCurationType(Long userId, Long folderId, CurationType curationType);
 

@@ -2,8 +2,7 @@ package com.example.ticketing.user.application.usecase;
 
 import com.example.ticketing.common.exception.CustomException;
 import com.example.ticketing.common.exception.ErrorCode;
-import com.example.ticketing.user.domain.User;
-import com.example.ticketing.user.domain.UserRepository;
+import com.example.ticketing.user.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,15 +13,27 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class WithdrawUserUseCaseTest {
 
   @Mock
   private UserRepository userRepository;
+  @Mock
+  private SocialAccountRepository socialAccountRepository;
+  @Mock
+  private UserFavoriteRepository userFavoriteRepository;
+  @Mock
+  private UserRecentViewRepository userRecentViewRepository;
+  @Mock
+  private UserPreferredRegionRepository userPreferredRegionRepository;
+  @Mock
+  private UserCategoryPreferenceRepository userCategoryPreferenceRepository;
+  @Mock
+  private FavoriteFolderRepository favoriteFolderRepository;
 
   @InjectMocks
   private WithdrawUserUseCase withdrawUserUseCase;
@@ -32,7 +43,7 @@ class WithdrawUserUseCaseTest {
   class Execute {
 
     @Test
-    @DisplayName("성공: 회원 탈퇴 시 deletedAt이 설정된다")
+    @DisplayName("성공: 회원 탈퇴 시 모든 데이터가 삭제된다")
     void success() {
       // given
       Long userId = 1L;
@@ -47,8 +58,13 @@ class WithdrawUserUseCaseTest {
       withdrawUserUseCase.execute(userId);
 
       // then
-      assertThat(user.isDeleted()).isTrue();
-      assertThat(user.getDeletedAt()).isNotNull();
+      verify(socialAccountRepository).deleteByUserId(userId);
+      verify(userFavoriteRepository).deleteByUserId(userId);
+      verify(userRecentViewRepository).deleteByUserId(userId);
+      verify(userPreferredRegionRepository).deleteByUserId(userId);
+      verify(userCategoryPreferenceRepository).deleteByUserId(userId);
+      verify(favoriteFolderRepository).deleteByUserId(userId);
+      verify(userRepository).delete(user);
     }
 
     @Test
